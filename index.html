@@ -76,6 +76,27 @@
             text-align: left;
         }
 
+        /* Image Styling */
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .image-gallery img {
+            width: 250px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .image-gallery img:hover {
+            transform: scale(1.05);
+        }
+
         /* Responsive Design */
         @media (max-width: 600px) {
             nav {
@@ -105,6 +126,7 @@
         <a href="#" onclick="showSection('power')">Power</a>
         <a href="#" onclick="showSection('wiring')">Wiring</a>
         <a href="#" onclick="showSection('final')">Final Product</a>
+        <a href="#" onclick="showSection('images')">Images</a>
     </nav>
 
     <!-- Home Section -->
@@ -190,6 +212,17 @@
         <div class="container">
             <h2>Final Product</h2>
             <p>Once assembled, the ROV is tested in water to evaluate its stability, maneuverability, and video transmission capabilities.</p>
+        </div>
+    </section>
+
+    <!-- Images Section -->
+    <section id="images">
+        <div class="container">
+            <h2>The Team</h2>
+            <div class="image-gallery">
+                <img src="./IMG_1135.jpeg" alt="Team Image 1">
+                <img src="./IMG_1127.jpeg" alt="Team Image 2">
+            </div>
         </div>
     </section>
 
