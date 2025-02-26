@@ -31,7 +31,7 @@
             margin-right: 15px;
         }
 
-        /* Navigation Bar */
+        /* Navigation */
         .menu-icon {
             display: none;
             font-size: 30px;
@@ -109,27 +109,6 @@
         .container {
             text-align: left;
         }
-
-        /* Image Styling */
-        .image-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            padding: 10px;
-        }
-
-        .image-gallery img {
-            width: 250px;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .image-gallery img:hover {
-            transform: scale(1.05);
-        }
     </style>
 </head>
 <body>
@@ -157,38 +136,85 @@
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our Project</h2>
-            <p>We are a team working on a DIY underwater ROV for exploration and learning. Explore the sections to learn more about our project!</p>
+            <p>We are a team building a DIY underwater ROV for exploration, research, and learning.</p>
+        </div>
+    </section>
+
+    <section id="rov">
+        <div class="container">
+            <h2>DIY Underwater ROV</h2>
+            <p>Our ROV is a remotely operated vehicle designed to explore underwater environments while being controlled from the surface.</p>
+        </div>
+    </section>
+
+    <section id="challenges">
+        <div class="container">
+            <h2>Challenges</h2>
+            <p>Challenges include waterproofing components, designing an efficient propulsion system, and ensuring smooth controls.</p>
+        </div>
+    </section>
+
+    <section id="cost">
+        <div class="container">
+            <h2>Estimated Cost</h2>
+            <p>The estimated budget for the ROV ranges between $200 to $500, depending on material choices and upgrades.</p>
+        </div>
+    </section>
+
+    <section id="goal">
+        <div class="container">
+            <h2>Project Goal</h2>
+            <p>Our goal is to create a low-cost, efficient ROV for underwater exploration, education, and environmental research.</p>
+        </div>
+    </section>
+
+    <section id="materials">
+        <div class="container">
+            <h2>Materials Needed</h2>
+            <ul>
+                <li>PVC pipes and connectors</li>
+                <li>Waterproof motors</li>
+                <li>Battery and power distribution system</li>
+                <li>Underwater camera</li>
+                <li>Control system (Arduino/Raspberry Pi)</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="design">
+        <div class="container">
+            <h2>ROV Design</h2>
+            <p>The ROV frame is made from PVC pipes, powered by thrusters, and includes a waterproof camera for visibility.</p>
         </div>
     </section>
 
     <section id="power">
         <div class="container">
             <h2>Power Supply</h2>
-            <p>The ROV is powered by a rechargeable battery pack that supplies energy to the motors and control systems. We use a **12V lithium-ion battery** to ensure stable and long-lasting operation.</p>
+            <p>We use a **12V lithium-ion battery** to power the motors and electronics, ensuring stable performance underwater.</p>
         </div>
     </section>
 
     <section id="wiring">
         <div class="container">
             <h2>Wiring & Electronics</h2>
-            <p>The wiring setup includes **motor controllers**, a **waterproof casing** for electronics, and a **tethered communication system** to send signals between the ROV and the operator.</p>
+            <p>The ROV is wired with **motor controllers, a waterproof casing, and a tethered connection** for communication.</p>
         </div>
     </section>
 
     <section id="final">
         <div class="container">
             <h2>Final Product</h2>
-            <p>Once assembled, the ROV undergoes **testing in water** to evaluate stability, maneuverability, and video transmission capabilities. The final design ensures smooth underwater exploration.</p>
+            <p>After assembly, the ROV is tested in water to ensure proper movement, camera function, and communication.</p>
         </div>
     </section>
 
     <section id="images">
         <div class="container">
             <h2>The Team</h2>
-            <div class="image-gallery">
-                <img src="./IMG_1135.jpeg" alt="Team Image 1">
-                <img src="./IMG_1127.jpeg" alt="Team Image 2">
-            </div>
+            <p>Meet the team behind the project!</p>
+            <img src="./IMG_1135.jpeg" alt="Team Image 1">
+            <img src="./IMG_1127.jpeg" alt="Team Image 2">
         </div>
     </section>
 
