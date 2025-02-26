@@ -153,7 +153,7 @@
         <a href="#" onclick="showSection('images')">Images</a>
     </nav>
 
-    <!-- Home Section -->
+    <!-- Sections -->
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our Project</h2>
@@ -161,9 +161,54 @@
         </div>
     </section>
 
-    <!-- Other sections remain unchanged -->
+    <section id="rov">
+        <div class="container">
+            <h2>DIY Underwater ROV</h2>
+            <p>This project involves building a remotely operated vehicle (ROV) for underwater exploration.</p>
+        </div>
+    </section>
 
-    <!-- Images Section -->
+    <section id="challenges">
+        <div class="container">
+            <h2>Challenges</h2>
+            <p>Challenges include waterproofing, designing an efficient propulsion system, and ensuring smooth control mechanisms.</p>
+        </div>
+    </section>
+
+    <section id="cost">
+        <div class="container">
+            <h2>Estimated Cost</h2>
+            <p>The estimated cost ranges between $200 and $500, depending on materials and components.</p>
+        </div>
+    </section>
+
+    <section id="goal">
+        <div class="container">
+            <h2>Project Goal</h2>
+            <p>Our goal is to design a functional, low-cost underwater ROV that can explore and capture video footage in water environments.</p>
+        </div>
+    </section>
+
+    <section id="materials">
+        <div class="container">
+            <h2>Materials Needed</h2>
+            <ul>
+                <li>PVC pipes and connectors</li>
+                <li>Waterproof motors</li>
+                <li>Battery and power distribution system</li>
+                <li>Camera for underwater recording</li>
+                <li>Control system (Arduino, Raspberry Pi, or custom-built)</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="design">
+        <div class="container">
+            <h2>ROV Design</h2>
+            <p>The design includes a frame made from PVC pipes, motorized thrusters, and a camera.</p>
+        </div>
+    </section>
+
     <section id="images">
         <div class="container">
             <h2>The Team</h2>
@@ -176,11 +221,8 @@
 
     <script>
         function showSection(sectionId) {
-            var sections = document.querySelectorAll("section");
-            sections.forEach(section => section.classList.remove("active"));
+            document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
             document.getElementById(sectionId).classList.add("active");
-
-            // Hide menu on mobile after clicking a link
             document.getElementById("menu").classList.remove("show");
         }
 
@@ -190,5 +232,3 @@
     </script>
 </body>
 </html>
-
-
