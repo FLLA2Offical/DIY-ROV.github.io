@@ -171,11 +171,49 @@
         </div>
     </section>
 
-    <!-- Power Section -->
-    <section id="power">
+    <!-- ROV Section -->
+    <section id="rov">
         <div class="container">
-            <h2>Power Supply</h2>
-            <p>The ROV is powered using a rechargeable battery pack that supplies energy to the motors and control systems.</p>
+            <h2>DIY Underwater ROV</h2>
+            <p>This project involves designing and building a functional underwater remotely operated vehicle (ROV) for exploration.</p>
+        </div>
+    </section>
+
+    <!-- Challenges Section -->
+    <section id="challenges">
+        <div class="container">
+            <h2>Challenges</h2>
+            <p>Some challenges we faced included ensuring waterproofing, achieving precise control, and designing an efficient propulsion system.</p>
+        </div>
+    </section>
+
+    <!-- Cost Section -->
+    <section id="cost">
+        <div class="container">
+            <h2>Estimated Cost</h2>
+            <p>The total cost of this project is estimated to be between $200 and $500, depending on the materials used.</p>
+        </div>
+    </section>
+
+    <!-- Goal Section -->
+    <section id="goal">
+        <div class="container">
+            <h2>Project Goal</h2>
+            <p>The main goal of this project is to create a low-cost, functional underwater ROV that can explore aquatic environments.</p>
+        </div>
+    </section>
+
+    <!-- Materials Section -->
+    <section id="materials">
+        <div class="container">
+            <h2>Materials Needed</h2>
+            <ul>
+                <li>PVC pipes and connectors</li>
+                <li>Waterproof motors</li>
+                <li>Battery pack</li>
+                <li>Camera for underwater viewing</li>
+                <li>Control system (Arduino, Raspberry Pi, or similar)</li>
+            </ul>
         </div>
     </section>
 
@@ -183,7 +221,7 @@
     <section id="wiring">
         <div class="container">
             <h2>Wiring & Electronics</h2>
-            <p>The wiring setup includes motor controllers, a waterproof casing for electronic components, and a tethered connection for communication.</p>
+            <p>The ROV's wiring system includes motor controllers, a power distribution board, and a waterproofed electronics enclosure.</p>
         </div>
     </section>
 
@@ -191,7 +229,7 @@
     <section id="final">
         <div class="container">
             <h2>Final Product</h2>
-            <p>Once assembled, the ROV is tested in water to evaluate its stability, maneuverability, and video transmission capabilities.</p>
+            <p>After assembling all components, we tested the ROV to assess its underwater movement, video clarity, and operational stability.</p>
         </div>
     </section>
 
@@ -206,12 +244,6 @@
         </div>
     </section>
 
-    <!-- Fullscreen Image Modal -->
-    <div id="imageModal" class="modal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <img id="modalImage" src="">
-    </div>
-
     <script>
         function showSection(sectionId) {
             var sections = document.querySelectorAll("section");
@@ -220,14 +252,8 @@
         }
 
         function openModal(image) {
-            var modal = document.getElementById("imageModal");
-            var modalImg = document.getElementById("modalImage");
-            modal.style.display = "flex";
-            modalImg.src = image.src;
-        }
-
-        function closeModal() {
-            document.getElementById("imageModal").style.display = "none";
+            document.getElementById("imageModal").style.display = "flex";
+            document.getElementById("modalImage").src = image.src;
         }
     </script>
 </body>
