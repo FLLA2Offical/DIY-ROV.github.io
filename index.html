@@ -219,7 +219,82 @@
         </div>
     </section>
 
-    <!-- Add the rest of the sections here... -->
+    <section id="challenges">
+        <div class="container">
+            <h2>Challenges</h2>
+            <p>Building an ROV comes with challenges such as waterproofing, designing an efficient propulsion system, and ensuring smooth control mechanisms.</p>
+        </div>
+    </section>
+
+    <section id="cost">
+        <div class="container">
+            <h2>Estimated Cost</h2>
+            <p>The estimated cost for building the ROV ranges between $200 and $500, depending on materials and components used.</p>
+        </div>
+    </section>
+
+    <section id="goal">
+        <div class="container">
+            <h2>Project Goal</h2>
+            <p>The goal of this project is to design a functional, low-cost underwater ROV that can explore and capture video footage in water environments.</p>
+        </div>
+    </section>
+
+    <section id="materials">
+        <div class="container">
+            <h2>Materials Needed</h2>
+            <ul>
+                <li>PVC pipes and connectors</li>
+                <li>Waterproof motors</li>
+                <li>Battery and power distribution system</li>
+                <li>Camera for underwater recording</li>
+                <li>Control system (Arduino, Raspberry Pi, or custom-built)</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="design">
+        <div class="container">
+            <h2>ROV Design</h2>
+            <p>The design of the ROV is focused on being compact, lightweight, and modular. The ROV features a frame built from PVC pipes, making it both sturdy and buoyant. It includes space for a camera system, motors for propulsion, and a control system that can be customized for different purposes.</p>
+        </div>
+    </section>
+
+    <section id="power">
+        <div class="container">
+            <h2>Power Supply</h2>
+            <p>The ROV is powered using a rechargeable battery pack that supplies energy to the motors and control systems. The power system is designed to be efficient and easy to replace, ensuring the ROV has long-lasting energy during missions.</p>
+        </div>
+    </section>
+
+    <section id="wiring">
+        <div class="container">
+            <h2>Wiring & Electronics</h2>
+            <p>The wiring setup includes motor controllers, a waterproof casing for electronic components, and a tethered connection for communication. Proper wiring is essential to ensure the ROV operates without any power loss or electrical malfunction.</p>
+        </div>
+    </section>
+
+    <section id="final">
+        <div class="container">
+            <h2>Final Product</h2>
+            <p>After extensive testing, our ROV is fully operational. It maneuvers effectively underwater and provides real-time video feedback, offering a comprehensive solution for underwater exploration.</p>
+        </div>
+    </section>
+
+    <section id="images">
+        <div class="container">
+            <h2>Project Images</h2>
+            <div class="image-container">
+                <img src="./IMG_1135.jpeg" alt="ROV Image 1" onclick="openModal(this)">
+                <img src="./IMG_1127.jpeg" alt="ROV Image 2" onclick="openModal(this)">
+            </div>
+        </div>
+    </section>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <img id="modalImage">
+    </div>
 
     <script>
         function showSection(sectionId) {
@@ -229,6 +304,15 @@
 
         function toggleMenu() {
             document.getElementById('navbar').classList.toggle('active');
+        }
+
+        function openModal(image) {
+            document.getElementById("imageModal").style.display = "flex";
+            document.getElementById("modalImage").src = image.src;
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
         }
     </script>
 </body>
