@@ -56,6 +56,17 @@
             background: #ff7f00;
         }
 
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column; /* Stacks links vertically */
+                padding: 5px; /* Reduces padding */
+            }
+            nav a {
+                margin: 2px; /* Reduces margin between links */
+            }
+        }
+
         /* Sections */
         section {
             display: none;
@@ -238,7 +249,7 @@
     </section>
 
     <div id="imageModal" class="modal" onclick="closeModal()">
-        <span class="close">&times;</span>
+        <span class="close">×</span>
         <img id="modalImage">
     </div>
 
