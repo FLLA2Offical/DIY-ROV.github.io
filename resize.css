@@ -1,0 +1,18 @@
+/* General Image Style */
+.image-container img {
+    width: 100%;  /* Make the image fill the container */
+    max-width: 400px;  /* Limit the size when not clicked */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Fullscreen Style */
+.image-container.fullscreen img {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;  /* Full width */
+    height: 100vh;  /* Full height */
+    object-fit: contain;
+    z-index: 1000;
+}
