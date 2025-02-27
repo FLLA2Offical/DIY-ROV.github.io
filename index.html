@@ -87,7 +87,7 @@
 
         .image-container img {
             width: 100%;
-            max-width: 300px;
+            max-width: 400px;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -139,11 +139,14 @@
         <a href="#" onclick="showSection('home')">Home</a>
         <a href="#" onclick="showSection('team')">Team</a>
         <a href="#" onclick="showSection('design')">Design</a>
+        <a href="#" onclick="showSection('challenges')">Challenges</a>
+        <a href="#" onclick="showSection('cost')">Cost</a>
+        <a href="#" onclick="showSection('goal')">Goal</a>
+        <a href="#" onclick="showSection('materials')">Materials</a>
         <a href="#" onclick="showSection('final')">Final Product</a>
         <a href="#" onclick="showSection('images')">Images</a>
     </nav>
 
-    <!-- Home Section -->
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our Project</h2>
@@ -151,7 +154,6 @@
         </div>
     </section>
 
-    <!-- Team Section -->
     <section id="team">
         <div class="container">
             <h2>Meet Our Team</h2>
@@ -159,41 +161,49 @@
             <div class="image-container">
                 <img src="team_member1.jpg" alt="Team Member 1" onclick="openModal(this)">
                 <img src="team_member2.jpg" alt="Team Member 2" onclick="openModal(this)">
-                <img src="team_member3.jpg" alt="Team Member 3" onclick="openModal(this)">
             </div>
         </div>
     </section>
 
-    <!-- Design Section -->
     <section id="design">
         <div class="container">
             <h2>ROV Design</h2>
-            <p>The design of the ROV focuses on simplicity and efficiency. The frame is made from lightweight PVC pipes, ensuring buoyancy and durability. The propulsion system consists of three waterproof thrusters to enable smooth movement in all directions.</p>
+            <p>The ROV design focuses on simplicity and efficiency. The frame is made from lightweight PVC pipes, ensuring buoyancy and durability.</p>
         </div>
     </section>
 
-    <!-- Final Product Section -->
-    <section id="final">
+    <section id="challenges">
         <div class="container">
-            <h2>Final Product</h2>
-            <p>After assembling and testing all components, our ROV successfully navigated underwater, proving that our design choices worked as intended.</p>
+            <h2>Challenges Faced</h2>
+            <p>We encountered issues with waterproofing and motor efficiency, requiring adjustments to improve performance.</p>
         </div>
     </section>
 
-    <!-- Images Section -->
+    <section id="cost">
+        <div class="container">
+            <h2>Project Cost</h2>
+            <p>The total cost was approximately $500, covering materials, motors, and electronics.</p>
+        </div>
+    </section>
+
+    <section id="goal">
+        <div class="container">
+            <h2>Project Goal</h2>
+            <p>Our goal was to create a fully operational underwater ROV capable of capturing footage and collecting data.</p>
+        </div>
+    </section>
+
     <section id="images">
         <div class="container">
             <h2>Project Images</h2>
-            <p>Below are images of our ROV in different stages of development and testing.</p>
+            <p>Here are some key images from our project:</p>
             <div class="image-container">
-                <img src="rov_build1.jpg" alt="ROV Build 1" onclick="openModal(this)">
-                <img src="rov_build2.jpg" alt="ROV Build 2" onclick="openModal(this)">
-                <img src="rov_test.jpg" alt="ROV Test Run" onclick="openModal(this)">
+                <img src="./IMG_1135" alt="ROV Image 1" onclick="openModal(this)">
+                <img src="./IMG_1127.jpeg" alt="ROV Image 2" onclick="openModal(this)">
             </div>
         </div>
     </section>
 
-    <!-- Fullscreen Image Modal -->
     <div id="imageModal" class="modal" onclick="closeModal()">
         <span class="close">&times;</span>
         <img id="modalImage">
