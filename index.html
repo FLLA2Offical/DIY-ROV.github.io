@@ -76,14 +76,81 @@
             text-align: left;
         }
 
+        /* Image Styling */
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .image-container img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Fullscreen Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
+
         /* Footer */
         footer {
-            background: #0077be;
+            background: #333;
             color: white;
-            text-align: center;
-            padding: 10px;
-            margin-top: 20px;
+            padding: 15px;
             font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        footer a {
+            color: #ff7f00;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -107,7 +174,6 @@
 
     <section id="home" class="active">
         <div class="container">
-            <h2>Our DIY ROV</h2>
             <h2>Welcome to Our DIY Underwater ROV Project!</h2>
             <p>We built a low-cost, functional underwater ROV for exploration and research. Designed for under $375, it features a wireless remote, a waterproof casing, and a camera for capturing underwater footage.</p>
             <h3>Key Features:</h3>
@@ -125,80 +191,104 @@
     <section id="challenges">
         <div class="container">
             <h2>Challenges</h2>
-            <p>We faced multiple challenges including waterproofing, motor efficiency, and buoyancy control. Overcoming these required testing and innovation.</p>
+            <p>Building a functional ROV at an affordable price comes with several challenges:</p>
+            <ul>
+                <li>Ensuring waterproofing and durability of all components.</li>
+                <li>Designing a stable and controllable navigation system.</li>
+                <li>Balancing the budget while maintaining high-quality parts.</li>
+            </ul>
         </div>
     </section>
 
     <section id="cost">
         <div class="container">
-            <h2>Cost</h2>
-            <p>Our ROV was built for under $375, significantly cheaper than commercial alternatives while maintaining quality and functionality.</p>
+            <h2>Cost Breakdown</h2>
+            <p>The total cost of the ROV is kept under $375. Here's how the budget breaks down:</p>
+            <ul>
+                <li>Motors: $100</li>
+                <li>Camera: $50</li>
+                <li>Buoyancy materials: $30</li>
+                <li>Controller and wiring: $80</li>
+                <li>Other materials (frame, sealing, etc.): $115</li>
+            </ul>
         </div>
     </section>
 
     <section id="goal">
         <div class="container">
-            <h2>Goal</h2>
-            <p>Our goal is to make underwater exploration accessible and affordable while promoting STEM education and engineering creativity.</p>
+            <h2>Project Goal</h2>
+            <p>The main goal of this project is to create a functional, low-cost underwater ROV for educational purposes, allowing students to explore marine life and practice engineering and design skills.</p>
         </div>
     </section>
 
     <section id="materials">
         <div class="container">
-            <h2>Materials</h2>
-            <p>We used PVC pipes, waterproof motors, a camera module, and 3D-printed components to construct our ROV.</p>
+            <h2>Materials Used</h2>
+            <ul>
+                <li>Waterproof casing</li>
+                <li>Electric motors</li>
+                <li>Propellers</li>
+                <li>Wireless remote control</li>
+                <li>Buoyancy materials</li>
+            </ul>
         </div>
     </section>
 
     <section id="design">
         <div class="container">
-            <h2>Design</h2>
-            <p>Our design focuses on a compact, modular frame with efficient motor placement for stable maneuverability.</p>
+            <h2>Design Process</h2>
+            <p>We followed a step-by-step design approach:</p>
+            <ol>
+                <li>Initial concept and layout planning.</li>
+                <li>Designing the frame for durability and lightweight properties.</li>
+                <li>Testing for buoyancy and stability in water.</li>
+                <li>Final adjustments and assembly.</li>
+            </ol>
         </div>
     </section>
 
     <section id="power">
         <div class="container">
-            <h2>Power</h2>
-            <p>The ROV is powered by a 12V battery, ensuring long operational times with efficient energy consumption.</p>
+            <h2>Power System</h2>
+            <p>The ROV is powered by rechargeable lithium batteries, providing enough energy for a few hours of operation. The power system is designed to be safe and efficient, keeping the ROV running smoothly under water.</p>
         </div>
     </section>
 
     <section id="wiring">
         <div class="container">
-            <h2>Wiring</h2>
-            <p>Our wiring system ensures reliable communication between the controller and motors while remaining waterproof.</p>
+            <h2>Wiring and Electronics</h2>
+            <p>We use a simple wiring system, using waterproof connectors to prevent short circuits. The electronics are designed for easy accessibility and maintenance.</p>
         </div>
     </section>
 
     <section id="final">
         <div class="container">
             <h2>Current Prototype</h2>
-            <p>Our latest prototype is fully functional, featuring improved stability, better waterproofing, and a clear camera feed.</p>
+            <p>The prototype is ready! It features functional propulsion, camera feeds, and a reliable control system, and is ready for real-world testing.</p>
         </div>
     </section>
 
     <section id="images">
         <div class="container">
             <h2>Images</h2>
-            <p>Check out our latest images showcasing the ROV in action.</p>
+            <div class="image-container">
+                <img src="image1.jpg" alt="Image 1">
+                <img src="image2.jpg" alt="Image 2">
+                <img src="image3.jpg" alt="Image 3">
+            </div>
         </div>
     </section>
 
     <footer>
-        Contact us at <a href="mailto:fll.69309@gmail.com" style="color: white;">fll.69309@gmail.com</a>
+        <p>&copy; 2025 DIY Underwater ROV Project. All rights reserved. | <a href="mailto:fll.69309@gmail.com">Contact Us</a></p>
     </footer>
 
     <script>
         function showSection(sectionId) {
-            const sections = document.querySelectorAll("section");
-            sections.forEach(section => {
-                section.classList.remove("active");
-            });
-            document.getElementById(sectionId).classList.add("active");
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
         }
     </script>
 </body>
 </html>
-
-
