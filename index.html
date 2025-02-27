@@ -75,61 +75,6 @@
         .container {
             text-align: left;
         }
-
-        /* Image Styling */
-        .image-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .image-container img {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .image-container img:hover {
-            transform: scale(1.05);
-        }
-
-        /* Fullscreen Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
-        }
-
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -151,6 +96,7 @@
         <a href="#" onclick="showSection('images')">Images</a>
     </nav>
 
+    <!-- Sections -->
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our Project</h2>
@@ -165,6 +111,34 @@
         </div>
     </section>
 
+    <section id="challenges">
+        <div class="container">
+            <h2>Challenges Faced</h2>
+            <p>We encountered challenges in waterproofing the electronics, ensuring stable buoyancy, and achieving smooth control. Each of these problems required innovative solutions to make the ROV functional.</p>
+        </div>
+    </section>
+
+    <section id="cost">
+        <div class="container">
+            <h2>Project Cost</h2>
+            <p>Our goal was to keep costs low while maintaining efficiency. The estimated budget was $500, with major expenses being motors, waterproofing materials, and the camera system.</p>
+        </div>
+    </section>
+
+    <section id="goal">
+        <div class="container">
+            <h2>Project Goal</h2>
+            <p>The main objective of this project was to develop an ROV that could operate efficiently underwater and be controlled remotely, all while remaining affordable for hobbyists and students.</p>
+        </div>
+    </section>
+
+    <section id="materials">
+        <div class="container">
+            <h2>Materials Used</h2>
+            <p>The ROV frame is built using lightweight PVC pipes. The propulsion system consists of waterproof thrusters, and the control system is based on an Arduino or Raspberry Pi.</p>
+        </div>
+    </section>
+
     <section id="design">
         <div class="container">
             <h2>ROV Design</h2>
@@ -172,35 +146,46 @@
         </div>
     </section>
 
-    <section id="images">
+    <section id="power">
         <div class="container">
-            <h2>Project Images</h2>
-            <div class="image-container">
-                <img src="./IMG_1135.jpeg" alt="ROV Image 1" onclick="openModal(this)">
-                <img src="./IMG_1127.jpeg" alt="ROV Image 2" onclick="openModal(this)">
-            </div>
+            <h2>Power System</h2>
+            <p>The ROV is powered using a 12V battery system. We had to ensure that the power source was both lightweight and long-lasting to support extended underwater operation.</p>
         </div>
     </section>
 
-    <div id="imageModal" class="modal" onclick="closeModal()">
-        <span class="close">&times;</span>
-        <img id="modalImage">
-    </div>
+    <section id="wiring">
+        <div class="container">
+            <h2>Wiring and Electronics</h2>
+            <p>The wiring system connects the motors, camera, and sensors to the central control board. We used waterproof connectors to protect the electronics from water damage.</p>
+        </div>
+    </section>
+
+    <section id="final">
+        <div class="container">
+            <h2>Final Product</h2>
+            <p>After assembling and testing all components, our ROV successfully navigated underwater, proving that our design choices worked as intended.</p>
+        </div>
+    </section>
+
+    <section id="images">
+        <div class="container">
+            <h2>Project Images</h2>
+            <p>Below are images of our ROV in different stages of development and testing.</p>
+        </div>
+    </section>
 
     <script>
         function showSection(sectionId) {
             document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
-            document.getElementById(sectionId).classList.add("active");
+            let section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add("active");
+            } else {
+                console.error("Section not found:", sectionId);
+            }
         }
 
-        function openModal(image) {
-            document.getElementById("imageModal").style.display = "flex";
-            document.getElementById("modalImage").src = image.src;
-        }
-
-        function closeModal() {
-            document.getElementById("imageModal").style.display = "none";
-        }
+        console.log("JavaScript loaded and running");
     </script>
 </body>
 </html>
