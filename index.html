@@ -85,7 +85,6 @@
             margin-top: 20px;
             font-size: 14px;
         }
-
     </style>
 </head>
 <body>
@@ -122,10 +121,84 @@
             <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
         </div>   
     </section>
-    
+
+    <section id="challenges">
+        <div class="container">
+            <h2>Challenges</h2>
+            <p>We faced multiple challenges including waterproofing, motor efficiency, and buoyancy control. Overcoming these required testing and innovation.</p>
+        </div>
+    </section>
+
+    <section id="cost">
+        <div class="container">
+            <h2>Cost</h2>
+            <p>Our ROV was built for under $375, significantly cheaper than commercial alternatives while maintaining quality and functionality.</p>
+        </div>
+    </section>
+
+    <section id="goal">
+        <div class="container">
+            <h2>Goal</h2>
+            <p>Our goal is to make underwater exploration accessible and affordable while promoting STEM education and engineering creativity.</p>
+        </div>
+    </section>
+
+    <section id="materials">
+        <div class="container">
+            <h2>Materials</h2>
+            <p>We used PVC pipes, waterproof motors, a camera module, and 3D-printed components to construct our ROV.</p>
+        </div>
+    </section>
+
+    <section id="design">
+        <div class="container">
+            <h2>Design</h2>
+            <p>Our design focuses on a compact, modular frame with efficient motor placement for stable maneuverability.</p>
+        </div>
+    </section>
+
+    <section id="power">
+        <div class="container">
+            <h2>Power</h2>
+            <p>The ROV is powered by a 12V battery, ensuring long operational times with efficient energy consumption.</p>
+        </div>
+    </section>
+
+    <section id="wiring">
+        <div class="container">
+            <h2>Wiring</h2>
+            <p>Our wiring system ensures reliable communication between the controller and motors while remaining waterproof.</p>
+        </div>
+    </section>
+
+    <section id="final">
+        <div class="container">
+            <h2>Current Prototype</h2>
+            <p>Our latest prototype is fully functional, featuring improved stability, better waterproofing, and a clear camera feed.</p>
+        </div>
+    </section>
+
+    <section id="images">
+        <div class="container">
+            <h2>Images</h2>
+            <p>Check out our latest images showcasing the ROV in action.</p>
+        </div>
+    </section>
+
     <footer>
-        &copy; 2025 DIY Underwater ROV Project | Designed by Team 69309 | Contact us at <a href="mailto:fll.69309@gmail.com" style="color: white;">fll.69309@gmail.com</a>
+        Contact us at <a href="mailto:fll.69309@gmail.com" style="color: white;">fll.69309@gmail.com</a>
     </footer>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll("section");
+            sections.forEach(section => {
+                section.classList.remove("active");
+            });
+            document.getElementById(sectionId).classList.add("active");
+        }
+    </script>
 </body>
 </html>
+
 
