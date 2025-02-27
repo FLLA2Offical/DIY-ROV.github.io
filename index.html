@@ -76,60 +76,16 @@
             text-align: left;
         }
 
-        /* Image Styling */
-        .image-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .image-container img {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .image-container img:hover {
-            transform: scale(1.05);
-        }
-
-        /* Fullscreen Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
-        }
-
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
+        /* Footer */
+        footer {
+            background: #0077be;
             color: white;
-            cursor: pointer;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 14px;
         }
+
     </style>
 </head>
 <body>
@@ -150,7 +106,7 @@
         <a href="#" onclick="showSection('images')">Images</a>
     </nav>
 
-        <section id="home" class="active">
+    <section id="home" class="active">
         <div class="container">
             <h2>Our DIY ROV</h2>
             <h2>Welcome to Our DIY Underwater ROV Project!</h2>
@@ -165,119 +121,11 @@
             <p>Explore our <strong>design, wiring, and final product</strong> to see how we made underwater exploration possible!</p>
             <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
         </div>   
-        </section>
-    
-    <section id="challenges">
-        <div class="container">
-            <h2>Exploration Challenges</h2>
-            <p>Exploring shallow underwater environments poses significant challenges due to the high cost and complexity of traditional underwater drones. Our goal is to develop an affordable solution that retains key functionalities while making underwater exploration more accessible.</p>
-            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>        
-        </div>
     </section>
     
-    <section id="cost">
-        <div class="container">
-            <h2>Cost Comparison</h2>
-            <p>Traditional remotely operated vehicles (ROVs) cost between $3,000 and $140,000, limiting their accessibility to large organizations and research institutions. Our project focuses on designing and building a functional ROV for under $375, making it an ideal option for hobbyists, educators, and researchers on a budget.</p>
-            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
-        </div>
-    </section>
-    
-    <section id="goal">
-        <div class="container">
-            <h2>Our Goal</h2>
-            <p>Our mission is to create an innovative yet cost-effective DIY underwater rover. We aim to achieve a balance between affordability, ease of assembly, and functionality, ensuring the ROV is capable of capturing underwater footage, maneuvering efficiently, and withstanding underwater pressure.</p>
-            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
-        </div>
-    </section>
-    
-    <section id="materials">
-        <div class="container">
-            <h2>Materials</h2>
-            <ul>
-                <li>Raspberry Pi Cam - $14.49</li>
-                <li>Syringes - $7.64</li>
-                <li>Camera - $60</li>
-                <li>Wireless Remote - $40</li>
-                <li>Brushless Motor - $50</li>
-                <li>Raspberry Pi - $40</li>
-                <li>12V Battery - $45</li>
-                <li>Water Sealant - $7</li>
-                <li>12V to 5V Converter - $6.50</li>
-                <li>Two Small Servos - $20</li>
-                <li>Solderable Breadboard - $2.50</li>
-            </ul>
-            <p>Some components can be substituted with more cost-effective or reliable alternatives.</p>
-            <p>You can choose between the Raspberry Pi and camera for footage. Both are great options.</p>
-            <p>Prices are subject to change.</p>
-            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
-        </div>
-    </section>
-    
-    <section id="design">
-        <div class="container">
-            <h2>Design Iterations</h2>
-            <p>We refined our design through multiple iterations, incorporating improvements in size, weight, and efficiency. Key changes included optimizing the frame structure for better hydrodynamics, upgrading propulsion for improved maneuverability, and refining waterproofing techniques to prevent water damage. An example from our slideshow includes using 3D printing to develop lightweight yet durable components, reducing overall material costs while enhancing structural integrity.</p>
-            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
-        </div>
-    </section>
-    
-    <section id="power">
-        <div class="container">
-            <h2>Power & Coding</h2>
-            <p>The ROV's power system was designed for efficiency. Using an Arduino microcontroller, we integrated pulse-width modulation (PWM) to achieve smooth and precise motor control. The 12V to 5V converter was implemented to efficiently distribute power to different components, ensuring optimal performance while maintaining battery efficiency.</p>
-            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
-        </div>
-    </section>
-    
-    <section id="wiring">
-        <div class="container">
-            <h2>Wiring Diagram</h2>
-            <div class='image-container'><img src="https://lh3.googleusercontent.com/fife/ALs6j_EiabsFPzCRQHiLdeO7nHtvR4_jDjkTyVBWcQPA3UCLooTtIZVJiGCnviZlKLCzcZle6GU5WUgojl0TNe701x7dt0hx8lR9t_3-KQql7I-O5akwMSQgFtGD-TXPrxHi9TGE8PUkIF7PNLYGCj-l-TZKQp3EnnQ9eRnMyIn5dblkEgzKPSPadB7t_tjmsqXF3FNkQhyi5L98_IGKPzfz_8Uq_P07cumqI5aUg36nqsj6ZQ_bNBqB5fffbQ-Vmw7hjRJVXF9Cy_APXLOx3DtFnnnHyn9HlVwtmcmpB4wINXbkuBR7oM6cKj4b2kZKIAHHc2hYErcHSXy3IX4IduHRNkyQ9E5wED1JOxTdFN3zd4n5aq_y8TuGoEir2Zuf_X-6tB9ltOxkrC3hf7X3fDOEXWMpOqbOwZ_FR3HHYBieMzfpEH8Xw2tAbYehHH5R63nyINUHS3e-KZG62Jz4HZ4o-1Gx5bNao8AHFqtxjeMz3kEqxG4Xjkqg7w5sqJePRHYQ707vXpjgZ6vGmfRsfY6AJc2YDz3xg0A_qoFuvO8x8-4TuHv4Bwc31F4EKxpOh9l0ojSUGX7ptMzEPGh92EACX1sU7Xvm9Zm1IUClyrH9AwXZtkUdRq8fWzoY3m-ZcQ6dOeAy9z3OC7IkLFfZFIA9qnnlj2h7cSGXB0ChIbddxOBLwJ-coXtUMNkV_C7dc9omzMCg5bqBhYlAXZT30PePh2KFNuBY1166heeWQOaPpwa_pNbsjNh1P6Ev8jJmSCbVeuv1xVXqwKF2UxZDxUH3BZl-tGWITciYR6-87HBw7ihlujMsMgP3C1i8VFiRfQN3LNNJjd7VUWvUOm7zuHb1gOb5CVRMaDWnVq8uY1Q4bfuntmMllFBKKnejQJfdh0zHmgBpDD662YeGzlTUs3qlEOygRx0E6_JW5eRWPxLzI9Hrt9McntbRo8Xt07y6As0O4sdalH7Z-Kl-MuWHQe9XVcfSFptcbZgzZQ1s8ws-WdVziGHlugh3x1LuoYdkPqunn7HHK-wam1EQxk4A8i0wOO-x55fb347b06diBhNPTTsv1f4bz5j9L2g4RDUXtpXGMjITqJOcrBOg3G8B1vG49S-PYMv3AClERJVOj0xAngxmblpkvnC6JaU_WMyAq3OTBgfMlTl02Rd-d99kQLTM__xmorxEChNhPVNhQ1MRlo8QVVX3kx8lcayvMDwTgYsg2JDycKNaS2VrmV5uViHVr8nm0nBOxGjh5CBTrB-5SIt26rmgreg10nmG3PogrBOR_TtHLFRGDKcYH0a7Sw2CZDgZEiYXDofAviJhS0w2LKOfPvXJMlTgyJRQGA0sTcCdfbZb-OSF7QI26cw3mfATNQkKfo2n1eAYI3Vnta2o2Fy94rLYPSWXlT-xfZSbtP-_DW6aQ6KNCVEbhZm7B10GyFOIF8MCz95IWS6AzD3MpCrBNOsG9FTDeFer5m9U2TmmjGM2Ra3dPvOSizXxtIgcGapMKfw5WBJwId6pXDlU4aATpJUZCvnRDoiCRKtNZj9Kzapffz-gai23VafkambSeaXKkBmJk08Cf6_dM22c4ukIw0yGSh8Sp6QlEiOYXSlsv7sTmC3tkNf_NPza=w400-h300-p-k-nu" alt="Wiring Diagram"></div>
-            <p>Having trouble veiwing the diagram? Click 
-            <a href="https://drive.google.com/file/d/1CjaMv_B_zV5rwS8c22cn3T-48YaU7wiK/view?usp=drivesdk">here</a>!</p>
-            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
-        </div>
-    </section>
-    
-    <section id="final">
-        <div class="container">
-            <h2>Final Product</h2>
-            <p>Check out our final product in action and see how the ROV performs underwater:</p>
-            <div class='image-container'><img src="https://lh3.googleusercontent.com/fife/ALs6j_FuUXGj3FhFVVP2EHEC-EaI1WS9BX93ZELzxsfZLDdA4mlpKj1eUNqv3j4GAHmjs8tXhlDooTTUaECVsKwmT2tL0soLN5hNZxfgwfAqPdkYRgP5wljfjRqGETMBJQZS-arJabRt_2bbXfDWm4DuZdh4iYELHXdM4XhAtPidvlMHO-ZORclxwac1xS1im3MRTwaeIOV6UErjpNRKXsT8B8YTPUHl9sd8Orym8kXmaKWC8kdjwy5p3S-p2o11cjHjZDV94B2V0sL7I-owwM5huVJ7TwCRHSsv_Q2qrA5vvd6P4pwi8ZmaVxQiJmpJT1isr3-KtT_JKrrC6F9hI-YOV2A_lK0UPQH0wzGOdlFbo-uTNM5heuWxkJWg0PJ5kJfk_Er4Cbl_p--9NoGVFoLcraZ4aJ7dJIQk4ifTjTiIMHUyMtZTESmQq5S_N42VXGDr7waI0OHrhA6ik_JPM20C6DAIeBsKhLI8pXOjFt-BAWi0pqEXg6o6Qdk3kRZsTj3QkR6ZaYl5VdR4E0AuCKpqclT8-WzzUp8T5TwjAR0Bx72aC4jzjc__Qq3FL5pdR5nKE95HGFnuJO5Yj4AFMiMk9Bt5nt6DI9eMHnQwHd1pEPh7HxpWyoBHgEU8MIydLfld92ll-pzi6y3a2LMcl_MfrStFM4OeEDmc828jG2-scck2LLa1iUQrGqvvVlvoNaVwqjyotI2BwQoWkuz_DM9eqU7BWuzLnkfzinJd7zZrEHqFtDZVVAHdsrW0WQRyDRjd6dte4qDI3GQF_6OcRlMufD2seNaInWxlFznuDwH49iawaN2poobFb7rTRhQTsTh2DpWoSjmV4vaAC1NvHeH-GIu7hgBcJPnejG49ddyZOn1sKZxRKkReNbjSIfZwOOb8h4rwwLTRKLIuVjiG4yG30I6dmWV5RqDbdRkIxlWeXXEQSE6Yl9TAryvKf1PrfhYKKl_twSUIdZ5SrWyF3t8K2MiK9VMAnqivzdjvCC4pz4OgFp3JFE2E7zee2ZacBS0nw0vSKu9qD9aHfCldk3-rCNd9VvkstMQ-04obuFQNN4dX0Lv-bhuXO40p2mOEFaidB8KpAbatiA2QefivxpqQqzhEYedcbggCnRDup0VV2H_WudjGqpYXcfgUqDaIEG8rZLyDVQEv7HiCMJdZKuDAAJH2gcnkcPeg5yYD_ZefW0FJH0I71iME1L8KnhjkUKYd4TNUFdUpchgAl87ao5vb-uiOhERpvAMp6nKLtOZWJtSg4p-PzQcpvBW26aVuaRjkgj4ifU6DdvCwpedcP_hxvOOV3-ECm1yTDAYBUEy-UpLQydEWJKVnxzo8XUuCD2-qAcySXo4_Jo-u2J9Jvz0ihcjApbuD_gXy894MeEKlEG1pleHynnB7F2knO6XIrXkay960ALiC03MrdRaHGDO4P7ZPAmbd7HfJJb574oTo82rdLvtDkLkyMOJBASWIxFYzI5bQt47No7LqwIRkWRbRD-DoM85Z_WMXUYI7dDDSpOJq1JLk3oy2Iyqntd-4s5ue-C0rqRT4gCahNKU7c2Ipy067MiyYUBfAJMYseK9ZY3PnPKMdHQUc5opxmyf7dOeuNmvqN0najpD4fiLA=w400-h300-p-k-nu" alt="Final Product"></div>
-            <a href="https://drive.google.com/file/d/1-oIvIoZfOOm-b0lEJJq95WwGf8SKB0xx/view?usp=drivesdk">See a video of the ROV working!</a>
-          <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a>
-        </div>
-    </section>
-    <section id="images">
-        <div class="container">
-            <h2>Project Images</h2>
-            <div class="image-container">
-                <img src="./IMG_1135.jpeg" alt="ROV Image 1" onclick="openModal(this)">
-                <img src="./IMG_1127.jpeg" alt="ROV Image 2" onclick="openModal(this)">
-            </div>
-        </div>
-    </section>
-
-    <div id="imageModal" class="modal" onclick="closeModal()">
-        <span class="close">&times;</span>
-        <img id="modalImage">
-    </div>
-
-    <script>
-        function showSection(sectionId) {
-            document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
-            document.getElementById(sectionId).classList.add("active");
-        }
-
-        function openModal(image) {
-            document.getElementById("imageModal").style.display = "flex";
-            document.getElementById("modalImage").src = image.src;
-        }
-
-        function closeModal() {
-            document.getElementById("imageModal").style.display = "none";
-        }
-    </script>
+    <footer>
+        &copy; 2025 DIY Underwater ROV Project | Designed by Team 69309 | Contact us at <a href="mailto:fll.69309@gmail.com" style="color: white;">fll.69309@gmail.com</a>
+    </footer>
 </body>
 </html>
+
