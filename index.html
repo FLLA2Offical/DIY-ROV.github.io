@@ -56,32 +56,6 @@
             background: #ff7f00;
         }
 
-        /* Mobile Menu (Hamburger) */
-        .menu-toggle {
-            display: none;
-            background: #008cba;
-            color: white;
-            border: none;
-            padding: 10px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                display: none;
-                flex-direction: column;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .menu-active {
-                display: flex;
-            }
-        }
-
         /* Sections */
         section {
             display: none;
@@ -126,6 +100,36 @@
         .image-container img:hover {
             transform: scale(1.05);
         }
+
+        /* Fullscreen Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -133,8 +137,6 @@
         <img src="FLL_Team_A-2_69309_Modern_logo-removebg-preview.png" alt="Logo">
         DIY Underwater ROV
     </header>
-
-    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     <nav>
         <a href="#" onclick="showSection('home')">Home</a>
         <a href="#" onclick="showSection('rov')">ROV</a>
@@ -152,72 +154,28 @@
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our Project</h2>
-            <p>We are a team working on a DIY underwater ROV for exploration and learning.</p>
+            <p>We are a team working on a DIY underwater ROV for exploration and learning. Our project focuses on creating an affordable, remotely operated vehicle (ROV) capable of underwater navigation.</p>
         </div>
     </section>
 
     <section id="rov">
         <div class="container">
-            <h2>DIY Underwater ROV</h2>
-            <p>Our ROV is a custom-built submersible designed for underwater exploration.</p>
-        </div>
-    </section>
-
-    <section id="challenges">
-        <div class="container">
-            <h2>Challenges</h2>
-            <p>Building an ROV comes with challenges such as waterproofing, propulsion, and control.</p>
-        </div>
-    </section>
-
-    <section id="cost">
-        <div class="container">
-            <h2>Estimated Cost</h2>
-            <p>The estimated cost for building the ROV is $200-$500.</p>
-        </div>
-    </section>
-
-    <section id="goal">
-        <div class="container">
-            <h2>Project Goal</h2>
-            <p>Our goal is to design a low-cost, functional underwater ROV.</p>
-        </div>
-    </section>
-
-    <section id="materials">
-        <div class="container">
-            <h2>Materials Needed</h2>
-            <ul>
-                <li>PVC pipes</li>
-                <li>Waterproof motors</li>
-                <li>Camera system</li>
-            </ul>
+            <h2>ROV Overview</h2>
+            <p>The DIY underwater ROV is designed to be an affordable and functional exploration device. It incorporates waterproof motors, a lightweight frame, and a camera system for real-time feedback.</p>
         </div>
     </section>
 
     <section id="design">
         <div class="container">
             <h2>ROV Design</h2>
-            <p>The ROV consists of a PVC frame, motorized thrusters, and a control system.</p>
+            <p>The design of the ROV focuses on simplicity and efficiency. The frame is made from lightweight PVC pipes, ensuring buoyancy and durability. The propulsion system consists of three waterproof thrusters to enable smooth movement in all directions.</p>
         </div>
     </section>
 
-    <section id="power">
-        <div class="container">
-            <h2>Power Supply</h2>
-            <p>The ROV is powered by a rechargeable battery.</p>
-        </div>
-    </section>
-
-    <section id="images">
-        <div class="container">
-            <h2>Project Images</h2>
-            <div class="image-container">
-                <img src="./IMG_1135.jpeg" alt="ROV Image 1">
-                <img src="./IMG_1127.jpeg" alt="ROV Image 2">
-            </div>
-        </div>
-    </section>
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <img id="modalImage">
+    </div>
 
     <script>
         function showSection(sectionId) {
@@ -225,10 +183,16 @@
             document.getElementById(sectionId).classList.add("active");
         }
 
-        function toggleMenu() {
-            document.querySelector("nav").classList.toggle("menu-active");
+        function openModal(image) {
+            document.getElementById("imageModal").style.display = "flex";
+            document.getElementById("modalImage").src = image.src;
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
         }
     </script>
 </body>
 </html>
+
 
