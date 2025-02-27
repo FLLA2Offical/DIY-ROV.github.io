@@ -93,6 +93,22 @@
             border-bottom: 1px solid #004a70;
         }
 
+        /* Sections */
+        section {
+            display: none;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
         /* Mobile Layout */
         @media (max-width: 768px) {
             nav {
@@ -149,14 +165,54 @@
         <a href="#" onclick="showSection('images')">Images</a>
     </div>
 
+    <!-- Sections -->
+    <section id="home" class="active">
+        <h2>Welcome to Our Project</h2>
+        <p>We are a team working on a DIY underwater ROV for exploration and learning.</p>
+    </section>
+
+    <section id="rov">
+        <h2>DIY Underwater ROV</h2>
+        <p>The DIY underwater ROV is designed for affordable underwater exploration.</p>
+    </section>
+
+    <section id="challenges">
+        <h2>Challenges</h2>
+        <p>Waterproofing, propulsion, and control are major ROV challenges.</p>
+    </section>
+
+    <section id="cost">
+        <h2>Estimated Cost</h2>
+        <p>Between $200 and $500, depending on components.</p>
+    </section>
+
+    <section id="goal">
+        <h2>Project Goal</h2>
+        <p>Our goal is to build a low-cost, functional ROV.</p>
+    </section>
+
+    <section id="materials">
+        <h2>Materials Needed</h2>
+        <ul>
+            <li>PVC pipes and connectors</li>
+            <li>Waterproof motors</li>
+            <li>Battery and control system</li>
+        </ul>
+    </section>
+
     <script>
         function showSection(sectionId) {
             document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
             document.getElementById(sectionId).classList.add("active");
+            closeMenu();
         }
 
         function toggleMenu() {
             document.getElementById("mobileMenu").classList.toggle("active");
+        }
+
+        function closeMenu() {
+            document.getElementById("mobileMenu").classList.remove("active");
         }
     </script>
 </body>
