@@ -22,7 +22,7 @@
             font-size: 24px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -54,6 +54,66 @@
 
         nav a:hover {
             background: #ff7f00;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            padding: 10px;
+            z-index: 100;
+        }
+
+        .hamburger-menu div {
+            width: 25px;
+            height: 4px;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: #005f8b;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin: 5px;
+            background: #008cba;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+            text-align: center;
+        }
+
+        .mobile-nav a:hover {
+            background: #ff7f00;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .mobile-nav.active {
+                display: flex;
+            }
         }
 
         /* Sections */
@@ -158,7 +218,13 @@
     <header>
         <img src="FLL_Team_A-2_69309_Modern_logo-removebg-preview.png" alt="Logo">
         DIY Underwater ROV
+        <div class="hamburger-menu" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
     </header>
+    
     <nav>
         <a href="#" onclick="showSection('home')">Home</a>
         <a href="#" onclick="showSection('challenges')">Challenges</a>
@@ -172,6 +238,19 @@
         <a href="#" onclick="showSection('images')">Images</a>
     </nav>
 
+    <div class="mobile-nav">
+        <a href="#" onclick="showSection('home')">Home</a>
+        <a href="#" onclick="showSection('challenges')">Challenges</a>
+        <a href="#" onclick="showSection('cost')">Cost</a>
+        <a href="#" onclick="showSection('goal')">Goal</a>
+        <a href="#" onclick="showSection('materials')">Materials</a>
+        <a href="#" onclick="showSection('design')">Design</a>
+        <a href="#" onclick="showSection('power')">Power</a>
+        <a href="#" onclick="showSection('wiring')">Wiring</a>
+        <a href="#" onclick="showSection('final')">Current Prototype</a>
+        <a href="#" onclick="showSection('images')">Images</a>
+    </div>
+
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our DIY Underwater ROV Project!</h2>
@@ -181,7 +260,7 @@
                 <li><strong>Affordable & Accessible</strong> – A budget-friendly alternative to commercial ROVs.</li>
                 <li><strong>Custom Engineering</strong> – Efficient motor control, buoyancy adjustments, and durable waterproofing.</li>
                 <li><strong>Easy to Operate</strong> – Wireless remote control for smooth navigation.</li>
-                <strong>Built on Open-Source Platforms</strong> – Making adjustments easy.</li>
+                <li><strong>Built on Open-Source Platforms</strong> – Making adjustments easy.</li>
             </ul>
             <p>Explore our <strong>design, wiring, and final product</strong> to see how we made underwater exploration possible!</p>
             <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
@@ -191,96 +270,96 @@
     <section id="challenges">
         <div class="container">
             <h2>Challenges</h2>
-            <p>Building a functional ROV at an affordable price comes with several challenges:</p>
+            <p>Building a functional ROV at an affordable price comes with several challenges. Some of the biggest hurdles we encountered include:</p>
             <ul>
-                <li>Ensuring waterproofing and durability of all components.</li>
-                <li>Designing a stable and controllable navigation system.</li>
-                <li>Balancing the budget while maintaining high-quality parts.</li>
+                <li>Waterproofing the components to ensure they remain functional underwater.</li>
+                <li>Finding affordable motors and controllers that provide the right power to the ROV.</li>
+                <li>Designing a reliable and stable wireless communication system.</li>
             </ul>
+            <p>Despite these challenges, we were able to design and build a fully operational ROV that met our performance and cost goals.</p>
         </div>
     </section>
 
     <section id="cost">
         <div class="container">
             <h2>Cost Breakdown</h2>
-            <p>The total cost of the ROV is kept under $375. Here's how the budget breaks down:</p>
+            <p>Here's the estimated cost of building our DIY underwater ROV:</p>
             <ul>
-                <li>Motors: $100</li>
-                <li>Camera: $50</li>
-                <li>Buoyancy materials: $30</li>
-                <li>Controller and wiring: $80</li>
-                <li>Other materials (frame, sealing, etc.): $115</li>
+                <li>Motors & Propellers: $80</li>
+                <li>Controller & Sensors: $100</li>
+                <li>Waterproof Housing & Materials: $50</li>
+                <li>Miscellaneous (wires, glue, etc.): $45</li>
             </ul>
+            <p><strong>Total: $375</strong></p>
         </div>
     </section>
 
     <section id="goal">
         <div class="container">
-            <h2>Project Goal</h2>
-            <p>The main goal of this project is to create a functional, low-cost underwater ROV for educational purposes, allowing students to explore marine life and practice engineering and design skills.</p>
+            <h2>Our Goal</h2>
+            <p>Our goal was to create an affordable, high-performance ROV that can be used for underwater exploration, learning, and development. We wanted to make it accessible to schools, hobbyists, and anyone interested in robotics.</p>
         </div>
     </section>
 
     <section id="materials">
         <div class="container">
-            <h2>Materials Used</h2>
+            <h2>Materials</h2>
+            <p>We used a variety of materials for our ROV build:</p>
             <ul>
-                <li>Waterproof casing</li>
-                <li>Electric motors</li>
-                <li>Propellers</li>
-                <li>Wireless remote control</li>
-                <li>Buoyancy materials</li>
+                <li>Plastic & PVC piping for the frame.</li>
+                <li>Waterproof motors and electronic components.</li>
+                <li>Specialized connectors and wiring for secure electrical connections.</li>
             </ul>
         </div>
     </section>
 
     <section id="design">
         <div class="container">
-            <h2>Design Process</h2>
-            <p>We followed a step-by-step design approach:</p>
-            <ol>
-                <li>Initial concept and layout planning.</li>
-                <li>Designing the frame for durability and lightweight properties.</li>
-                <li>Testing for buoyancy and stability in water.</li>
-                <li>Final adjustments and assembly.</li>
-            </ol>
+            <h2>Design</h2>
+            <p>The design of our ROV is streamlined and compact, allowing for efficient movement and easy maneuverability underwater. We designed it with the following goals in mind:</p>
+            <ul>
+                <li>Minimize drag for better movement efficiency.</li>
+                <li>Ensure balance and stability in the water.</li>
+                <li>Maximize visibility with a mounted camera and lighting system.</li>
+            </ul>
         </div>
     </section>
 
     <section id="power">
         <div class="container">
-            <h2>Power System</h2>
-            <p>The ROV is powered by rechargeable lithium batteries, providing enough energy for a few hours of operation. The power system is designed to be safe and efficient, keeping the ROV running smoothly under water.</p>
+            <h2>Power</h2>
+            <p>We power the ROV using a battery pack that can run for approximately 2 hours. The power system includes:</p>
+            <ul>
+                <li>Battery pack: 12V, lithium-ion</li>
+                <li>Power distribution board</li>
+                <li>Wiring and fuses to ensure safe operation</li>
+            </ul>
         </div>
     </section>
 
     <section id="wiring">
         <div class="container">
-            <h2>Wiring and Electronics</h2>
-            <p>We use a simple wiring system, using waterproof connectors to prevent short circuits. The electronics are designed for easy accessibility and maintenance.</p>
+            <h2>Wiring</h2>
+            <p>The wiring system ensures reliable operation of all components. We used a mix of soldering and connectors to ensure secure connections:</p>
+            <ul>
+                <li>Waterproof connectors to prevent shorts or failure underwater.</li>
+                <li>Proper insulation for each wire to prevent accidental disconnections.</li>
+            </ul>
         </div>
     </section>
 
     <section id="final">
         <div class="container">
             <h2>Current Prototype</h2>
-            <p>The prototype is ready! It features functional propulsion, camera feeds, and a reliable control system, and is ready for real-world testing.</p>
-            <div class="image-container">
-                <img src="IMG_0133.jpg" alt="Current Prototype" onclick="openModal(this)">
-            </div>
+            <p>Our current prototype works perfectly underwater, with fully functional motors, sensors, and camera for exploration. Check out some images below to see the prototype in action!</p>
         </div>
     </section>
 
     <section id="images">
-        <div class="container">
-            <h2>Images</h2>
-            <div class="image-container">
-                <img src="IMG_1127.jpeg" alt="Image 1" onclick="openModal(this)">
-                <img src="IMG_1135.jpeg" alt="Image 2" onclick="openModal(this)">
-                <img src="image1.jpg" alt="Image 3" onclick="openModal(this)">
-                <img src="image2.jpg" alt="Image 4" onclick="openModal(this)">
-                <img src="image3.jpg" alt="Image 5" onclick="openModal(this)">
-            </div>
+        <div class="image-container">
+            <img src="IMG_0133.jpg" alt="ROV Image 1" onclick="openModal(this)">
+            <img src="IMG_0134.jpg" alt="ROV Image 2" onclick="openModal(this)">
+            <!-- More images go here -->
         </div>
     </section>
 
@@ -298,6 +377,7 @@
             const sections = document.querySelectorAll('section');
             sections.forEach(section => section.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
+            closeMenu();
         }
 
         function openModal(img) {
@@ -310,6 +390,16 @@
         function closeModal() {
             const modal = document.getElementById('modal');
             modal.style.display = 'none';
+        }
+
+        function toggleMenu() {
+            const mobileNav = document.querySelector('.mobile-nav');
+            mobileNav.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            const mobileNav = document.querySelector('.mobile-nav');
+            mobileNav.classList.remove('active');
         }
     </script>
 </body>
