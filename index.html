@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Google Site Verification Meta Tag -->
-    <meta name="google-site-verification" content="google-site-verification=fjMeXrVXnT0pwJMsjwYJ-jnxPLj5Dd8yJVGvQGW-NjU" />
+    <title>DIY Underwater ROV</title>
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="DIY Underwater ROV Project. A budget-friendly, low-cost remote-operated vehicle designed for underwater exploration.">
@@ -12,7 +9,9 @@
     <meta name="author" content="Your Name">
     <meta name="robots" content="index, follow">
 
-    <title>DIY Underwater ROV</title>
+    <!-- Google Search Console TXT Verification -->
+    <meta name="google-site-verification" content="google-site-verification=fjMeXrVXnT0pwJMsjwYJ-jnxPLj5Dd8yJVGvQGW-NjU" />
+
     <style>
         /* General Styling */
         body {
@@ -161,77 +160,14 @@
         footer a:hover {
             text-decoration: underline;
         }
-
-        /* Hamburger Menu */
-        .menu-icon {
-            display: none;
-            cursor: pointer;
-        }
-
-        .menu-icon div {
-            width: 30px;
-            height: 4px;
-            background-color: white;
-            margin: 6px 0;
-            transition: 0.4s;
-        }
-
-        @media screen and (max-width: 768px) {
-            nav {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-            }
-
-            nav a {
-                text-align: center;
-                padding: 12px;
-                margin: 0;
-                background: #005f8b;
-                font-size: 18px;
-            }
-
-            nav a:hover {
-                background: #ff7f00;
-            }
-
-            .menu-icon {
-                display: block;
-                position: absolute;
-                top: 20px;
-                right: 20px;
-            }
-
-            .menu-icon.open div:nth-child(1) {
-                transform: rotate(-45deg) translate(-5px, 6px);
-            }
-
-            .menu-icon.open div:nth-child(2) {
-                opacity: 0;
-            }
-
-            .menu-icon.open div:nth-child(3) {
-                transform: rotate(45deg) translate(-5px, -6px);
-            }
-
-            nav.open {
-                display: flex;
-            }
-        }
     </style>
 </head>
+
 <body>
     <header>
         <img src="FLL_Team_A-2_69309_Modern_logo-removebg-preview.png" alt="Logo">
         DIY Underwater ROV
     </header>
-
-    <div class="menu-icon" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-
     <nav>
         <a href="#" onclick="showSection('home')">Home</a>
         <a href="#" onclick="showSection('challenges')">Challenges</a>
@@ -331,7 +267,7 @@
         <div class="container">
             <h2>Wiring and Electronics</h2>
             <p>We use a simple wiring system, using waterproof connectors to prevent short circuits. The electronics are designed for easy accessibility and maintenance.</p>
-            <img src="IMG_0131.jpg" alt="Wiring Diagram" />
+            <img src="IMG_0131.jpg" alt="Wiring Diagram">
         </div>
     </section>
 
@@ -339,7 +275,7 @@
         <div class="container">
             <h2>Current Prototype</h2>
             <p>The prototype is ready! It features functional propulsion, camera feeds, and a reliable control system, and is ready for real-world testing.</p>
-            <img src="IMG_0133.jpg" alt="Prototype" class="image-container" onclick="openModal(this.src)" />
+            <img src="IMG_0133.jpg" alt="ROV Prototype" class="image-container">
         </div>
     </section>
 
@@ -347,15 +283,18 @@
         <div class="container">
             <h2>Images</h2>
             <div class="image-container">
-                <img src="IMG_1127.jpeg" alt="Team Image 1" onclick="openModal(this.src)">
-                <img src="IMG_1135.jpeg" alt="Team Image 2" onclick="openModal(this.src)">
-                <img src="IMG_0132-removebg-preview.jpg" alt="Wiring Diagram" onclick="openModal(this.src)">
+                <img src="IMG_1127.jpeg" alt="Team Image 1">
+                <img src="IMG_1135.jpeg" alt="Team Image 2">
+                <img src="IMG_0132-removebg-preview.png" alt="Team Image 3">
+            </div>
+            <div class="image-container">
+                <img src="IMG_0131.jpg" alt="Wiring Diagram">
             </div>
         </div>
     </section>
 
     <footer>
-        <p>Last updated: <strong>February 2025</strong> | Contact Us: <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
+        <p>Last updated: February 2025 | <a href="mailto:fll.69309@gmail.com">Contact Us</a></p>
     </footer>
 
     <script>
@@ -364,27 +303,5 @@
             sections.forEach(section => section.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
         }
-
-        function toggleMenu() {
-            const nav = document.querySelector('nav');
-            const menuIcon = document.querySelector('.menu-icon');
-            nav.classList.toggle('open');
-            menuIcon.classList.toggle('open');
-        }
-
-        function openModal(imageSrc) {
-            const modal = document.createElement('div');
-            modal.classList.add('modal');
-            const img = document.createElement('img');
-            img.src = imageSrc;
-            const closeBtn = document.createElement('span');
-            closeBtn.classList.add('close');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.onclick = () => document.body.removeChild(modal);
-            modal.appendChild(closeBtn);
-            modal.appendChild(img);
-            document.body.appendChild(modal);
-        }
     </script>
 </body>
-</html>
