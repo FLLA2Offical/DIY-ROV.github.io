@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="DIY Underwater ROV Project. A budget-friendly, low-cost remote-operated vehicle designed for underwater exploration.">
+    <meta name="keywords" content="DIY, Underwater ROV, remote operated vehicle, robotics, underwater exploration, marine technology, engineering">
+    <meta name="author" content="Your Name">
+    <meta name="robots" content="index, follow">
+    
     <title>DIY Underwater ROV</title>
+
     <style>
         /* General Styling */
         body {
@@ -22,7 +30,7 @@
             font-size: 24px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -54,66 +62,6 @@
 
         nav a:hover {
             background: #ff7f00;
-        }
-
-        /* Hamburger Menu */
-        .hamburger-menu {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 5px;
-            padding: 10px;
-            z-index: 100;
-        }
-
-        .hamburger-menu div {
-            width: 25px;
-            height: 4px;
-            background-color: white;
-            border-radius: 5px;
-        }
-
-        .mobile-nav {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            background: #005f8b;
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 200px;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .mobile-nav a {
-            color: white;
-            text-decoration: none;
-            padding: 10px;
-            margin: 5px;
-            background: #008cba;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;
-            text-align: center;
-        }
-
-        .mobile-nav a:hover {
-            background: #ff7f00;
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                display: none;
-            }
-
-            .hamburger-menu {
-                display: flex;
-            }
-
-            .mobile-nav.active {
-                display: flex;
-            }
         }
 
         /* Sections */
@@ -212,44 +160,78 @@
         footer a:hover {
             text-decoration: underline;
         }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            cursor: pointer;
+            font-size: 30px;
+            color: white;
+            padding: 10px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .hamburger-menu.open {
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger-menu {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background: #005f8b;
+                position: absolute;
+                top: 60px;
+                left: 0;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            nav a {
+                margin: 10px 0;
+                text-align: center;
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <img src="FLL_Team_A-2_69309_Modern_logo-removebg-preview.png" alt="Logo">
         DIY Underwater ROV
-        <div class="hamburger-menu" onclick="toggleMenu()">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
     </header>
-    
-    <nav>
-        <a href="#" onclick="showSection('home')">Home</a>
-        <a href="#" onclick="showSection('challenges')">Challenges</a>
-        <a href="#" onclick="showSection('cost')">Cost</a>
-        <a href="#" onclick="showSection('goal')">Goal</a>
-        <a href="#" onclick="showSection('materials')">Materials</a>
-        <a href="#" onclick="showSection('design')">Design</a>
-        <a href="#" onclick="showSection('power')">Power</a>
-        <a href="#" onclick="showSection('wiring')">Wiring</a>
-        <a href="#" onclick="showSection('final')">Current Prototype</a>
-        <a href="#" onclick="showSection('images')">Images</a>
-    </nav>
 
-    <div class="mobile-nav">
-        <a href="#" onclick="showSection('home')">Home</a>
-        <a href="#" onclick="showSection('challenges')">Challenges</a>
-        <a href="#" onclick="showSection('cost')">Cost</a>
-        <a href="#" onclick="showSection('goal')">Goal</a>
-        <a href="#" onclick="showSection('materials')">Materials</a>
-        <a href="#" onclick="showSection('design')">Design</a>
-        <a href="#" onclick="showSection('power')">Power</a>
-        <a href="#" onclick="showSection('wiring')">Wiring</a>
-        <a href="#" onclick="showSection('final')">Current Prototype</a>
-        <a href="#" onclick="showSection('images')">Images</a>
-    </div>
+    <!-- Hamburger Menu -->
+    <div class="hamburger-menu" onclick="toggleMenu()">☰</div>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="nav-links">
+            <a href="#" onclick="showSection('home')">Home</a>
+            <a href="#" onclick="showSection('challenges')">Challenges</a>
+            <a href="#" onclick="showSection('cost')">Cost</a>
+            <a href="#" onclick="showSection('goal')">Goal</a>
+            <a href="#" onclick="showSection('materials')">Materials</a>
+            <a href="#" onclick="showSection('design')">Design</a>
+            <a href="#" onclick="showSection('power')">Power</a>
+            <a href="#" onclick="showSection('wiring')">Wiring</a>
+            <a href="#" onclick="showSection('final')">Current Prototype</a>
+            <a href="#" onclick="showSection('images')">Images</a>
+        </div>
+    </nav>
 
     <!-- Home Section -->
     <section id="home" class="active">
@@ -264,14 +246,20 @@
                 <li><strong>Built on Open-Source Platforms</strong> – Making adjustments easy.</li>
             </ul>
             <p>Explore our <strong>design, wiring, and final product</strong> to see how we made underwater exploration possible!</p>
-        </div>   
+            <p><strong>Give us your suggestions</strong><br>at <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
+        </div>
     </section>
 
     <!-- Challenges Section -->
     <section id="challenges">
         <div class="container">
             <h2>Challenges</h2>
-            <p>During this project, we faced several challenges including creating a waterproof casing, selecting the right motors, and ensuring proper communication between the remote control and ROV. We overcame these challenges with creative solutions and teamwork.</p>
+            <p>Building a functional ROV at an affordable price comes with several challenges:</p>
+            <ul>
+                <li>Ensuring waterproofing and durability of all components.</li>
+                <li>Designing a stable and controllable navigation system.</li>
+                <li>Balancing the budget while maintaining high-quality parts.</li>
+            </ul>
         </div>
     </section>
 
@@ -279,13 +267,13 @@
     <section id="cost">
         <div class="container">
             <h2>Cost Breakdown</h2>
-            <p>The total cost of the ROV project was kept under $375. Here's a breakdown of the major expenses:</p>
+            <p>The total cost of the ROV is kept under $375. Here's how the budget breaks down:</p>
             <ul>
                 <li>Motors: $100</li>
-                <li>Frame: $50</li>
                 <li>Camera: $50</li>
-                <li>Control System: $70</li>
-                <li>Waterproof Casing: $80</li>
+                <li>Buoyancy materials: $30</li>
+                <li>Controller and wiring: $80</li>
+                <li>Other materials (frame, sealing, etc.): $115</li>
             </ul>
         </div>
     </section>
@@ -294,7 +282,7 @@
     <section id="goal">
         <div class="container">
             <h2>Project Goal</h2>
-            <p>Our goal was to create an affordable, functional underwater ROV that could be used for educational and research purposes. We wanted to build a device that could operate in various underwater environments and provide valuable feedback in real-time.</p>
+            <p>The main goal of this project is to create a functional, low-cost underwater ROV for educational purposes, allowing students to explore marine life and practice engineering and design skills.</p>
         </div>
     </section>
 
@@ -302,13 +290,13 @@
     <section id="materials">
         <div class="container">
             <h2>Materials Used</h2>
-            <p>The following materials were used in the construction of our ROV:</p>
             <ul>
-                <li>Motors</li>
-                <li>PVC Pipes for Frame</li>
-                <li>Waterproof Enclosure</li>
-                <li>Microcontroller</li>
-                <li>Wireless Communication System</li>
+                <li>Waterproof casing</li>
+                <li>Electric motors</li>
+                <li>Microcontroller (Arduino)</li>
+                <li>Camera</li>
+                <li>Buoyancy foam</li>
+                <li>Wires, connectors, and switches</li>
             </ul>
         </div>
     </section>
@@ -316,16 +304,19 @@
     <!-- Design Section -->
     <section id="design">
         <div class="container">
-            <h2>Design Process</h2>
-            <p>Our design process involved several iterations. We started by creating a rough prototype to test the mechanics, then refined the design to ensure proper buoyancy, control, and waterproofing. Afterward, we focused on wiring and integrating the control system.</p>
+            <h2>Design</h2>
+            <p>The design of the ROV was centered around maximizing buoyancy, minimizing drag, and ensuring stability. Below is a sketch of the overall design:</p>
+            <div class="image-container">
+                <img src="design-sketch.jpg" alt="Design Sketch" onclick="openModal(this)">
+            </div>
         </div>
     </section>
 
     <!-- Power Section -->
     <section id="power">
         <div class="container">
-            <h2>Power System</h2>
-            <p>We use a 12V battery to power our ROV. The power system is designed to provide enough current to drive the motors while maintaining a safe voltage level for the control system.</p>
+            <h2>Power Supply</h2>
+            <p>Our ROV uses a sealed rechargeable battery to power the motors and camera, designed to last for up to 2 hours of continuous operation.</p>
         </div>
     </section>
 
@@ -333,20 +324,20 @@
     <section id="wiring">
         <div class="container">
             <h2>Wiring Diagram</h2>
-            <p>Here's a detailed wiring diagram of our ROV, showing how the electrical components are connected. Proper wiring is crucial to ensure smooth communication between the control system and motors.</p>
+            <p>Below is the wiring diagram for our ROV system:</p>
             <div class="image-container">
-                <img src="IMG_0131.jpg" alt="Wiring Diagram" onclick="openModal(this)">
+                <img src="wiring-diagram.jpg" alt="Wiring Diagram" onclick="openModal(this)">
             </div>
         </div>
     </section>
 
-    <!-- Final Prototype Section -->
+    <!-- Current Prototype Section -->
     <section id="final">
         <div class="container">
             <h2>Current Prototype</h2>
-            <p>This is a snapshot of our current ROV prototype in action, demonstrating its ability to function underwater. We continue to refine the design and make adjustments to improve performance.</p>
+            <p>This is the final version of our prototype:</p>
             <div class="image-container">
-                <img src="IMG_0133.jpg" alt="ROV Prototype" onclick="openModal(this)">
+                <img src="IMG_0133.jpg" alt="Current Prototype" onclick="openModal(this)">
             </div>
         </div>
     </section>
@@ -359,47 +350,45 @@
                 <img src="IMG_1127.jpeg" alt="Team Image 1" onclick="openModal(this)">
                 <img src="IMG_1135.jpeg" alt="Team Image 2" onclick="openModal(this)">
             </div>
+            <h2>Wiring Diagram</h2>
+            <div class="image-container">
+                <img src="wiring-diagram.jpg" alt="Wiring Diagram" onclick="openModal(this)">
+            </div>
         </div>
     </section>
 
-    <footer>
-        <p>Last Updated: February 27, 2025</p>
-        <p>Contact Us: <a href="mailto:fll.69309@gmail.com">fll.69309@gmail.com</a></p>
-    </footer>
-
-    <div id="modal" class="modal" onclick="closeModal()">
-        <span class="close">&times;</span>
-        <img id="modal-image" src="" alt="Fullscreen Image">
+    <!-- Fullscreen Modal -->
+    <div id="modal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modal-image" src="">
     </div>
+
+    <footer>
+        <p>Last updated: February 2025 | <a href="mailto:fll.69309@gmail.com">Contact Us</a></p>
+    </footer>
 
     <script>
         function showSection(sectionId) {
             const sections = document.querySelectorAll('section');
             sections.forEach(section => section.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-            closeMenu();
         }
 
-        function openModal(img) {
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('open');
+        }
+
+        function openModal(image) {
             const modal = document.getElementById('modal');
             const modalImage = document.getElementById('modal-image');
-            modalImage.src = img.src;
             modal.style.display = 'flex';
+            modalImage.src = image.src;
         }
 
         function closeModal() {
             const modal = document.getElementById('modal');
             modal.style.display = 'none';
-        }
-
-        function toggleMenu() {
-            const mobileNav = document.querySelector('.mobile-nav');
-            mobileNav.classList.toggle('active');
-        }
-
-        function closeMenu() {
-            const mobileNav = document.querySelector('.mobile-nav');
-            mobileNav.classList.remove('active');
         }
     </script>
 </body>
