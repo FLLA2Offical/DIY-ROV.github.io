@@ -160,6 +160,17 @@
         footer a:hover {
             text-decoration: underline;
         }
+        body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+main {
+    flex: 1;
+}
+
     </style>
 </head>
 
@@ -182,6 +193,7 @@
         <a href="#" onclick="showSection('images')">Images</a>
     </nav>
 
+    <main>
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our DIY Underwater ROV Project!</h2>
@@ -316,6 +328,7 @@
             </div>
         </div>
     </section>
+    </main>
 
     <footer>
         <p>Last updated: February 2025 | <a href="mailto:fll.69309@gmail.com">Contact Us</a></p>
