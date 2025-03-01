@@ -139,18 +139,7 @@
             cursor: pointer;
         }
 
-        /* Footer */
-        footer {
-            background: #333;
-            color: white;
-            padding: 15px;
-            font-size: 14px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-        }
+        
 
         footer a {
             color: #ff7f00;
@@ -169,7 +158,22 @@
 
 main {
     flex: 1;
+    padding-bottom: 60px; /* Adjust based on your footer height */
 }
+
+footer {
+    background: #333;
+    color: white;
+    padding: 15px;
+    font-size: 14px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    height: 60px; /* Define a fixed height for padding reference */
+}
+
 
     </style>
 </head>
