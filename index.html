@@ -93,21 +93,21 @@
             margin-top: 20px;
         }
 
-        .image-container img {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
+    .image-container img {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+        transition: transform 0.3s ease-in-out;
+        cursor: pointer;
+        border-radius: 10px;
+    }
 
-        .image-container img:hover {
-            transform: scale(1.05);
-        }
+    .image-container img.enlarged {
+        transform: scale(1.8); /* Increase size */
+        z-index: 10;
+        position: relative;
+    }
+
 
         /* Fullscreen Modal */
         .modal {
@@ -306,7 +306,7 @@ footer {
             <h2>Current Prototype</h2>
             <p>The prototype is ready! It features functional propulsion, camera feeds, and a reliable control system, and is ready for real-world testing.</p>
             <div class="image-container">
-                <img src="IMG_0133.jpg" alt="Team Image 1">
+                <img src="IMG_0133.jpg" alt="Final Product" oneclick="toggleImageSize(this)">
             </div>
             <p>To see a video of the ROV working click
             <a href="https://drive.google.com/file/d/1-oIvIoZfOOm-b0lEJJq95WwGf8SKB0xx/view?usp=drivesdk">here!</a></p>
@@ -325,9 +325,10 @@ footer {
         <div class="container">
             <h2>Images</h2>
             <div class="image-container">
-                <img src="IMG_1127.jpeg" alt="Team Image 1">
-                <img src="IMG_1135.jpeg" alt="Team Image 2">
-                <img src="IMG_0131.jpg" alt="Team Image 3">
+                <img src="IMG_1127.jpeg" alt="Team Image 1" oneclick="toggleImageSize(this)">
+                <img src="IMG_1135.jpeg" alt="Team Image 2" oneclick="toggleImageSize(this)">
+                <img src="IMG_0131.jpg" alt="Wiring Diagram" oneclick="toggleImageSize(this)">
+                <img src="IMG_0133.jpg" alt="ROV with hand" oneclick="toggleImageSize(this)">
             </div>
         </div>
     </section>
