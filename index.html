@@ -175,6 +175,21 @@ footer {
 }
 
 
+  .image-container img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.image-container img.enlarged {
+    transform: scale(1.8); /* Zoom effect */
+    z-index: 10;
+    position: relative;
+}
+
     </style>
 </head>
 
@@ -340,13 +355,14 @@ footer {
 
     <script>
         function showSection(sectionId) {
-            const sections = document.querySelectorAll('section');
-            sections.forEach(section => section.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-        }
-    function toggleImageSize(imgElement) {
-        imgElement.classList.toggle("enlarged"); // Toggle the enlarged class
-    }
+    const sections = document.querySelectorAll('section');
+    sections.forEach(section => section.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+}
+
+function toggleImageSize(imgElement) {
+    imgElement.classList.toggle("enlarged"); // Toggle the enlarged class
+}
 </script>
 </body>
 </html>
