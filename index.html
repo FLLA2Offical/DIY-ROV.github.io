@@ -357,7 +357,7 @@
                 <p>Click on an image below to view it in full-screen mode:</p>
                 <div class="image-container">
                     <img src="IMG_1127.jpeg" alt="ROV Image 1" onclick="showFullscreenImage(this)">
-                    <img src="IMG_1135.jpeg" alt="ROV Image 2" onclick="showFullscreenImage(this)">
+                    <img src="IMG_1135.jpeg" alt="ROV Image 1" onclick="openImage(this)">
                 </div>
             </div>
         </section>
@@ -368,37 +368,50 @@
     </footer>
 
     <script>
-        function showSection(section) {
-            // Hide all sections
-            const sections = document.querySelectorAll('section');
-            sections.forEach(sec => sec.classList.remove('active'));
+        <script>
+    // Display the last updated date dynamically
+    document.getElementById('last-updated').textContent = document.lastModified;
 
-            // Show the clicked section
-            document.getElementById(section).classList.add('active');
-        }
+    // JavaScript function to switch between sections
+    function showSection(sectionId) {
+        // Hide all sections
+        const sections = document.querySelectorAll('section');
+        sections.forEach((section) => {
+            section.classList.remove('active');
+        });
 
-        function showFullscreenImage(img) {
-            const fullscreenImage = document.createElement('div');
-            fullscreenImage.classList.add('fullscreen-image');
-            const imageClone = img.cloneNode();
-            imageClone.classList.remove('enlarged');
-            fullscreenImage.appendChild(imageClone);
+        // Show the selected section
+        const selectedSection = document.getElementById(sectionId);
+        selectedSection.classList.add('active');
+    }
 
-            const closeBtn = document.createElement('span');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.classList.add('close');
-            fullscreenImage.appendChild(closeBtn);
+    // Function to show image in full screen
+    function openImage(imgElement) {
+        // Create overlay div
+        const overlay = document.createElement("div");
+        overlay.classList.add("fullscreen-image");
 
-            closeBtn.onclick = function () {
-                fullscreenImage.remove();
-            };
+        // Create image element
+        const fullImage = document.createElement("img");
+        fullImage.src = imgElement.src;
+        fullImage.alt = imgElement.alt;
 
-            fullscreenImage.appendChild(imageClone);
-            document.body.appendChild(fullscreenImage);
+        // Create close button
+        const closeButton = document.createElement("span");
+        closeButton.classList.add("close");
+        closeButton.innerHTML = "&times;";
+        closeButton.onclick = function () {
+            document.body.removeChild(overlay);
+        };
 
-            // Show the fullscreen image
-            fullscreenImage.style.display = 'flex';
-        }
-    </script>
+        // Append elements
+        overlay.appendChild(fullImage);
+        overlay.appendChild(closeButton);
+        document.body.appendChild(overlay);
+
+        // Show the overlay
+        overlay.style.display = "flex";
+    }
+</script>
 </body>
 </html>
