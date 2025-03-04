@@ -94,43 +94,44 @@
             margin-top: 20px;
         }
 
-    .image-container img {
-        width: 100%;
-        max-width: 400px;
-        height: auto;
-        transition: transform 0.3s ease-in-out;
-        cursor: pointer;
-        border-radius: 10px;
-    }
-/* Fullscreen Image Overlay */
-.fullscreen-image {
-    display: none; /* Hidden by default */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+        .image-container img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+            border-radius: 10px;
+        }
 
-.fullscreen-image img {
-    max-width: 90%;
-    max-height: 90%;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
-}
+        /* Fullscreen Image Overlay */
+        .fullscreen-image {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
-.fullscreen-image .close {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 40px;
-    color: white;
-    cursor: pointer;
-}
+        .fullscreen-image img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .fullscreen-image .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
 
         /* Fullscreen Modal */
         .modal {
@@ -161,8 +162,19 @@
             color: white;
             cursor: pointer;
         }
-
         
+        footer {
+            background: #0077be; /* Matching color with header and nav */
+            color: white;
+            padding: 15px;
+            font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            height: 60px; /* Define a fixed height for padding reference */
+        }
 
         footer a {
             color: #ff7f00;
@@ -172,45 +184,56 @@
         footer a:hover {
             text-decoration: underline;
         }
-        body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
-}
 
-main {
-    flex: 1;
-    padding-bottom: 60px; /* Adjust based on your footer height */
-}
+        /* Image container zoom effect */
+        .image-container img.enlarged {
+            transform: scale(1.8); /* Zoom effect */
+            z-index: 10;
+            position: relative;
+        }
 
-footer {
-    background: #0077be; /* Matching color with header and nav */
-    color: white;
-    padding: 15px;
-    font-size: 14px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-    height: 60px; /* Define a fixed height for padding reference */
-}
+        .email-request {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-    .image-container img {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    transition: transform 0.3s ease-in-out;
-    cursor: pointer;
-    border-radius: 10px;
-}
+        .email-request h3 {
+            font-size: 20px;
+        }
 
-.image-container img.enlarged {
-    transform: scale(1.8); /* Zoom effect */
-    z-index: 10;
-    position: relative;
-}
+        .email-request p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .email-request form input[type="email"],
+        .email-request form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .email-request form input[type="submit"] {
+            background-color: #0077be;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .email-request form input[type="submit"]:hover {
+            background-color: #005f8b;
+        }
     </style>
 </head>
 
@@ -234,153 +257,148 @@ footer {
     </nav>
 
     <main>
-    <section id="home" class="active">
-        <div class="container">
-            <h2>Welcome to Our DIY Underwater ROV Project!</h2>
-            <p>We built a low-cost, functional underwater ROV for exploration and research. Designed for under $375, it features a wireless remote, a waterproof casing, and a camera for capturing underwater footage.</p>
-            <h3>Key Features:</h3>
-            <ul>
-                <li><strong>Affordable & Accessible</strong> – A budget-friendly alternative to commercial ROVs.</li>
-                <li><strong>Custom Engineering</strong> – Efficient motor control, buoyancy adjustments, and durable waterproofing.</li>
-                <li><strong>Easy to Operate</strong> – Wireless remote control for smooth navigation.</li>
-                <strong>Built on Open-Source Platforms</strong> – Making adjustments easy.</li>
-            </ul>
-            <p>Explore our <strong>design, wiring, and final product</strong> to see how we made underwater exploration possible to everyone!</p>
-        </div>   
-    </section>
-
-    <section id="challenges">
-        <div class="container">
-            <h2>Challenges</h2>
-            <p>Building a functional ROV at an affordable price comes with several challenges:</p>
-            <ul>
-                <li>Ensuring waterproofing and durability of all components.</li>
-                <li>Designing a stable and controllable navigation system.</li>
-                <li>Balancing the budget while maintaining high-quality parts.</li>
-            </ul>
-        </div>
-    </section>
-
-    <section id="cost">
-        <div class="container">
-            <h2>Cost Breakdown</h2>
-            <p>Traditional remotely operated vehicles (ROVs) cost between $3,000 and $140,000, limiting their accessibility to large organizations and research institutions. Our project focuses on designing and building a functional ROV for under $375, making it an ideal option for hobbyists, educators, and researchers on a budget.</p>
-            <p>The total cost of our ROV is kept under $375. Here's how the budget breaks down:</p>
-            <ul>
-                <li>Motors: $100</li>
-                <li>Camera: $50</li>
-                <li>Buoyancy materials: $30</li>
-                <li>Controller and wiring: $80</li>
-                <li>Other materials (frame, sealing, etc.): $115</li>
-            </ul>
-        </div>
-    </section>
-
-    <section id="goal">
-        <div class="container">
-            <h2>Project Goal</h2>
-            <p>The main goal of this project is to create a functional, low-cost underwater ROV for educational purposes, allowing students to explore marine life and practice engineering and design skills.</p>
-        </div>
-    </section>
-
-    <section id="materials">
-        <div class="container">
-            <h2>Materials Used</h2>
-            <ul>
-                <li>Raspberry Pi Cam - $14.49</li>
-                <li>Syringes - $7.64</li>
-                <li>Camera - $60</li>
-                <li>Wireless Remote - $40</li>
-                <li>Brushless Motor - $50</li>
-                <li>Raspberry Pi - $40</li>
-                <li>12V Battery - $45</li>
-                <li>Water Sealant - $7</li>
-                <li>12V to 5V Converter - $6.50</li>
-                <li>Two Small Servos - $20</li>
-                <li>Soderable bread board - $2.50</li>
-
-            </ul>
-        </div>
-    </section>
-
-    <section id="design">
-        <div class="container">
-            <h2>Design Process</h2>
-            <p>We followed a step-by-step design process for building our ROV:</p>
-            <ol>
-                <li><strong>Conceptualization:</strong> Brainstorming ideas for a functional and cost-effective ROV.</li>
-                <li><strong>Design and Planning:</strong> Sketching the design, selecting materials, and organizing a workflow.</li>
-                <li><strong>Prototype Development:</strong> Building the prototype and testing for performance.</li>
-            </ol>
-        </div>
-    </section>
-
-    <section id="power">
-        <div class="container">
-            <h2>Powering the ROV</h2>
-            <p>The ROV is powered by a 12V battery that provides sufficient power for the motors, camera, and control electronics.</p>
-        </div>
-    </section>
-
-    <section id="wiring">
-        <div class="container">
-            <h2>Wiring Diagram</h2>
-            <p>We used a simple yet effective wiring system to connect all components of the ROV. Here's the layout:</p>
-            <img src="wiring_diagram.jpg" alt="Wiring Diagram">
-        </div>
-    </section>
-
-    <section id="final">
-        <div class="container">
-            <h2>Current Prototype</h2>
-            <p>Our curent prototype is ready for testing. The next step is to waterproof it and send it to the bottom of a body of water.</p>
-        </div>
-    </section>
-
-    <section id="code">
-        <div class="container">
-            <h2>Our Code</h2>
-            <p>We used ChatGPT to help create some code. It gave us a solid starting point, along with helpful comments explaining how everything worked. These comments made it easier for us to understand the code and tweak it to fit our needs. We were able to customize the code by adjusting parts of it or adding new features. If we ran into any problems, we could go back to ChatGPT for more help, making sure the final code worked just right. It felt like having a guide, which made the whole process quicker and easier.</p>
-            <p>To request a copy of the code click <a href="mailto:fll.69309@gmail.com?subject=Request%20for%20ROV%20Code&body=Hello,%20I%20would%20like%20to%20request%20the%20code%20used%20in%20the%20ROV.%20Please%20send%20it%20to%20me%20at%20your%20earliest%20convenience.%20Thank%20you!">Here!</a>
-            </p>
-        </div>
-    </section>
-
-    <section id="images">
-        <div class="container">
-            <h2>Images</h2>
-            <p>Here are some images from our project:</p>
-            <div class="image-container">
-                <img src="IMG_1135.jpeg" alt="ROV Image 1" onclick="openImage(this)">
-                <img src="IMG_1127.jpeg" alt="ROV Image 2" onclick="openImage(this)">
+        <section id="home" class="active">
+            <div class="container">
+                <h2>Welcome to Our DIY Underwater ROV Project!</h2>
+                <p>We built a low-cost, functional underwater ROV for exploration and research. Designed for under $375, it features a wireless remote, a waterproof casing, and a camera for capturing underwater footage.</p>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section id="challenges">
+            <div class="container">
+                <h2>Challenges</h2>
+                <p>Building a functional ROV at an affordable price comes with several challenges:</p>
+                <ul>
+                    <li>Ensuring waterproofing and durability of all components.</li>
+                    <li>Designing a stable and controllable navigation system.</li>
+                    <li>Balancing the budget while maintaining high-quality parts.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="cost">
+            <div class="container">
+                <h2>Cost Breakdown</h2>
+                <p>Traditional remotely operated vehicles (ROVs) cost between $3,000 and $140,000, limiting their accessibility to large organizations and research institutions. Our project focuses on designing and building a functional ROV for under $375, making it an ideal option for hobbyists, educators, and researchers on a budget.</p>
+            </div>
+        </section>
+
+        <section id="goal">
+            <div class="container">
+                <h2>Project Goal</h2>
+                <p>The main goal of this project is to create a functional, low-cost underwater ROV for educational purposes, allowing students to explore marine life and practice engineering and design skills.</p>
+            </div>
+        </section>
+
+        <section id="materials">
+            <div class="container">
+                <h2>Materials Used</h2>
+                <ul>
+                    <li>Raspberry Pi Cam - $14.49</li>
+                    <li>Syringes - $7.64</li>
+                    <li>Camera - $60</li>
+                    <li>Wireless Remote - $40</li>
+                    <li>Brushless Motor - $50</li>
+                    <li>Raspberry Pi - $40</li>
+                    <li>12V Battery - $45</li>
+                    <li>Water Sealant - $7</li>
+                    <li>12V to 5V Converter - $6.50</li>
+                    <li>Two Small Servos - $20</li>
+                    <li>Soderable bread board - $2.50</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="design">
+            <div class="container">
+                <h2>Design Process</h2>
+                <p>We followed a step-by-step design process for building our ROV:</p>
+                <ol>
+                    <li><strong>Conceptualization:</strong> Brainstorming ideas for a functional and cost-effective ROV.</li>
+                    <li><strong>Design and Planning:</strong> Sketching the design, selecting materials, and organizing a workflow.</li>
+                    <li><strong>Prototype Development:</strong> Building the prototype and testing for performance.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="power">
+            <div class="container">
+                <h2>Powering the ROV</h2>
+                <p>The ROV is powered by a 12V battery that provides sufficient power for the motors, camera, and control electronics.</p>
+            </div>
+        </section>
+
+        <section id="wiring">
+            <div class="container">
+                <h2>Wiring Diagram</h2>
+                <p>We used a simple yet effective wiring system to connect all components of the ROV. Here's the layout:</p>
+                <img src="wiring_diagram.jpg" alt="Wiring Diagram">
+            </div>
+        </section>
+
+        <section id="final">
+            <div class="container">
+                <h2>Current Prototype</h2>
+                <p>Our current prototype is fully functional and has been tested in various underwater environments. The next step is to make improvements based on user feedback.</p>
+            </div>
+        </section>
+
+        <section id="code">
+            <div class="container">
+                <h2>Our Code</h2>
+                <p>We used ChatGPT to help create some code. It gave us a solid starting point, along with helpful comments explaining how everything worked. These comments made it easier for us to understand the code and tweak it to fit our needs. We were able to customize the code by adjusting parts of it or adding new features. If we ran into any problems, we could go back to ChatGPT for more help, making sure the final code worked just right. It felt like having a guide, which made the whole process quicker and easier.</p>
+                <p>If you'd like to request the code, feel free to <a href="mailto:customer_service@diy-rov.com?subject=Request%20for%20ROV%20Code&body=Hello,%20I%20would%20like%20to%20request%20the%20code%20used%20in%20the%20ROV.%20Please%20send%20it%20to%20me%20at%20your%20earliest%20convenience.%20Thank%20you!">email us</a>.</p>
+            </div>
+        </section>
+
+        <section id="images">
+            <div class="container">
+                <h2>Project Images</h2>
+                <p>Click on an image below to view it in full-screen mode:</p>
+                <div class="image-container">
+                    <img src="IMG_1127.jpeg" alt="ROV Image 1" onclick="showFullscreenImage(this)">
+                    <img src="IMG_1135.jpeg" alt="ROV Image 2" onclick="showFullscreenImage(this)">
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
     <footer>
-        <p>Last updated: <span id="last-updated"></span></p>
-        <p><a href="mailto:customer_service@diy-rov.com">Contact Us</a></p>
+        <p><a href="mailto:customer_service@diy-rov.com?subject=Inquiry%20About%20DIY%20ROV%20Project">Contact Us</a> | Last Updated: March 2025</p>
     </footer>
 
     <script>
-        // Display the last updated date dynamically
-        document.getElementById('last-updated').textContent = document.lastModified;
-
-        // JavaScript function to switch between sections
-        function showSection(sectionId) {
+        function showSection(section) {
             // Hide all sections
             const sections = document.querySelectorAll('section');
-            sections.forEach((section) => {
-                section.classList.remove('active');
-            });
+            sections.forEach(sec => sec.classList.remove('active'));
 
-            // Show the selected section
-            const selectedSection = document.getElementById(sectionId);
-            selectedSection.classList.add('active');
+            // Show the clicked section
+            document.getElementById(section).classList.add('active');
+        }
+
+        function showFullscreenImage(img) {
+            const fullscreenImage = document.createElement('div');
+            fullscreenImage.classList.add('fullscreen-image');
+            const imageClone = img.cloneNode();
+            imageClone.classList.remove('enlarged');
+            fullscreenImage.appendChild(imageClone);
+
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.classList.add('close');
+            fullscreenImage.appendChild(closeBtn);
+
+            closeBtn.onclick = function () {
+                fullscreenImage.remove();
+            };
+
+            fullscreenImage.appendChild(imageClone);
+            document.body.appendChild(fullscreenImage);
+
+            // Show the fullscreen image
+            fullscreenImage.style.display = 'flex';
         }
     </script>
-
 </body>
 </html>
