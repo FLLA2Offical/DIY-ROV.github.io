@@ -185,7 +185,7 @@ main {
 }
 
 footer {
-    background: #333;
+    background: #0077be; /* Matching color with header and nav */
     color: white;
     padding: 15px;
     font-size: 14px;
@@ -197,8 +197,7 @@ footer {
     height: 60px; /* Define a fixed height for padding reference */
 }
 
-
-  .image-container img {
+    .image-container img {
     width: 100%;
     max-width: 400px;
     height: auto;
@@ -212,7 +211,6 @@ footer {
     z-index: 10;
     position: relative;
 }
-
     </style>
 </head>
 
@@ -369,6 +367,19 @@ footer {
     <script>
         // Display the last updated date dynamically
         document.getElementById('last-updated').textContent = document.lastModified;
+
+        // JavaScript function to switch between sections
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('section');
+            sections.forEach((section) => {
+                section.classList.remove('active');
+            });
+
+            // Show the selected section
+            const selectedSection = document.getElementById(sectionId);
+            selectedSection.classList.add('active');
+        }
     </script>
 
 </body>
