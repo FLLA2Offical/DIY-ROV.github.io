@@ -403,22 +403,6 @@
    <footer>
         <p>Last updated: March 2025 | <a href="mailto:customer_service@diy-rov.com">Contact Us</a></p>
     </footer>
-
-<script>
-    document.getElementById("contactForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevents actual form submission
-        let email = document.getElementById("email").value;
-        let message = document.getElementById("message").value;
-
-        // Construct the mailto link
-        let mailtoLink = `mailto:customer_service@diy-rov.com?subject=Contact Request&body=From: ${email}%0D%0A%0D%0A${encodeURIComponent(message)}`;
-        
-        // Open the mail client
-        window.location.href = mailtoLink;
-    });
-</script>
-
-
     <script>
         function showSection(sectionId) {
     const sections = document.querySelectorAll('section');
