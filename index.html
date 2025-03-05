@@ -400,18 +400,32 @@
     </section>
     </main>
 
-    <footer>
+   <footer>
     <p>Last updated: March 2025 | <a href="mailto:customer_service@diy-rov.com">Contact Us</a></p>
     <div class="email-request">
         <h3>Contact Us</h3>
         <p>Have questions or want to learn more? Send us a message!</p>
-        <form action="mailto:customer_service@diy-rov.com" method="post" enctype="text/plain">
-            <input type="email" name="email" placeholder="Your Email" required>
-            <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+        <form id="contactForm">
+            <input type="email" id="email" name="email" placeholder="Your Email" required>
+            <textarea id="message" name="message" rows="4" placeholder="Your Message" required></textarea>
             <input type="submit" value="Send Message">
         </form>
     </div>
 </footer>
+
+<script>
+    document.getElementById("contactForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevents actual form submission
+        let email = document.getElementById("email").value;
+        let message = document.getElementById("message").value;
+
+        // Construct the mailto link
+        let mailtoLink = `mailto:customer_service@diy-rov.com?subject=Contact Request&body=From: ${email}%0D%0A%0D%0A${encodeURIComponent(message)}`;
+        
+        // Open the mail client
+        window.location.href = mailtoLink;
+    });
+</script>
 
 
     <script>
