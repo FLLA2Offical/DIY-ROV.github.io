@@ -4,3 +4,11 @@ body{
 .title {
 	color: #5C6AC4;
 }
+a {
+    color: orange;
+    text-decoration: none;
+}
+
+a:hover {
+    color: darkorange;
+}
