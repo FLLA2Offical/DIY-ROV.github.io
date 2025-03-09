@@ -255,6 +255,8 @@
     <header>
         <img src="FLL_Team_A-2_69309_Modern_logo-removebg-preview.png" alt="Logo">
         DIY Underwater ROV
+        <div id="viewCounter" style="font-size: 16px; margin-left: 20px;"></div>
+
     </header>
     <nav>
         <a href="#" onclick="showSection('home')">Home</a>
@@ -271,6 +273,16 @@
     </nav>
 
     <main>
+        <script>
+    function updateViewCounter() {
+        let views = localStorage.getItem("viewCount");
+        views = views ? parseInt(views) + 1 : 1;
+        localStorage.setItem("viewCount", views);
+        document.getElementById("viewCounter").innerText = `Views: ${views}`;
+    }
+    updateViewCounter();
+</script>
+
     <section id="home" class="active">
         <div class="container">
             <h2>Welcome to Our DIY Underwater ROV Project!</h2>
