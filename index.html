@@ -1,525 +1,303 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    
-    <title>DIY Underwater ROV</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="DIY Underwater ROV Project. A budget-friendly, low-cost remote-operated vehicle designed for underwater exploration.">
-    <meta name="keywords" content="DIY, Underwater ROV, remote operated vehicle, robotics, underwater exploration, marine technology, engineering">
-    <meta name="author" content="FLL 69309">
-    <meta name="robots" content="index, follow">
-
-    <!-- Google Search Console TXT Verification -->
-    <meta name="google-site-verification" content="google-site-verification=fjMeXrVXnT0pwJMsjwYJ-jnxPLj5Dd8yJVGvQGW-NjU" />
-
-    <style>
-       main {
-    padding-bottom: 80px; /* Slightly larger than footer height */
-    min-height: calc(100vh - 120px); /* Adjust based on header/nav/footer size */
-}
-
-
-        /* General Styling */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            background-color: #f4f4f4;
-        }
-
-        /* Header */
-        header {
-            background: #0077be;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        header img {
-            height: 120px;
-            margin-right: 15px;
-        }
-
-        /* Navigation Bar */
-        nav {
-            background: #005f8b;
-            padding: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            margin: 5px;
-            background: #008cba;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        nav a:hover {
-            background: #ff7f00;
-        }
-
-        /* Sections */
-        section {
-            display: none;
-            padding: 30px;
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin-top: 20px;
-        }
-
-        .active {
-            display: block;
-        }
-
-        .container {
-            text-align: left;
-        }
-
-        /* Image Styling */
-        .image-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .image-container img {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            transition: transform 0.3s ease-in-out;
-            cursor: pointer;
-            border-radius: 10px;
-        }
-
-        /* Fullscreen Image Overlay */
-        .fullscreen-image {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .fullscreen-image img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
-        }
-
-        .fullscreen-image .close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-        }
-
-        /* Fullscreen Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
-        }
-
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-        }
-        
-        footer {
-            background: #0077be; /* Matching color with header and nav */
-            color: white;
-            padding: 15px;
-            font-size: 14px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-            height: 60px; /* Define a fixed height for padding reference */
-        }
-
-        footer a {
-            color: #ff7f00;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Image container zoom effect */
-        .image-container img.enlarged {
-            transform: scale(1.8); /* Zoom effect */
-            z-index: 10;
-            position: relative;
-        }
-
-        .email-request {
-            background-color: #f4f4f4;
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .email-request h3 {
-            font-size: 20px;
-        }
-
-        .email-request p {
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        .email-request form input[type="email"],
-        .email-request form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .email-request form input[type="submit"] {
-            background-color: #0077be;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .email-request form input[type="submit"]:hover {
-            background-color: #005f8b;
-        }
-    a {
-            color: orange; /* Makes the link text orange */
-            text-decoration: none; /* Removes underline */
-        }
-
-        a:hover {
-            color: darkorange; /* Changes color when hovered over */
-        }
-    </style>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-VT0T2VY9XK');
-</script>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DIY Underwater ROV</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin:0; padding:0; background:#f4f4f4; text-align:center;
+  }
+  header {
+    background:#0077be; color:#fff; padding:20px; font-size:24px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  header img {
+    height:120px; margin-right:15px;
+  }
+  nav {
+    background:#005f8b; padding:10px; display:flex; justify-content:center;
+    gap:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  nav a {
+    color:#fff; text-decoration:none; padding:10px 15px; background:#008cba;
+    border-radius:5px; font-weight:bold; transition:background 0.3s;
+    cursor:pointer;
+  }
+  nav a:hover {
+    background:#ff7f00;
+  }
+  main {
+    max-width: 900px;
+    margin: 30px auto 80px auto;
+    text-align: left;
+  }
+  /* Content sections - full innovation page */
+  section {
+    margin-bottom: 40px;
+  }
+  h2 {
+    color:#0077be;
+  }
+  ul, ol {
+    margin-left: 20px;
+  }
+  .image-container {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:20px;
+  }
+  .image-container img {
+    max-width: 400px; width:100%; height:auto; border-radius:10px;
+    cursor:pointer; transition: transform 0.3s ease-in-out;
+  }
+  .image-container img:hover {
+    transform: scale(1.05);
+  }
+  .fullscreen-image {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.9); justify-content:center; align-items:center;
+    z-index:1000;
+  }
+  .fullscreen-image img {
+    max-width:90%; max-height:90%; border-radius:10px;
+  }
+  .fullscreen-image .close {
+    position:absolute; top:20px; right:30px; font-size:40px; color:#fff; cursor:pointer;
+  }
+  footer {
+    background:#0077be; color:#fff; padding:15px; font-size:14px; text-align:center;
+    position: fixed; bottom:0; width:100%; box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
+  }
+  footer a {
+    color:#ff7f00; text-decoration:none;
+  }
+  footer a:hover {
+    text-decoration:underline;
+  }
+</style>
 </head>
-
 <body>
-    <header>
-        <img src="FLL_Team_A-2_69309_Modern_logo-removebg-preview.png" alt="Logo">
-        DIY Underwater ROV
-        
-    </header>
-    <nav>
-        <a href="#" onclick="showSection('home')">Home</a>
-        <a href="#" onclick="showSection('challenges')">Challenges</a>
-        <a href="#" onclick="showSection('cost')">Cost</a>
-        <a href="#" onclick="showSection('goal')">Goal</a>
-        <a href="#" onclick="showSection('materials')">Materials</a>
-        <a href="#" onclick="showSection('design')">Design</a>
-        <a href="#" onclick="showSection('power')">Power</a>
-        <a href="#" onclick="showSection('wiring')">Wiring</a>
-        <a href="#" onclick="showSection('final')">Current Prototype</a>
-        <a href="#" onclick="showSection('code')">Code</a>
-        <a href="#" onclick="showSection('images')">Images</a>
-    </nav>
 
-    <main>
-        <script>
-    function updateViewCounter() {
-        let views = localStorage.getItem("viewCount");
-        views = views ? parseInt(views) + 1 : 1;
-        localStorage.setItem("viewCount", views);
-        document.getElementById("viewCounter").innerText = `Views: ${views}`;
-    }
-    updateViewCounter();
-</script>
+<header>
+  <img src="FLL_Team_A-2_69309_Modern_logo-removebg-preview.png" alt="Logo" />
+  DIY Underwater ROV
+</header>
 
-    <section id="home" class="active">
-        <div class="container">
-            <h2>Welcome to Our DIY Underwater ROV Project!</h2>
-            <p>We built a low-cost, functional underwater ROV for exploration and research. Designed for under $375, it features a wireless remote, a waterproof casing, and a camera for capturing underwater footage.</p>
-            <h3>Key Features:</h3>
-            <ul>
-                <li><strong>Affordable & Accessible</strong> – A budget-friendly alternative to commercial ROVs.</li>
-                <li><strong>Custom Engineering</strong> – Efficient motor control, buoyancy adjustments, and durable waterproofing.</li>
-                <li><strong>Easy to Operate</strong> – Wireless remote control for smooth navigation.</li>
-                <li><strong>Built on Open-Source Platforms</strong> – Making adjustments easy.</li>
-            </ul>
-            <p>Explore our <strong>design, wiring, and final product</strong> to see how we made underwater exploration possible!</p>
-        </div>   
-    </section>
+<nav id="nav-home">
+  <a href="#" onclick="showHome()">Home</a>
+  <a href="#" onclick="showInnovation()">Innovation Project</a>
+</nav>
 
-    <section id="challenges">
-        <div class="container">
-            <h2>Challenges</h2>
-            <p>Building a functional ROV at an affordable price comes with several challenges:</p>
-            <ul>
-                <li>Ensuring waterproofing and durability of all components.</li>
-                <li>Designing a stable and controllable navigation system.</li>
-                <li>Balancing the budget while maintaining high-quality parts.</li>
-            </ul>
-        </div>
-    </section>
+<nav id="nav-innovation" style="display:none;">
+  <a href="#" onclick="showHome()">Back to Home</a>
+  <a href="#" onclick="showInnovationSection('home')">Home</a>
+  <a href="#" onclick="showInnovationSection('challenges')">Challenges</a>
+  <a href="#" onclick="showInnovationSection('cost')">Cost</a>
+  <a href="#" onclick="showInnovationSection('goal')">Goal</a>
+  <a href="#" onclick="showInnovationSection('materials')">Materials</a>
+  <a href="#" onclick="showInnovationSection('design')">Design</a>
+  <a href="#" onclick="showInnovationSection('power')">Power</a>
+  <a href="#" onclick="showInnovationSection('wiring')">Wiring</a>
+  <a href="#" onclick="showInnovationSection('final')">Current Prototype</a>
+  <a href="#" onclick="showInnovationSection('code')">Code</a>
+  <a href="#" onclick="showInnovationSection('images')">Images</a>
+</nav>
 
-    <section id="cost">
-        <div class="container">
-            <h2>Cost Breakdown</h2>
-            <p>Traditional remotely operated vehicles (ROVs) cost between $3,000 and $140,000, limiting their accessibility to large organizations and research institutions. Our project focuses on designing and building a functional ROV for under $375, making it an ideal option for hobbyists, educators, and researchers on a budget.</p>
-            <p>The total cost of our ROV is kept under $375. Here's how the budget breaks down:</p>
-            <ul>
-                <li>Motors: $100</li>
-                <li>Camera: $50</li>
-                <li>Buoyancy materials: $30</li>
-                <li>Controller and wiring: $80</li>
-                <li>Other materials (frame, sealing, etc.): $115</li>
-            </ul>
-        </div>
-    </section>
+<main id="main-home">
+  <!-- Home page blank content -->
+</main>
 
-    <section id="goal">
-        <div class="container">
-            <h2>Project Goal</h2>
-            <p>The main goal of this project is to create a functional, low-cost underwater ROV for educational purposes, allowing students to explore marine life and practice engineering and design skills.</p>
-        </div>
-    </section>
+<main id="main-innovation" style="display:none;">
+  <!-- All your content sections -->
+  
+  <section id="home" style="display:block;">
+    <h2>Welcome to Our DIY Underwater ROV Project!</h2>
+    <p>We built a low-cost, functional underwater ROV for exploration and research. Designed for under $375, it features a wireless remote, a waterproof casing, and a camera for capturing underwater footage.</p>
+    <h3>Key Features:</h3>
+    <ul>
+      <li><strong>Affordable & Accessible</strong> – A budget-friendly alternative to commercial ROVs.</li>
+      <li><strong>Custom Engineering</strong> – Efficient motor control, buoyancy adjustments, and durable waterproofing.</li>
+      <li><strong>Easy to Operate</strong> – Wireless remote control for smooth navigation.</li>
+      <li><strong>Built on Open-Source Platforms</strong> – Making adjustments easy.</li>
+    </ul>
+    <p>Explore our <strong>design, wiring, and final product</strong> to see how we made underwater exploration possible!</p>
+  </section>
 
-    <section id="materials">
-        <div class="container">
-            <h2>Materials Used</h2>
-            <ul>
-                <li>Raspberry Pi Cam - $14.49</li>
-                <li>Syringes - $7.64</li>
-                <li>Camera - $60</li>
-                <li>Wireless Remote - $40</li>
-                <li>Brushless Motor - $50</li>
-                <li>Raspberry Pi - $40</li>
-                <li>12V Battery - $45</li>
-                <li>Water Sealant - $7</li>
-                <li>12V to 5V Converter - $6.50</li>
-                <li>Two Small Servos - $20</li>
-                <li>Soderable bread board - $2.50</li>
+  <section id="challenges" style="display:none;">
+    <h2>Challenges</h2>
+    <p>Building a functional ROV at an affordable price comes with several challenges:</p>
+    <ul>
+      <li>Ensuring waterproofing and durability of all components.</li>
+      <li>Designing a stable and controllable navigation system.</li>
+      <li>Balancing the budget while maintaining high-quality parts.</li>
+    </ul>
+  </section>
 
-            </ul>
-            <p>Price subject to change.<br>Some items can be replace with cost-friendly or high efficeny material.<br>You can pick between a external camera (like a GoPro) or the raspberry pi and camera.</p>
-        </div>
-    </section>
+  <section id="cost" style="display:none;">
+    <h2>Cost Breakdown</h2>
+    <p>Traditional remotely operated vehicles (ROVs) cost between $3,000 and $140,000, limiting their accessibility to large organizations and research institutions. Our project focuses on designing and building a functional ROV for under $375, making it an ideal option for hobbyists, educators, and researchers on a budget.</p>
+    <p>The total cost of our ROV is kept under $375. Here's how the budget breaks down:</p>
+    <ul>
+      <li>Motors: $100</li>
+      <li>Camera: $50</li>
+      <li>Buoyancy materials: $30</li>
+      <li>Controller and wiring: $80</li>
+      <li>Other materials (frame, sealing, etc.): $115</li>
+    </ul>
+  </section>
 
-    <section id="design">
-        <div class="container">
-            <h2>Design Process</h2>
-            <p>We followed a step-by-step design approach:</p>
-            <ol>
-                <li>Initial concept and layout planning.</li>
-                <li>Designing the frame for durability and lightweight properties.</li>
-                <li>Testing for buoyancy and stability in water.</li>
-                <li>Final adjustments and assembly.</li>
-            </ol>
-          <p>We refined our design through multiple iterations, incorporating improvements in size, weight, and efficiency. Key changes included optimizing the frame structure for better hydrodynamics, upgrading propulsion for improved maneuverability, and refining waterproofing techniques to prevent water damage. An example from our slideshow includes using 3D printing to develop lightweight yet durable components, reducing overall material costs while enhancing structural integrity.</p>
-        </div>
-    </section>
+  <section id="goal" style="display:none;">
+    <h2>Project Goal</h2>
+    <p>The main goal of this project is to create a functional, low-cost underwater ROV for educational purposes, allowing students to explore marine life and practice engineering and design skills.</p>
+  </section>
 
-    <section id="power">
-        <div class="container">
-            <h2>Power System</h2>
-            <p>The ROV is powered by rechargeable lithium batteries, providing enough energy for a few hours of operation. The power system is designed to be safe and efficient, keeping the ROV running smoothly under water.</p>
-        </div>
-    </section>
+  <section id="materials" style="display:none;">
+    <h2>Materials Used</h2>
+    <ul>
+      <li>Raspberry Pi Cam - $14.49</li>
+      <li>Syringes - $7.64</li>
+      <li>Camera - $60</li>
+      <li>Wireless Remote - $40</li>
+      <li>Brushless Motor - $50</li>
+      <li>Raspberry Pi - $40</li>
+      <li>12V Battery - $45</li>
+      <li>Water Sealant - $7</li>
+      <li>12V to 5V Converter - $6.50</li>
+      <li>Two Small Servos - $20</li>
+      <li>Soderable bread board - $2.50</li>
+    </ul>
+    <p>Price subject to change.<br />Some items can be replace with cost-friendly or high efficeny material.<br />You can pick between a external camera (like a GoPro) or the raspberry pi and camera.</p>
+  </section>
 
-    <section id="wiring">
-        <div class="container">
-            <h2>Wiring and Electronics</h2>
-            <p>We use a simple wiring system, using waterproof connectors to prevent short circuits. The electronics are designed for easy accessibility and maintenance. 
-            we were able to power the 5v and 12v components through a converter so we could use only 1 battery.</p>
-            <div class="image-container">
-                <img src="IMG_0131.jpg" alt="Wiring Diagram" onclick="toggleImageSize(this)">
-           <p>Having trouble veiwing the diagram? Click 
-            <a href="https://drive.google.com/file/d/1CjaMv_B_zV5rwS8c22cn3T-48YaU7wiK/view?usp=drivesdk">here</a>!</p>
+  <section id="design" style="display:none;">
+    <h2>Design Process</h2>
+    <p>We followed a step-by-step design approach:</p>
+    <ol>
+      <li>Initial concept and layout planning.</li>
+      <li>Designing the frame for durability and lightweight properties.</li>
+      <li>Testing for buoyancy and stability in water.</li>
+      <li>Final adjustments and assembly.</li>
+    </ol>
+    <p>We refined our design through multiple iterations, incorporating improvements in size, weight, and efficiency. Key changes included optimizing the frame structure for better hydrodynamics, upgrading propulsion for improved maneuverability, and refining waterproofing techniques to prevent water damage. An example from our design process includes the transition from a bulky external motor to compact brushless motors that allowed better speed and control. We also experimented with different buoyancy materials to achieve neutral buoyancy, making the ROV easier to control underwater.</p>
+  </section>
 
-        </div>
-    </section>
+  <section id="power" style="display:none;">
+    <h2>Power and Energy Efficiency</h2>
+    <p>The ROV is powered by a 12V battery, which is converted down to 5V for the Raspberry Pi and other electronics. To conserve energy, we use brushless motors known for higher efficiency and longevity. The system includes a power management module that regulates voltage and current, ensuring safe operation and preventing power surges.</p>
+  </section>
 
-    <section id="final">
-        <div class="container">
-            <h2>Current Prototype</h2>
-            <p>The prototype is ready! It features functional propulsion, camera feeds, and a reliable control system, and is ready for real-world testing.</p>
-            <div class="image-container">
-                <img src="IMG_0133.jpg" alt="Final Product" onclick="toggleImageSize(this)">
-            </div>
-            <p>To see a video of the ROV working click
-            <a href="https://drive.google.com/file/d/1jzbyndZE7E22T-8FyOl91QXsXZDJr51m/view?usp=drivesdk">here</a>!</p>
-        </div>
-    </section>
+  <section id="wiring" style="display:none;">
+    <h2>Wiring and Electronics</h2>
+    <p>The wiring layout includes connections from the battery to the power converter and then to the Raspberry Pi and motors. All wiring is waterproofed using sealant and carefully routed to avoid tangling or damage. We use a solderable breadboard to simplify the connections and allow easy modifications during testing.</p>
+  </section>
 
-    <section id="code">
-        <div class="container">
-            <h2>Our Code</h2>
-            <p>We used ChatGPT to help create some code. It gave us a solid starting point, along with helpful comments explaining how everything worked. These comments made it easier for us to understand the code and tweak it to fit our needs. We were able to customize the code by adjusting parts of it or adding new features. If we ran into any problems, we could go back to ChatGPT for more help, making sure the final code worked just right. It felt like having a guide, which made the whole process quicker and easier.</p>
-            <p>To request a copy of the code click <a href="mailto:fll.69309@gmail.com?subject=Request%20for%20ROV%20Code&body=Hello,%20I%20would%20like%20to%20request%20the%20code%20used%20in%20the%20ROV.%20Please%20send%20it%20to%20me%20at%20your%20earliest%20convenience.%20Thank%20you!">here</a>!</p>
-    </section>
-        </div>
-    <section id="images">
-        <div class="container">
-            <h2>Images</h2>
-            <div class="image-container">
-                <img src="IMG_1127.jpeg" alt="Team Image 1" onclick="toggleImageSize(this)">
-                <img src="IMG_1135.jpeg" alt="Team Image 2" onclick="toggleImageSize(this)">
-                <img src="IMG_0131.jpg" alt="Wiring Diagram" onclick="toggleImageSize(this)">
-                <img src="IMG_0133.jpg" alt="ROV with hand" onclick="toggleImageSize(this)">
-                <img src="IMG_0421.jpeg" alt="Us at FRC expo" onclick="toggleImageSize(this)">
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br><br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br><br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                
-                   <div style="position: relative; width: 100%; height: 600px;">
-  <button onclick="document.getElementById('polyIframe').requestFullscreen()" 
-          style="position: absolute; top: 10px; right: 10px; z-index: 10; padding: 6px 10px; background: #000; color: #fff; border: none; border-radius: 4px; opacity: 0.7; cursor: pointer;">
-    Fullscreen
-  </button>
-  <iframe id="polyIframe" src="https://beta-polytrack.kodub.com/" 
-          style="width: 100%; height: 100%; border: none;" 
-          allowfullscreen>
-  </iframe>
-            </div>
-        </div>
-     
+  <section id="final" style="display:none;">
+    <h2>Current Prototype</h2>
+    <p>Our current prototype consists of a sealed waterproof case housing the Raspberry Pi, battery, and electronics. The brushless motors provide smooth propulsion, and the camera streams live video for navigation. The ROV can maneuver in all directions and maintain depth with the buoyancy system.</p>
+  </section>
+
+  <section id="code" style="display:none;">
+    <h2>Code</h2>
+    <p>The control software is written in Python, running on the Raspberry Pi. It handles input from the wireless remote, processes commands, and controls the motor speeds accordingly. The camera feed is streamed to a display device for real-time feedback.</p>
+    <pre style="background:#eee; padding:10px; overflow:auto;">
+# Sample motor control code (Python)
+
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+motor_pins = [17, 18, 27, 22]  # Example motor control pins
+for pin in motor_pins:
+    GPIO.setup(pin, GPIO.OUT)
+    GPIO.output(pin, GPIO.LOW)
+
+def forward():
+    GPIO.output(17, GPIO.HIGH)
+    GPIO.output(18, GPIO.LOW)
+    GPIO.output(27, GPIO.HIGH)
+    GPIO.output(22, GPIO.LOW)
+
+def stop():
+    for pin in motor_pins:
+        GPIO.output(pin, GPIO.LOW)
+
+try:
+    while True:
+        forward()
+        time.sleep(2)
+        stop()
+        time.sleep(2)
+except KeyboardInterrupt:
+    GPIO.cleanup()
+    </pre>
+  </section>
+
+  <section id="images" style="display:none;">
+    <h2>Images</h2>
+    <div class="image-container">
+      <img src="IMG_5237.jpg" alt="ROV Image 1" onclick="openFullscreen(this)" />
+      <img src="IMG_5238.jpg" alt="ROV Image 2" onclick="openFullscreen(this)" />
+      <img src="IMG_5239.jpg" alt="ROV Image 3" onclick="openFullscreen(this)" />
+      <img src="IMG_5240.jpg" alt="ROV Image 4" onclick="openFullscreen(this)" />
+      <img src="IMG_5241.jpg" alt="ROV Image 5" onclick="openFullscreen(this)" />
+    </div>
+  </section>
+
+</main>
+
+<div id="fullscreen" class="fullscreen-image" onclick="closeFullscreen()">
+  <span class="close" onclick="closeFullscreen()">&times;</span>
+  <img id="fullscreen-img" src="" alt="Fullscreen" />
 </div>
 
-    </section>
-    </main>
+<footer>
+  Copyright © 2023 Theodore R. Buland | <a href="mailto:contact@example.com">Contact Us</a>
+</footer>
 
-   <footer></div>
+<script>
+  const navHome = document.getElementById('nav-home');
+  const navInnovation = document.getElementById('nav-innovation');
+  const mainHome = document.getElementById('main-home');
+  const mainInnovation = document.getElementById('main-innovation');
+  const sections = mainInnovation.querySelectorAll('section');
 
-        <p>Last updated: April 2025 | <a href="mailto:fll.69309@gmail.com">Contact Us</a></p>
-    </footer>
-    <script>
-        function showSection(sectionId) {
-    const sections = document.querySelectorAll('section');
-    sections.forEach(section => section.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
-}
+  function showHome() {
+    navHome.style.display = 'flex';
+    navInnovation.style.display = 'none';
+    mainHome.style.display = 'block';
+    mainInnovation.style.display = 'none';
+  }
 
-function showFullscreenImage(imgSrc) {
-    const fullscreenDiv = document.getElementById("fullscreenImage");
-    const fullscreenImg = document.getElementById("fullscreenImg");
+  function showInnovation() {
+    navHome.style.display = 'none';
+    navInnovation.style.display = 'flex';
+    mainHome.style.display = 'none';
+    mainInnovation.style.display = 'block';
+    showInnovationSection('home');
+  }
 
-    fullscreenImg.src = imgSrc;
-    fullscreenDiv.style.display = "flex"; // Show full-screen overlay
-}
-
-function closeFullscreenImage() {
-    document.getElementById("fullscreenImage").style.display = "none"; // Hide overlay
-}
-
-// Attach click event to all images
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".image-container img").forEach(img => {
-        img.addEventListener("click", function () {
-            showFullscreenImage(this.src);
-        });
+  function showInnovationSection(id) {
+    sections.forEach(section => {
+      section.style.display = (section.id === id) ? 'block' : 'none';
     });
-});
-</script>
-<!-- Fullscreen Image Container -->
-<div class="fullscreen-image" id="fullscreenImage">
-    <span class="close" onclick="closeFullscreenImage()">&times;</span>
-    <img id="fullscreenImg" src="" alt="Full Screen">
-</div>
+  }
 
-</body></html>
+  // Fullscreen image viewer
+  function openFullscreen(img) {
+    const fs = document.getElementById('fullscreen');
+    const fsImg = document.getElementById('fullscreen-img');
+    fsImg.src = img.src;
+    fs.style.display = 'flex';
+  }
+  function closeFullscreen() {
+    const fs = document.getElementById('fullscreen');
+    fs.style.display = 'none';
+  }
+
+  // Initialize on page load to show home
+  showHome();
+</script>
+
+</body>
+</html>
