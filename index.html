@@ -198,11 +198,28 @@ p {
 footer {
     width: 100%;
     text-align: center;
-    padding: 15px;
+    padding: 20px 15px;
     background: #001a3d;
     color: #888;
-    font-size: 0.9em;
-    margin-top: 20px;
+    font-size: 1em;
+}
+
+footer a {
+    display:inline-block;
+    margin-top:10px;
+    padding:10px 20px;
+    background:#e46d0d;
+    color:#fff;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+    box-shadow:0 0 15px #e46d0d, 0 0 30px #11376b;
+    transition:0.3s;
+}
+
+footer a:hover {
+    box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b;
+    transform: scale(1.05);
 }
 
 /* Responsive */
@@ -264,7 +281,8 @@ footer {
 </section>
 
 <footer>
-    &copy; 2025 Team 69309 Collegiate. All rights reserved.
+    <div>Last updated: September 30, 2025</div>
+    <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">Visit our YouTube Channel</a>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0"></script>
