@@ -466,5 +466,139 @@ document.addEventListener("DOMContentLoaded", function () {
     <span class="close" onclick="closeFullscreenImage()">&times;</span>
     <img id="fullscreenImg" src="" alt="Full Screen">
 </div>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Browser Image Classifier (MobileNet) — Free</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#7c3aed}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Arial}
+    body{margin:0;background:linear-gradient(180deg,#071024 0%,#081229 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:20px;max-width:900px;width:100%;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    h1{margin:0 0 8px;font-size:20px}
+    p.lead{margin:0 0 16px;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:20px}
+    .drop{border:2px dashed rgba(255,255,255,0.06);border-radius:10px;padding:18px;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer}
+    .drop.drag{background:linear-gradient(90deg, rgba(124,58,237,0.06), rgba(124,58,237,0.02));border-color:rgba(124,58,237,0.6)}
+    img.preview{max-width:100%;max-height:360px;border-radius:8px;object-fit:contain}
+    .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:8px;color:white;cursor:pointer;font-weight:600}
+    .list{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;min-height:260px}
+    .pred{display:flex;align-items:center;justify-content:space-between;padding:8px 6px;border-bottom:1px solid rgba(255,255,255,0.02)}
+    .pred strong{font-size:14px}
+    .muted{color:var(--muted);font-size:13px}
+    footer.small{margin-top:12px;color:var(--muted);font-size:12px}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}.drop{min-height:220px}.list{min-height:140px}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Free in-browser image classifier (MobileNet)</h1>
+    <p class="lead">No backend. No cost. Upload or drag & drop an image — runs entirely in your browser using TensorFlow.js.</p>
+
+    <div class="grid">
+      <div>
+        <div id="drop" class="drop">
+          <div style="text-align:center;max-width:320px">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Drop an image here or</div>
+            <input id="fileInput" type="file" accept="image/*" style="display:none" />
+            <button id="pick" class="btn">Choose image</button>
+            <div style="height:8px"></div>
+            <div id="status" class="muted">Model not loaded yet — loading...</div>
+          </div>
+          <img id="preview" class="preview" style="display:none" alt="preview" />
+        </div>
+      </div>
+
+      <div>
+        <div class="list">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div><strong>Top predictions</strong></div>
+            <div class="muted" id="time">—</div>
+          </div>
+          <div id="predictions" aria-live="polite">
+            <div class="muted">Upload an image to see predictions.</div>
+          </div>
+        </div>
+        <footer class="small">Model: MobileNet (pretrained). Predictions are probabilistic — not perfect. Works offline if you host the page and TF files locally (don’t open with just double-click, use a local server).</footer>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@3.1.0/dist/mobilenet.min.js"></script>
+  <script>
+    (async ()=>{
+      const status = document.getElementById('status');
+      const drop = document.getElementById('drop');
+      const fileInput = document.getElementById('fileInput');
+      const pick = document.getElementById('pick');
+      const preview = document.getElementById('preview');
+      const predsEl = document.getElementById('predictions');
+      const timeEl = document.getElementById('time');
+      let model;
+
+      function clearPreds(){ predsEl.innerHTML = '<div class="muted">Upload an image to see predictions.</div>'; timeEl.textContent = '—'; }
+      function showError(msg){ status.textContent = msg; status.style.color = '#f87171'; }
+
+      try{
+        status.textContent = 'Loading MobileNet model (may take a few seconds)...';
+        model = await mobilenet.load();
+        status.textContent = 'Model loaded — ready.';
+      }catch(err){
+        console.error(err);
+        showError('❌ Failed to load model. Try reloading this page in a server environment (not just file://).');
+        return;
+      }
+
+      function showPredictions(predictions){
+        if(!predictions || predictions.length===0){ clearPreds(); return }
+        predsEl.innerHTML = '';
+        predictions.forEach(p=>{
+          const el = document.createElement('div'); el.className='pred';
+          const label = document.createElement('div'); label.innerHTML = `<strong>${escapeHtml(p.className)}</strong><div class="muted">probability: ${(p.probability*100).toFixed(1)}%</div>`;
+          const bar = document.createElement('div'); bar.style.width='120px'; bar.style.marginLeft='12px'; bar.style.textAlign='right'; bar.textContent = (p.probability*100).toFixed(1)+'%';
+          el.appendChild(label); el.appendChild(bar);
+          predsEl.appendChild(el);
+        });
+        timeEl.textContent = new Date().toLocaleTimeString();
+      }
+
+      async function handleFile(file){
+        if(!file){ showError('❌ No file selected.'); return; }
+        try{
+          const url = URL.createObjectURL(file);
+          preview.src = url; preview.style.display='block';
+          status.textContent = 'Classifying image...';
+          await preview.decode();
+          const predictions = await model.classify(preview, 5);
+          status.textContent = 'Done.';
+          showPredictions(predictions);
+          URL.revokeObjectURL(url);
+        }catch(err){
+          console.error(err);
+          showError('❌ Failed to classify the image.');
+        }
+      }
+
+      pick.addEventListener('click', ()=>fileInput.click());
+      fileInput.addEventListener('change', e=>handleFile(e.target.files[0]));
+
+      ['dragenter','dragover'].forEach(ev=>{
+        drop.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add('drag'); });
+      });
+      ['dragleave','drop'].forEach(ev=>{
+        drop.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove('drag'); });
+      });
+      drop.addEventListener('drop', e=>{
+        const dt = e.dataTransfer; if(!dt) return; const f = dt.files && dt.files[0]; if(f) handleFile(f);
+      });
+
+      function escapeHtml(str){ return str.replace(/[&<>\"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+    })();
+  </script>
+</body>
+</html>
 
 </body></html>
