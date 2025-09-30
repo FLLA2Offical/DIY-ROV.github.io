@@ -37,8 +37,15 @@ header div {
 }
 
 header img {
-    height:80px;
     border-radius:10px;
+}
+
+header img:first-child {
+    height: 80px; /* Collegiate logo */
+}
+
+header img:last-child {
+    height: 120px; /* FLL logo */
 }
 
 /* Navigation */
@@ -234,8 +241,8 @@ footer a:hover {
 
 <header>
     <div>
-        <img src="2023_Collegiate_School_Logo_1_A1.1.webp" style="height:80px; border-radius:10px;">
-        <img src="69309logo.png" style="height:80px; border-radius:10px;">
+        <img src="2023_Collegiate_School_Logo_1_A1.1.webp">
+        <img src="69309logo.png">
     </div>
     FLL 69309 Collegiate
 </header>
@@ -254,13 +261,11 @@ footer a:hover {
 <section id="innovation">
     <h2>Innovation Project</h2>
 
-    <!-- Submenu -->
     <div class="subnav">
         <button onclick="showSubpage('ai')">AI Analysis</button>
         <button onclick="showSubpage('cad')">CAD Design</button>
     </div>
 
-    <!-- AI Analysis Page -->
     <div id="ai" class="ai-card">
         <p>This AI analysis program can help us identify different objects we find. Try it out here ↓</p>
         <input type="file" accept="image/*" onchange="loadImage(event)" />
@@ -268,7 +273,6 @@ footer a:hover {
         <div id="result">Loading AI model...</div>
     </div>
 
-    <!-- CAD Design Page -->
     <div id="cad" class="ai-card" style="display:none;">
         <p>Here you can explore our CAD designs for the innovation project. 3D models, sketches, and design details will be displayed here.</p>
         <p><em>Placeholder for CAD content.</em></p>
@@ -289,19 +293,16 @@ footer a:hover {
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
 
 <script>
-/* Section navigation */
 function showSection(id) {
     document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 
-/* Subpages (AI / CAD) */
 function showSubpage(id) {
     document.querySelectorAll('.ai-card').forEach(c => c.style.display = 'none');
     document.getElementById(id).style.display = 'block';
 }
 
-/* Floating particles */
 for(let i=0;i<50;i++){
     let p = document.createElement('div');
     p.classList.add('particle');
@@ -313,9 +314,7 @@ for(let i=0;i<50;i++){
     document.body.appendChild(p);
 }
 
-/* AI Model */
 let net;
-
 async function loadModel() {
     document.getElementById('result').textContent = "Loading AI model...";
     net = await mobilenet.load();
@@ -326,7 +325,6 @@ async function loadImage(event) {
     const imgElement = document.getElementById('uploadedImage');
     imgElement.src = URL.createObjectURL(event.target.files[0]);
     imgElement.style.display = 'block';
-
     imgElement.onload = async () => {
         const result = await net.classify(imgElement);
         if(result.length > 0) {
