@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLL 69309 Collegiate Robotics</title>
+<style>
+    /* Reset */
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: #0a0f1e;
+        color: #fff;
+        overflow-x: hidden;
+    }
+
+    /* Banner */
+    header {
+        background: linear-gradient(90deg, #11376b, #e46d0d);
+        color: #fff;
+        text-align: center;
+        padding: 60px 20px;
+        font-size: 2.8em;
+        font-weight: bold;
+        text-shadow: 0 0 15px rgba(255,255,255,0.5);
+        position: relative;
+    }
+
+    /* Navigation */
+    nav {
+        display: flex;
+        justify-content: center;
+        background: #11376b;
+        box-shadow: 0 0 20px rgba(20,20,60,0.8);
+    }
+
+    nav a {
+        color: #e46d0d;
+        padding: 18px 25px;
+        text-decoration: none;
+        font-weight: bold;
+        position: relative;
+        transition: 0.3s;
+    }
+
+    nav a::before {
+        content: '';
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 0; height: 0;
+        background: rgba(228,109,13,0.3);
+        border-radius: 50%;
+        transform: translate(-50%,-50%);
+        transition: width 0.3s, height 0.3s;
+        z-index: -1;
+    }
+
+    nav a:hover::before {
+        width: 150%;
+        height: 300%;
+    }
+
+    nav a:hover {
+        color: #fff;
+        text-shadow: 0 0 15px #e46d0d, 0 0 25px #e46d0d;
+    }
+
+    /* Sections */
+    section {
+        display: none;
+        padding: 60px 20px;
+        text-align: center;
+        position: relative;
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin: 40px auto;
+        max-width: 1000px;
+        border-radius: 15px;
+        background: rgba(17,55,107,0.4);
+        box-shadow: 0 0 20px rgba(17,55,107,0.6);
+    }
+
+    section.active {
+        display: block;
+    }
+
+    section:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b;
+    }
+
+    h2 {
+        color: #e46d0d;
+        font-size: 2.2em;
+        margin-bottom: 20px;
+        text-shadow: 0 0 10px #e46d0d;
+    }
+
+    p {
+        font-size: 1.1em;
+        line-height: 1.8em;
+    }
+
+    /* Glowing background particles */
+    .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #e46d0d;
+        opacity: 0.3;
+        animation: float 10s infinite;
+        z-index: 0;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-50px) translateX(30px); }
+        100% { transform: translateY(0) translateX(0); }
+    }
+
+</style>
+</head>
+<body>
+
+<header>
+    FLL 69309 Collegiate
+</header>
+
+<nav>
+    <a href="#" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('innovation')">Innovation Project</a>
+    <a href="#" onclick="showSection('lego')">Lego Robot</a>
+</nav>
+
+<section id="home" class="active">
+    <h2>Welcome</h2>
+    <p>Explore our futuristic robotics projects and see our innovative solutions!</p>
+</section>
+
+<section id="innovation">
+    <h2>Innovation Project</h2>
+    <p>Discover the innovation project designed by Team 69309 Collegiate. See how we tackle real-world problems with creativity and technology.</p>
+</section>
+
+<section id="lego">
+    <h2>Lego Robot</h2>
+    <p>Our Lego Robot project pushes the boundaries of design and programming. Check out the features and challenges we faced along the way.</p>
+</section>
+
+<script>
+function showSection(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+// Generate floating particles for background
+for(let i=0;i<50;i++){
+    let p = document.createElement('div');
+    p.classList.add('particle');
+    p.style.top = Math.random()*100 + 'vh';
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.width = (Math.random()*5+3) + 'px';
+    p.style.height = p.style.width;
+    p.style.animationDuration = (Math.random()*15+5) + 's';
+    document.body.appendChild(p);
+}
+</script>
+
+</body>
+</html>
