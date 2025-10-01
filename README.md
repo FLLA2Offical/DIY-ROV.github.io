@@ -1,6 +1,6 @@
 # 🌊 DIY-ROV  
 
-![DIY-ROV Logo](FLL69309.png)  
+![DIY-ROV Logo](69309logo.png)  
 
 Welcome to the **DIY-ROV** GitHub repository! This project is dedicated to open-source Remotely Operated Vehicle (ROV) designs, tutorials, and software for underwater exploration enthusiasts.  
 
