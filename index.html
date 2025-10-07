@@ -27,10 +27,8 @@ header div {
 }
 header img { border-radius:10px; }
 header img:first-child { height: 80px; }
-header img:nth-child(2) { height: 120px; }
-header img:last-child { height: 100px; }
+header img:last-child { height: 120px; }
 
-/* Main menu styled like sub-menu */
 nav.subnav {
     display: flex; justify-content: center; flex-wrap: wrap; background: #11376b;
     padding: 15px 0;
@@ -64,25 +62,29 @@ section:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 0 50px #
 h2 { color: #e46d0d; font-size: 2.2em; margin-bottom: 20px; text-shadow: 0 0 10px #e46d0d; }
 p { font-size: 1.1em; line-height: 1.8em; color: #ddd; }
 
-.subnav { display: flex; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
-.subnav button {
-    background: #11376b; border: 2px solid #e46d0d; color: #e46d0d;
-    padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s;
-}
-.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
-
 .ai-card {
-    background: rgba(17,55,107,0.4); backdrop-filter: blur(10px); border-radius: 20px;
-    padding: 40px 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    border: 1px solid rgba(228,109,13,0.3); transition: all 0.3s ease;
+    background: rgba(17,55,107,0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    max-width: 700px;
+    margin: 0 auto;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(228,109,13,0.3);
+    transition: all 0.3s ease;
 }
 .ai-card:hover { box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b; transform: scale(1.02); }
 
-#uploadedImage { max-width: 100%; display: none; margin: 20px 0; border: 3px solid #e46d0d; border-radius: 15px; box-shadow: 0 6px 20px rgba(228,109,13,0.3); transition: transform 0.3s ease; }
-#result { margin-top: 20px; font-size: 1.2em; font-weight: bold; color: #e46d0d; }
-
-.particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #e46d0d; opacity: 0.3; animation: float 10s infinite; z-index: 0; }
-@keyframes float { 0% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-50px) translateX(30px); } 100% { transform: translateY(0) translateX(0); } }
+button, input[type=file] {
+    background: #11376b; border: 2px solid #e46d0d; color: #e46d0d;
+    padding: 10px 18px; margin: 5px; font-weight: bold; cursor: pointer;
+    border-radius: 10px; transition: 0.3s;
+}
+button:hover {
+    color: #fff; 
+    box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
+    transform: scale(1.05);
+}
 
 footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; font-size: 1em; }
 footer a {
@@ -93,7 +95,6 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
 
 @media (max-width: 600px) { 
     nav.subnav { flex-direction: column; } 
-    .subnav { flex-direction: column; } 
     .subnav button { margin: 5px 0; } 
 }
 </style>
@@ -109,7 +110,6 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
     FLL 69309 and 69310 Collegiate
 </header>
 
-<!-- Main menu -->
 <nav class="subnav">
     <button onclick="showSection('home')">Home</button>
     <button onclick="showSection('innovation')">Innovation Project</button>
@@ -130,131 +130,183 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
         <button onclick="showSubpage('materials')">Materials</button>
         <button onclick="showSubpage('wiring')">Wiring</button>
         <button onclick="showSubpage('problem')">Problem</button>
+        <button onclick="showSubpage('rock')">Rock and Fossil Identifier</button>
     </div>
 
     <div id="ai" class="ai-card">
         <p>This AI analysis program can help us identify different objects we find. Try it out here ↓</p>
         <input type="file" accept="image/*" onchange="loadImage(event)" />
-        <img id="uploadedImage" />
+        <img id="uploadedImage" style="max-width:100%; display:none; margin:20px 0; border-radius:10px; border:3px solid #e46d0d;">
         <div id="result">Loading AI model...</div>
     </div>
 
     <div id="cad" class="ai-card" style="display:none;">
-        <p>Here you can explore our CAD designs for the innovation project. 3D models, sketches, and design details will be displayed here.</p>
         <p><em>Placeholder for CAD content.</em></p>
     </div>
 
     <div id="materials" class="ai-card" style="display:none;">
-        <p>Materials used in our innovation project are carefully selected for efficiency and sustainability.</p>
+        <p><em>Placeholder for materials info.</em></p>
     </div>
 
     <div id="wiring" class="ai-card" style="display:none;">
-        <p>Wiring layout and electronics are critical for smooth performance. This section explains our approach.</p>
+        <p><em>Placeholder for wiring info.</em></p>
     </div>
 
     <div id="problem" class="ai-card" style="display:none;">
-        <p>This section outlines the main problem we are trying to solve and challenges we faced during the project.</p>
+        <p><em>Placeholder for problem description.</em></p>
+    </div>
+
+    <!-- Rock and Fossil Identifier -->
+    <div id="rock" class="ai-card" style="display:none;">
+        <h2>Rock and Fossil Identifier</h2>
+        <p>Use the webcam or upload images to identify rocks and fossils using our Teachable Machine model.</p>
+        <div>
+            <button id="startBtn" onclick="startWebcam()">Start Webcam</button>
+            <button id="stopBtn" onclick="stopWebcam()" disabled>Stop Webcam</button>
+            <button id="switchBtn" onclick="switchCamera()" disabled>Switch Camera</button>
+            <br><br>
+            <input type="file" id="fileInput" accept="image/*">
+            <button onclick="classifyUploadedImage()">Upload</button>
+            <button onclick="clearAll()">Clear</button>
+        </div>
+        <div id="webcam-container" style="margin-top:15px;"></div>
+        <canvas id="uploadedCanvas" width="200" height="200" style="display:none; border:2px solid #e46d0d; border-radius:10px;"></canvas>
+        <div id="label-container" style="margin-top:15px;"></div>
     </div>
 </section>
 
 <section id="lego">
     <h2>Lego Robot</h2>
-    <p>Our Lego Robot project pushes the boundaries of design and programming. Check out the features and challenges we faced along the way.</p>
+    <p>Our Lego Robot project pushes the boundaries of design and programming.</p>
 </section>
 
 <section id="photos">
     <h2>Team Photos</h2>
-    <div class="subnav">
-        <button onclick="showPhotoSub('teamPhotos')">Photos of Team</button>
-        <button onclick="showPhotoSub('innovationPhotos')">Innovation Project Photos</button>
-    </div>
-
-    <div id="teamPhotos" class="ai-card">
-        <p>Here are photos of our team members during competitions, practice, and teamwork sessions.</p>
-        <p><em>Placeholder for team photo gallery.</em></p>
-    </div>
-
-    <div id="innovationPhotos" class="ai-card" style="display:none;">
-        <p>Photos from our Innovation Project process — brainstorming, building, testing, and presenting.</p>
-        <p><em>Placeholder for innovation project photo gallery.</em></p>
-    </div>
+    <p><em>Placeholder for photos.</em></p>
 </section>
 
 <footer>
-    <div>Last updated: September 30, 2025</div>
+    <div>Last updated: October 30, 2025</div>
     <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">Visit our YouTube Channel</a>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+
 <script>
-function showSection(id) {
-    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+function showSection(id){
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
-function showSubpage(id) {
-    document.querySelectorAll('#innovation .ai-card').forEach(c => c.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
+function showSubpage(id){
+    document.querySelectorAll('#innovation .ai-card').forEach(c=>c.style.display='none');
+    document.getElementById(id).style.display='block';
 }
-function showPhotoSub(id) {
-    document.querySelectorAll('#photos .ai-card').forEach(c => c.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
-}
-for(let i=0;i<50;i++){
-    let p = document.createElement('div');
-    p.classList.add('particle');
-    p.style.top = Math.random()*100 + 'vh';
-    p.style.left = Math.random()*100 + 'vw';
-    p.style.width = (Math.random()*5+3) + 'px';
-    p.style.height = p.style.width;
-    p.style.animationDuration = (Math.random()*15+5) + 's';
-    document.body.appendChild(p);
-}
+
+// AI Image Classifier
 let net;
-async function loadModel() {
+async function loadModel(){
     document.getElementById('result').textContent = "Loading AI model...";
     net = await mobilenet.load();
     document.getElementById('result').textContent = "Model loaded. Upload or paste an image.";
 }
-async function loadImage(event) {
-    const imgElement = document.getElementById('uploadedImage');
-    if(event.target.files && event.target.files[0]){
-        imgElement.src = URL.createObjectURL(event.target.files[0]);
-    }
-    imgElement.style.display = 'block';
-    imgElement.onload = async () => {
-        const result = await net.classify(imgElement);
-        if(result.length > 0) {
-            const top = result[0];
-            document.getElementById('result').textContent =
-                `Prediction: ${top.className} (Confidence: ${(top.probability*100).toFixed(2)}%)`;
-        } else {
-            document.getElementById('result').textContent = "Couldn't identify the object.";
-        }
+async function loadImage(event){
+    const img = document.getElementById('uploadedImage');
+    img.src = URL.createObjectURL(event.target.files[0]);
+    img.style.display = 'block';
+    img.onload = async ()=>{
+        const result = await net.classify(img);
+        document.getElementById('result').textContent = `Prediction: ${result[0].className} (${(result[0].probability*100).toFixed(2)}%)`;
     };
 }
-document.addEventListener('paste', function(e){
-    const items = e.clipboardData.items;
-    for(let i=0; i<items.length; i++){
-        if(items[i].type.indexOf("image") !== -1){
-            const blob = items[i].getAsFile();
-            const imgElement = document.getElementById('uploadedImage');
-            imgElement.src = URL.createObjectURL(blob);
-            imgElement.style.display = 'block';
-            imgElement.onload = async () => {
-                const result = await net.classify(imgElement);
-                if(result.length > 0) {
-                    const top = result[0];
-                    document.getElementById('result').textContent =
-                        `Prediction: ${top.className} (Confidence: ${(top.probability*100).toFixed(2)}%)`;
-                } else {
-                    document.getElementById('result').textContent = "Couldn't identify the object.";
-                }
-            };
+loadModel();
+
+// ROCK MODEL
+const URL = "./rock_fossil_model/";
+let model, webcam, labelContainer, maxPredictions;
+let flip = true, usingFrontCamera = true, webcamActive = false;
+
+async function loadRockModel(){
+    if(!model){
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = "";
+        for(let i=0;i<maxPredictions;i++){
+            labelContainer.appendChild(document.createElement("div"));
         }
     }
-});
-loadModel();
+}
+
+async function startWebcam(){
+    await loadRockModel();
+    webcam = new tmImage.Webcam(200,200,flip);
+    try{
+        await webcam.setup({ facingMode: usingFrontCamera ? "user" : "environment" });
+        await webcam.play();
+        webcamActive = true;
+        document.getElementById("webcam-container").innerHTML = "";
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        document.getElementById("stopBtn").disabled = false;
+        document.getElementById("switchBtn").disabled = false;
+        document.getElementById("startBtn").disabled = true;
+        window.requestAnimationFrame(loop);
+    }catch(err){ alert("Camera access denied or unavailable."); }
+}
+function stopWebcam(){
+    if(webcam){
+        webcam.stop();
+        webcamActive = false;
+        document.getElementById("stopBtn").disabled = true;
+        document.getElementById("switchBtn").disabled = true;
+        document.getElementById("startBtn").disabled = false;
+    }
+}
+async function switchCamera(){
+    usingFrontCamera = !usingFrontCamera;
+    stopWebcam();
+    await startWebcam();
+}
+async function loop(){
+    if(webcamActive){
+        webcam.update();
+        await predict(webcam.canvas);
+        window.requestAnimationFrame(loop);
+    }
+}
+async function predict(input){
+    const prediction = await model.predict(input);
+    for(let i=0;i<maxPredictions;i++){
+        const p = prediction[i];
+        labelContainer.childNodes[i].innerHTML = `${p.className}: ${p.probability.toFixed(2)}`;
+    }
+}
+async function classifyUploadedImage(){
+    const fileInput = document.getElementById("fileInput");
+    const canvas = document.getElementById("uploadedCanvas");
+    const ctx = canvas.getContext("2d");
+    if(fileInput.files.length===0){ alert("Please select an image."); return; }
+    await loadRockModel();
+    const file = fileInput.files[0];
+    const img = new Image();
+    img.onload = async ()=>{
+        canvas.style.display="block";
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        await predict(canvas);
+    };
+    img.src = URL.createObjectURL(file);
+}
+function clearAll(){
+    if(webcamActive) stopWebcam();
+    document.getElementById("uploadedCanvas").style.display="none";
+    document.getElementById("fileInput").value="";
+    document.getElementById("label-container").innerHTML="";
+}
 </script>
+
 </body>
 </html>
