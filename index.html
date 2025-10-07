@@ -6,97 +6,52 @@
 <title>FLL 69309 and 69310 Collegiate Robotics</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #0a0f1e;
-    color: #fff;
-    overflow-x: hidden;
-}
-header {
-    background: linear-gradient(90deg, #11376b, #e46d0d);
-    color: #fff;
-    text-align: center;
-    padding: 60px 20px;
-    font-size: 2.8em;
-    font-weight: bold;
-    text-shadow: 0 0 15px rgba(255,255,255,0.5);
-    position: relative;
-}
-header div {
-    display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px;
-}
+body { font-family: 'Segoe UI', sans-serif; background: #0a0f1e; color: #fff; overflow-x: hidden; }
+header { background: linear-gradient(90deg, #11376b, #e46d0d); color: #fff; text-align: center; padding: 60px 20px; font-size: 2.8em; font-weight: bold; text-shadow: 0 0 15px rgba(255,255,255,0.5); position: relative; }
+header div { display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px; }
 header img { border-radius:10px; }
 header img:first-child { height: 80px; }
-header img:last-child { height: 120px; }
+header img:nth-child(2) { height: 120px; }
+header img:last-child { height: 100px; }
 
-nav.subnav {
-    display: flex; justify-content: center; flex-wrap: wrap; background: #11376b;
-    padding: 15px 0;
-    box-shadow: 0 0 20px rgba(20,20,60,0.8);
-}
-nav.subnav button {
-    background: #11376b; 
-    border: 2px solid #e46d0d; 
-    color: #e46d0d;
-    padding: 12px 20px; 
-    margin: 5px 10px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    border-radius: 12px; 
-    transition: 0.3s;
-}
-nav.subnav button:hover {
-    color: #fff; 
-    box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; 
-    transform: scale(1.05);
-}
+nav.subnav { display: flex; justify-content: center; flex-wrap: wrap; background: #11376b; padding: 15px 0; box-shadow: 0 0 20px rgba(20,20,60,0.8); }
+nav.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
+nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
 
-section {
-    display: none; padding: 60px 20px; text-align: center;
-    position: relative; transition: transform 0.3s, box-shadow 0.3s;
-    margin: 40px auto; max-width: 1000px; border-radius: 15px;
-    background: rgba(17,55,107,0.4); box-shadow: 0 0 20px rgba(17,55,107,0.6);
-}
+section { display: none; padding: 60px 20px; text-align: center; position: relative; transition: transform 0.3s, box-shadow 0.3s; margin: 40px auto; max-width: 1000px; border-radius: 15px; background: rgba(17,55,107,0.4); box-shadow: 0 0 20px rgba(17,55,107,0.6); }
 section.active { display: block; }
 section:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b; }
 h2 { color: #e46d0d; font-size: 2.2em; margin-bottom: 20px; text-shadow: 0 0 10px #e46d0d; }
 p { font-size: 1.1em; line-height: 1.8em; color: #ddd; }
 
-.ai-card {
-    background: rgba(17,55,107,0.4);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 40px 30px;
-    max-width: 700px;
-    margin: 0 auto;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    border: 1px solid rgba(228,109,13,0.3);
-    transition: all 0.3s ease;
-}
+.subnav { display: flex; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
+.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
+
+.ai-card { background: rgba(17,55,107,0.4); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid rgba(228,109,13,0.3); transition: all 0.3s ease; }
 .ai-card:hover { box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b; transform: scale(1.02); }
 
-button, input[type=file] {
-    background: #11376b; border: 2px solid #e46d0d; color: #e46d0d;
-    padding: 10px 18px; margin: 5px; font-weight: bold; cursor: pointer;
-    border-radius: 10px; transition: 0.3s;
+#uploadedImage, #rock-uploadedImage { max-width: 100%; display: none; margin: 20px 0; border: 3px solid #e46d0d; border-radius: 15px; box-shadow: 0 6px 20px rgba(228,109,13,0.3); transition: transform 0.3s ease; }
+#result, #rock-label-container { margin-top: 20px; font-size: 1.2em; font-weight: bold; color: #e46d0d; }
+
+#webcam-container, #rock-webcam-container { margin: 20px auto; }
+
+button.ai-btn {
+  background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s;
 }
-button:hover {
-    color: #fff; 
-    box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
-    transform: scale(1.05);
-}
+button.ai-btn:hover { color: #fff; box-shadow: 0 0 20px #e46d0d,0 0 40px #11376b; transform: scale(1.05); }
+
+.bar-container { width: 60%; margin: 6px auto 12px; background: #ddd; border-radius: 8px; overflow: hidden; }
+.bar { height: 20px; text-align: left; padding-left: 8px; line-height: 20px; color: #fff; font-size: 0.9em; background: #e46d0d; transition: width 0.3s ease; }
+
+.particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #e46d0d; opacity: 0.3; animation: float 10s infinite; z-index: 0; }
+@keyframes float { 0% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-50px) translateX(30px); } 100% { transform: translateY(0) translateX(0); } }
 
 footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; font-size: 1em; }
-footer a {
-    display:inline-block; margin-top:10px; padding:10px 20px; background:#e46d0d; color:#fff;
-    text-decoration:none; border-radius:12px; font-weight:bold; box-shadow:0 0 15px #e46d0d, 0 0 30px #11376b; transition:0.3s;
-}
+footer a { display:inline-block; margin-top:10px; padding:10px 20px; background:#e46d0d; color:#fff; text-decoration:none; border-radius:12px; font-weight:bold; box-shadow:0 0 15px #e46d0d, 0 0 30px #11376b; transition:0.3s; }
 footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale(1.05); }
 
-@media (max-width: 600px) { 
-    nav.subnav { flex-direction: column; } 
-    .subnav button { margin: 5px 0; } 
-}
+@media (max-width: 600px) { nav.subnav { flex-direction: column; } .subnav { flex-direction: column; } .subnav button { margin: 5px 0; } }
 </style>
 </head>
 <body>
@@ -130,182 +85,57 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
         <button onclick="showSubpage('materials')">Materials</button>
         <button onclick="showSubpage('wiring')">Wiring</button>
         <button onclick="showSubpage('problem')">Problem</button>
-        <button onclick="showSubpage('rock')">Rock and Fossil Identifier</button>
+        <button onclick="showSubpage('rock')">Rock & Fossil Identifier</button>
     </div>
 
     <div id="ai" class="ai-card">
         <p>This AI analysis program can help us identify different objects we find. Try it out here ↓</p>
-        <input type="file" accept="image/*" onchange="loadImage(event)" />
-        <img id="uploadedImage" style="max-width:100%; display:none; margin:20px 0; border-radius:10px; border:3px solid #e46d0d;">
+        <input class="ai-btn" type="file" accept="image/*" onchange="loadImage(event)" />
+        <img id="uploadedImage" />
         <div id="result">Loading AI model...</div>
     </div>
 
-    <div id="cad" class="ai-card" style="display:none;">
-        <p><em>Placeholder for CAD content.</em></p>
-    </div>
-
-    <div id="materials" class="ai-card" style="display:none;">
-        <p><em>Placeholder for materials info.</em></p>
-    </div>
-
-    <div id="wiring" class="ai-card" style="display:none;">
-        <p><em>Placeholder for wiring info.</em></p>
-    </div>
-
-    <div id="problem" class="ai-card" style="display:none;">
-        <p><em>Placeholder for problem description.</em></p>
-    </div>
-
-    <!-- Rock and Fossil Identifier -->
     <div id="rock" class="ai-card" style="display:none;">
-        <h2>Rock and Fossil Identifier</h2>
-        <p>Use the webcam or upload images to identify rocks and fossils using our Teachable Machine model.</p>
-        <div>
-            <button id="startBtn" onclick="startWebcam()">Start Webcam</button>
-            <button id="stopBtn" onclick="stopWebcam()" disabled>Stop Webcam</button>
-            <button id="switchBtn" onclick="switchCamera()" disabled>Switch Camera</button>
-            <br><br>
-            <input type="file" id="fileInput" accept="image/*">
-            <button onclick="classifyUploadedImage()">Upload</button>
-            <button onclick="clearAll()">Clear</button>
-        </div>
-        <div id="webcam-container" style="margin-top:15px;"></div>
-        <canvas id="uploadedCanvas" width="200" height="200" style="display:none; border:2px solid #e46d0d; border-radius:10px;"></canvas>
-        <div id="label-container" style="margin-top:15px;"></div>
+        <p>Identify rocks and fossils with this AI tool. Upload an image or use your webcam ↓</p>
+        <button class="ai-btn" onclick="startRockWebcam()">Start Webcam</button>
+        <button class="ai-btn" onclick="switchRockCamera()">Switch Camera</button>
+        <button class="ai-btn" onclick="stopRockWebcam()">Stop Webcam</button>
+        <input class="ai-btn" type="file" accept="image/*" onchange="loadRockImage(event)" />
+        <div id="rock-webcam-container"></div>
+        <div id="rock-label-container"></div>
+        <img id="rock-uploadedImage" />
     </div>
-</section>
-
-<section id="lego">
-    <h2>Lego Robot</h2>
-    <p>Our Lego Robot project pushes the boundaries of design and programming.</p>
-</section>
-
-<section id="photos">
-    <h2>Team Photos</h2>
-    <p><em>Placeholder for photos.</em></p>
 </section>
 
 <footer>
-    <div>Last updated: October 30, 2025</div>
+    <div>Last updated: October 7, 2025</div>
     <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">Visit our YouTube Channel</a>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
 <script>
-function showSection(id){
-    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
-function showSubpage(id){
-    document.querySelectorAll('#innovation .ai-card').forEach(c=>c.style.display='none');
-    document.getElementById(id).style.display='block';
-}
+// Section toggling
+function showSection(id){document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showSubpage(id){document.querySelectorAll('#innovation .ai-card').forEach(c=>c.style.display='none');document.getElementById(id).style.display='block';}
 
-// AI Image Classifier
-let net;
-async function loadModel(){
-    document.getElementById('result').textContent = "Loading AI model...";
-    net = await mobilenet.load();
-    document.getElementById('result').textContent = "Model loaded. Upload or paste an image.";
-}
-async function loadImage(event){
-    const img = document.getElementById('uploadedImage');
-    img.src = URL.createObjectURL(event.target.files[0]);
-    img.style.display = 'block';
-    img.onload = async ()=>{
-        const result = await net.classify(img);
-        document.getElementById('result').textContent = `Prediction: ${result[0].className} (${(result[0].probability*100).toFixed(2)}%)`;
-    };
-}
+// Mobilenet AI
+let net; async function loadModel(){net=await mobilenet.load(); document.getElementById('result').textContent="Model loaded. Upload or paste an image.";}
+async function loadImage(e){const img=document.getElementById('uploadedImage'); img.src=URL.createObjectURL(e.target.files[0]); img.style.display='block'; img.onload=async()=>{const res=await net.classify(img); if(res.length>0){document.getElementById('result').textContent=`Prediction: ${res[0].className} (${(res[0].probability*100).toFixed(2)}%)`;}else{document.getElementById('result').textContent="Couldn't identify the object.";} } }
+document.addEventListener('paste', e=>{const items=e.clipboardData.items; for(let i=0;i<items.length;i++){if(items[i].type.indexOf("image")!==-1){const blob=items[i].getAsFile(); const img=document.getElementById('uploadedImage'); img.src=URL.createObjectURL(blob); img.style.display='block'; img.onload=async()=>{const res=await net.classify(img); document.getElementById('result').textContent=`Prediction: ${res[0].className} (${(res[0].probability*100).toFixed(2)}%)`; } } }});
 loadModel();
 
-// ROCK MODEL
-const URL = "./rock_fossil_model/";
-let model, webcam, labelContainer, maxPredictions;
-let flip = true, usingFrontCamera = true, webcamActive = false;
-
-async function loadRockModel(){
-    if(!model){
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
-        labelContainer = document.getElementById("label-container");
-        labelContainer.innerHTML = "";
-        for(let i=0;i<maxPredictions;i++){
-            labelContainer.appendChild(document.createElement("div"));
-        }
-    }
-}
-
-async function startWebcam(){
-    await loadRockModel();
-    webcam = new tmImage.Webcam(200,200,flip);
-    try{
-        await webcam.setup({ facingMode: usingFrontCamera ? "user" : "environment" });
-        await webcam.play();
-        webcamActive = true;
-        document.getElementById("webcam-container").innerHTML = "";
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
-        document.getElementById("stopBtn").disabled = false;
-        document.getElementById("switchBtn").disabled = false;
-        document.getElementById("startBtn").disabled = true;
-        window.requestAnimationFrame(loop);
-    }catch(err){ alert("Camera access denied or unavailable."); }
-}
-function stopWebcam(){
-    if(webcam){
-        webcam.stop();
-        webcamActive = false;
-        document.getElementById("stopBtn").disabled = true;
-        document.getElementById("switchBtn").disabled = true;
-        document.getElementById("startBtn").disabled = false;
-    }
-}
-async function switchCamera(){
-    usingFrontCamera = !usingFrontCamera;
-    stopWebcam();
-    await startWebcam();
-}
-async function loop(){
-    if(webcamActive){
-        webcam.update();
-        await predict(webcam.canvas);
-        window.requestAnimationFrame(loop);
-    }
-}
-async function predict(input){
-    const prediction = await model.predict(input);
-    for(let i=0;i<maxPredictions;i++){
-        const p = prediction[i];
-        labelContainer.childNodes[i].innerHTML = `${p.className}: ${p.probability.toFixed(2)}`;
-    }
-}
-async function classifyUploadedImage(){
-    const fileInput = document.getElementById("fileInput");
-    const canvas = document.getElementById("uploadedCanvas");
-    const ctx = canvas.getContext("2d");
-    if(fileInput.files.length===0){ alert("Please select an image."); return; }
-    await loadRockModel();
-    const file = fileInput.files[0];
-    const img = new Image();
-    img.onload = async ()=>{
-        canvas.style.display="block";
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.drawImage(img,0,0,canvas.width,canvas.height);
-        await predict(canvas);
-    };
-    img.src = URL.createObjectURL(file);
-}
-function clearAll(){
-    if(webcamActive) stopWebcam();
-    document.getElementById("uploadedCanvas").style.display="none";
-    document.getElementById("fileInput").value="";
-    document.getElementById("label-container").innerHTML="";
-}
+// Rock & Fossil AI
+const ROCK_URL="https://teachablemachine.withgoogle.com/models/IZwfz2mDI/";
+let rockModel, rockWebcam, rockLabelContainer, rockRunning=false, rockFacingMode="environment";
+async function loadRockModel(){if(rockModel) return; rockModel=await tmImage.load(ROCK_URL+"model.json", ROCK_URL+"metadata.json"); rockLabelContainer=document.getElementById('rock-label-container'); }
+async function startRockWebcam(){await loadRockModel(); if(rockRunning) return; rockWebcam=new tmImage.Webcam(300,300,false); await rockWebcam.setup({facingMode:rockFacingMode}); await rockWebcam.play(); rockRunning=true; document.getElementById('rock-webcam-container').innerHTML=""; document.getElementById('rock-webcam-container').appendChild(rockWebcam.canvas); window.requestAnimationFrame(loopRock); }
+async function loopRock(){if(!rockRunning)return; rockWebcam.update(); const pred=await rockModel.predict(rockWebcam.canvas); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); window.requestAnimationFrame(loopRock); }
+function stopRockWebcam(){if(rockWebcam && rockRunning){rockWebcam.stop(); rockRunning=false; document.getElementById('rock-webcam-container').innerHTML=''; rockLabelContainer.innerHTML='';}}
+async function switchRockCamera(){rockFacingMode=(rockFacingMode==="user")?"environment":"user"; stopRockWebcam(); await startRockWebcam();}
+async function loadRockImage(e){await loadRockModel(); const img=document.getElementById('rock-uploadedImage'); img.src=URL.createObjectURL(e.target.files[0]); img.style.display='block'; img.onload=async()=>{const pred=await rockModel.predict(img); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); URL.revokeObjectURL(img.src);}}
 </script>
 
 </body>
