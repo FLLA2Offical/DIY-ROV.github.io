@@ -7,13 +7,27 @@
 <style>
 body { font-family: 'Segoe UI', sans-serif; background: #0a0f1e; color: #fff; text-align: center; padding: 50px; }
 h1 { color: #e46d0d; text-shadow: 0 0 15px #e46d0d; }
-a { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #11376b; color: #e46d0d; text-decoration: none; border-radius: 10px; font-weight: bold; transition: 0.3s; }
+p { font-size: 1.2em; margin-top: 20px; }
+a { display: inline-block; margin-top: 30px; padding: 10px 20px; background: #11376b; color: #e46d0d; text-decoration: none; border-radius: 10px; font-weight: bold; transition: 0.3s; }
 a:hover { color: #fff; box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b; transform: scale(1.05); }
 </style>
 </head>
 <body>
-<h1>Welcome to Your Portal!</h1>
-<p>You are now logged in. Here you can access your personal content and settings.</p>
+
+<h1 id="welcomeMessage">Welcome!</h1>
+<p>This is your personal portal where you can access your content and settings.</p>
 <a href="index.html">Back to Home</a>
+
+<script>
+// Get username from URL
+const params = new URLSearchParams(window.location.search);
+const user = params.get('user');
+if(user){
+    document.getElementById('welcomeMessage').textContent = `Welcome, ${user}!`;
+} else {
+    document.getElementById('welcomeMessage').textContent = `Welcome!`;
+}
+</script>
+
 </body>
 </html>
