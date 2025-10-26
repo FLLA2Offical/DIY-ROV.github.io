@@ -14,6 +14,25 @@ header img:first-child { height: 80px; }
 header img:nth-child(2) { height: 120px; }
 header img:last-child { height: 100px; }
 
+/* Login button */
+.login-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #11376b;
+  border: 2px solid #e46d0d;
+  color: #e46d0d;
+  padding: 10px 18px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.login-btn:hover {
+  color: #fff;
+  box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b;
+}
+
 nav.subnav { display: flex; justify-content: center; flex-wrap: wrap; background: #11376b; padding: 15px 0; box-shadow: 0 0 20px rgba(20,20,60,0.8); }
 nav.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
 nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
@@ -44,26 +63,81 @@ button.ai-btn:hover { color: #fff; box-shadow: 0 0 20px #e46d0d,0 0 40px #11376b
 .bar-container { width: 60%; margin: 6px auto 12px; background: #ddd; border-radius: 8px; overflow: hidden; }
 .bar { height: 20px; text-align: left; padding-left: 8px; line-height: 20px; color: #fff; font-size: 0.9em; background: #e46d0d; transition: width 0.3s ease; }
 
-.particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #e46d0d; opacity: 0.3; animation: float 10s infinite; z-index: 0; }
-@keyframes float { 0% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-50px) translateX(30px); } 100% { transform: translateY(0) translateX(0); } }
-
 footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; font-size: 1em; }
 footer a { display:inline-block; margin-top:10px; padding:10px 20px; background:#e46d0d; color:#fff; text-decoration:none; border-radius:12px; font-weight:bold; box-shadow:0 0 15px #e46d0d, 0 0 30px #11376b; transition:0.3s; }
 footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale(1.05); }
 
 @media (max-width: 600px) { nav.subnav { flex-direction: column; } .subnav { flex-direction: column; } .subnav button { margin: 5px 0; } }
+
+/* Login popup */
+#loginPopup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(17,55,107,0.95);
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 40px #e46d0d;
+  text-align: center;
+  z-index: 1000;
+}
+#loginPopup input {
+  display: block;
+  width: 80%;
+  margin: 10px auto;
+  padding: 10px;
+  border: 2px solid #e46d0d;
+  border-radius: 8px;
+  background: #001a3d;
+  color: #fff;
+}
+#loginPopup button {
+  background: #11376b;
+  border: 2px solid #e46d0d;
+  color: #e46d0d;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+#loginPopup button:hover {
+  color: #fff;
+  box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
+}
+#overlay {
+  display: none;
+  position: fixed;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.7);
+  z-index: 900;
+}
 </style>
 </head>
 <body>
 
 <header>
-    <div>
-        <img src="2023_Collegiate_School_Logo_1_A1.1.webp">
-        <img src="69309logo.png">
-        <img src="1AEB9244-1D70-4692-8E0A-53BC04AFC0B5-removebg-preview.png">
-    </div>
-    FLL 69309 and 69310 Collegiate
+  <button class="login-btn" onclick="openLogin()">Login</button>
+  <div>
+    <img src="2023_Collegiate_School_Logo_1_A1.1.webp">
+    <img src="69309logo.png">
+    <img src="1AEB9244-1D70-4692-8E0A-53BC04AFC0B5-removebg-preview.png">
+  </div>
+  FLL 69309 and 69310 Collegiate
 </header>
+
+<!-- Login Popup -->
+<div id="overlay" onclick="closeLogin()"></div>
+<div id="loginPopup">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <button onclick="closeLogin()">Cancel</button>
+  <div id="loginMessage" style="color:#e46d0d; margin-top:10px;"></div>
+</div>
 
 <nav class="subnav">
     <button onclick="showSection('home')">Home</button>
@@ -107,8 +181,8 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
         <img id="rock-uploadedImage" />
     </div>
 </section>
-  
-  <section id="who">
+
+<section id="who">
     <h2>We are a First Lego Leuge team based in the City of New York</h2>
     <p>FIRST is a nonprofit organization that promotes STEM. The FIRST Lego Le ge competition is one of 3 FIRST competitions.
     FIRST Lego Leuge promotes STEM, problem solving and Gracious Professionalism. Every year there is a new season. This year's
@@ -118,8 +192,8 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
     <a href="https://www.firstinspires.org/" target="_blank">Learn more about FIRST</a>
     <br>
     <a href="https://www.firstlegoleague.org/" target="_blank">Learn more about FIRST Lego Leuge</a>
-  </section>
-</body>
+</section>
+
 <footer>
     <div>Last updated: October 25, 2025</div>
     <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">Visit our YouTube Channel</a>
@@ -148,7 +222,25 @@ async function startRockWebcam(){await loadRockModel(); if(rockRunning) return; 
 async function loopRock(){if(!rockRunning)return; rockWebcam.update(); const pred=await rockModel.predict(rockWebcam.canvas); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); window.requestAnimationFrame(loopRock); }
 function stopRockWebcam(){if(rockWebcam && rockRunning){rockWebcam.stop(); rockRunning=false; document.getElementById('rock-webcam-container').innerHTML=''; rockLabelContainer.innerHTML='';}}
 async function switchRockCamera(){rockFacingMode=(rockFacingMode==="user")?"environment":"user"; stopRockWebcam(); await startRockWebcam();}
-async function loadRockImage(e){await loadRockModel(); const img=document.getElementById('rock-uploadedImage'); img.src=URL.createObjectURL(e.target.files[0]); img.style.display='block'; img.onload=async()=>{const pred=await rockModel.predict(img); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); URL.revokeObjectURL(img.src);}}
+async function loadRockImage(e){await loadRockModel(); const img=document.getElementById('rock-uploadedImage'); img.src=URL.createObjectURL(e.target.files[0]); img.style.display='block'; img.onload=async()=>{const pred=await rockModel.predict(img); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); }}
+
+// Login functionality
+const validUsers = {
+  "user1": "password1",
+  "user2": "password2"
+};
+function openLogin(){document.getElementById('loginPopup').style.display='block'; document.getElementById('overlay').style.display='block';}
+function closeLogin(){document.getElementById('loginPopup').style.display='none'; document.getElementById('overlay').style.display='none'; document.getElementById('loginMessage').textContent='';}
+function login(){ 
+    const u=document.getElementById('username').value; 
+    const p=document.getElementById('password').value; 
+    if(validUsers[u] && validUsers[u]===p){
+        // Redirect to portal page
+        window.location.href = "portal.html";
+    } else {
+        document.getElementById('loginMessage').textContent='Invalid username or password.';
+    }
+}
 </script>
 
 </body>
