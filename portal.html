@@ -3,131 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Portal</title>
+<title>Portal - FLL Robotics</title>
 <style>
-body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background: #0a0f1e; color: #fff; }
-h1 { color: #e46d0d; text-shadow: 0 0 15px #e46d0d; margin-bottom: 20px; }
-p { font-size: 1.2em; }
-.container { display: flex; min-height: 100vh; transition: all 0.3s; }
-.main { flex: 1; padding: 50px; text-align: center; transition: all 0.3s; }
+body {
+  margin:0;
+  font-family: 'Segoe UI', sans-serif;
+  background:#0a0f1e;
+  color:#fff;
+  display:flex;
+  height:100vh;
+  overflow:hidden;
+}
+#sidebar {
+  background:#11376b;
+  width:80px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-top:20px;
+  transition: all 0.3s;
+}
+#sidebar button {
+  background:#11376b; color:#e46d0d;
+  border:2px solid #e46d0d;
+  border-radius:12px; margin:10px;
+  padding:12px; cursor:pointer;
+  transition:0.3s;
+}
+#sidebar button:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
 
-/* Sidebar base */
-.sidebar { background: #11376b; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); transition: all 0.3s; }
-.sidebar button { background: #0a0f1e; color: #e46d0d; border: 2px solid #e46d0d; width: 50px; height: 50px; margin: 10px auto; border-radius: 10px; cursor: pointer; font-size: 1.5em; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-.sidebar button:hover { color: #fff; box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b; transform: scale(1.2); }
-.sidebar a.button { display: flex; align-items:center; justify-content:center; text-decoration:none; width:50px; height:50px; background:#0a0f1e; color:#e46d0d; border:2px solid #e46d0d; border-radius:10px; margin:10px auto; font-size:1.5em; transition:0.3s; }
-.sidebar a.button:hover { color:#fff; box-shadow:0 0 15px #e46d0d,0 0 30px #11376b; transform: scale(1.2); }
+#mainContent {
+  flex:1;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow-y:auto;
+}
 
-/* Sidebar positions */
-.sidebar.left { order:0; flex-direction: column; width:80px; height:100vh; }
-.sidebar.right { order:1; flex-direction: column; width:80px; height:100vh; }
-.sidebar.top { order:0; flex-direction: row; width:100%; height:auto; padding:10px; }
-.sidebar.top button, .sidebar.top a.button { width:50px; height:50px; margin:5px; }
-.sidebar.bottom { order:1; flex-direction: row; width:100%; height:auto; padding:10px; }
-.sidebar.bottom button, .sidebar.bottom a.button { width:50px; height:50px; margin:5px; }
+.service-btn {
+  background:#11376b; color:#e46d0d;
+  border:2px solid #e46d0d;
+  border-radius:12px;
+  padding:20px;
+  margin:10px;
+  cursor:pointer;
+  font-size:1.2em;
+  transition:0.3s;
+}
+.service-btn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
 
-/* Responsive */
-@media(max-width:800px){
-  .container { flex-direction: column; }
-  .sidebar { width:100%; flex-direction: row; justify-content: space-around; padding:10px; height:auto; box-shadow:0 2px 10px rgba(0,0,0,0.5);}
-  .sidebar button, .sidebar a.button { flex:1; margin:5px; }
+#googleServices {
+  display:none;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:20px;
+}
+
+#profileSettings {
+  display:none;
+  text-align:center;
+}
+
+#profileSettings img {
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  border:3px solid #e46d0d;
+  margin-bottom:20px;
+}
+
+input[type="file"] {
+  display:block;
+  margin:10px auto;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <button onclick="showAccount()" id="btnAccount">👤</button>
-    <button onclick="openLinks()" id="btnLinks">🔗</button>
-    <a href="https://mail.google.com" target="_blank" class="button" id="btnGmail">✉️</a>
-    <a href="https://drive.google.com" target="_blank" class="button" id="btnDrive">🟢</a>
-    <a href="https://calendar.google.com" target="_blank" class="button" id="btnCalendar">📅</a>
-    <a href="https://docs.google.com" target="_blank" class="button" id="btnDocs">📄</a>
-    <button onclick="showSettings()" id="btnSettings">⚙️</button>
-    <button onclick="logout()" id="btnLogout">🚪</button>
+<div id="sidebar">
+  <button onclick="showPanel('google')">🟢 Google Services</button>
+  <button onclick="showPanel('profile')">👤 Profile / Settings</button>
+</div>
+
+<div id="mainContent">
+  <!-- Google Services -->
+  <div id="googleServices">
+    <button class="service-btn" onclick="window.open('https://mail.google.com','_blank')">📧 Gmail</button>
+    <button class="service-btn" onclick="window.open('https://drive.google.com','_blank')">🗂️ Drive</button>
+    <button class="service-btn" onclick="window.open('https://calendar.google.com','_blank')">📅 Calendar</button>
+    <button class="service-btn" onclick="window.open('https://docs.google.com','_blank')">📄 Docs</button>
+    <button class="service-btn" onclick="window.open('https://sheets.google.com','_blank')">📊 Sheets</button>
+    <button class="service-btn" onclick="window.open('https://slides.google.com','_blank')">🎞️ Slides</button>
   </div>
 
-  <!-- Main content -->
-  <div class="main">
-    <h1 id="welcomeMessage">Welcome!</h1>
-    <p>This is your personal portal where you can access your content and settings.</p>
-    <div id="accountContent" style="margin-top:20px;"></div>
+  <!-- Profile / Settings -->
+  <div id="profileSettings">
+    <h2>Profile Settings</h2>
+    <img id="profileImage" src="default-profile.png" alt="Profile Picture">
+    <input type="file" accept="image/*" onchange="uploadProfile(event)">
+    <p>Upload your own icon!</p>
   </div>
 </div>
 
 <script>
-// Get username from URL
-const params = new URLSearchParams(window.location.search);
-const user = params.get('user') || "Guest";
-document.getElementById('welcomeMessage').textContent = `Welcome, ${user}!`;
-
-// Load saved preferences
-const savedPosition = localStorage.getItem('sidebarPosition') || 'left';
-const savedMode = localStorage.getItem('sidebarMode') || 'emoji';
-changeSidebarPosition(savedPosition);
-if(savedMode==='text') useText(); else useEmojis();
-
-// Sidebar button functions
-function showAccount(){
-    const accountDiv = document.getElementById('accountContent');
-    accountDiv.innerHTML = `<p><strong>Username:</strong> ${user}</p>
-                            <p>Here you can change your password or update your settings.</p>`;
+// Show panels
+function showPanel(panel) {
+  document.getElementById('googleServices').style.display = 'none';
+  document.getElementById('profileSettings').style.display = 'none';
+  if(panel==='google') document.getElementById('googleServices').style.display='flex';
+  if(panel==='profile') document.getElementById('profileSettings').style.display='block';
 }
 
-function openLinks(){
-    const accountDiv = document.getElementById('accountContent');
-    accountDiv.innerHTML = `<p>Useful links:</p>
-                            <ul style="list-style:none; padding:0;">
-                              <li><a href="https://www.firstinspires.org/" target="_blank">FIRST Official Site</a></li>
-                              <li><a href="https://www.firstlegoleague.org/" target="_blank">FIRST Lego League</a></li>
-                              <li><a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">YouTube Channel</a></li>
-                            </ul>`;
-}
-
-function logout(){ window.location.href="index.html"; }
-
-// Settings tab
-function showSettings(){
-    const accountDiv = document.getElementById('accountContent');
-    accountDiv.innerHTML = `
-      <h2>Settings</h2>
-      <p>Sidebar position:</p>
-      <select id="sidebarPositionSelect" onchange="changeSidebarPosition(this.value)">
-        <option value="left">Left</option>
-        <option value="right">Right</option>
-        <option value="top">Top</option>
-        <option value="bottom">Bottom</option>
-      </select>
-      <p style="margin-top:20px;">Sidebar mode:</p>
-      <button onclick="useEmojis()">Use Emojis</button>
-      <button onclick="useText()">Use Text</button>
-    `;
-    document.getElementById('sidebarPositionSelect').value = localStorage.getItem('sidebarPosition') || 'left';
-}
-
-// Change sidebar position
-function changeSidebarPosition(pos){
-    const sidebar = document.getElementById('sidebar');
-    sidebar.className = 'sidebar ' + pos;
-    localStorage.setItem('sidebarPosition', pos);
-}
-
-// Replace sidebar buttons with emojis
-function useEmojis(){
-    const btns = document.querySelectorAll('#sidebar button, #sidebar a.button');
-    const emojiMap = ['👤','🔗','✉️','🟢','📅','📄','⚙️','🚪'];
-    btns.forEach((btn,i)=>{ if(i<emojiMap.length) btn.innerHTML = emojiMap[i]; });
-    localStorage.setItem('sidebarMode','emoji');
-}
-
-// Replace sidebar buttons with text
-function useText(){
-    const btns = document.querySelectorAll('#sidebar button, #sidebar a.button');
-    const textMap = ['Account','Links','Gmail','Drive','Calendar','Docs','Settings','Logout'];
-    btns.forEach((btn,i)=>{ if(i<textMap.length) btn.innerHTML = textMap[i]; });
-    localStorage.setItem('sidebarMode','text');
+// Profile upload
+function uploadProfile(event){
+  const file = event.target.files[0];
+  if(file){
+    const img = document.getElementById('profileImage');
+    img.src = URL.createObjectURL(file);
+  }
 }
 </script>
 
