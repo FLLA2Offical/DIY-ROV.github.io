@@ -75,23 +75,28 @@ body {
   margin-bottom:20px;
 }
 
-input[type="file"] {
+input[type="file"], input[type="text"], input[type="password"], select {
   display:block;
   margin:10px auto;
-}
-
-#settingsPanel input[type="text"]{
-  text-align:center;
-  padding:5px;
-  border-radius:8px;
-  margin:5px;
-}
-
-#positionSelect{
-  margin:10px;
   padding:5px;
   border-radius:8px;
 }
+
+#createAccountPanel input {
+  width:200px;
+}
+
+button.saveBtn {
+  padding:8px 15px;
+  margin-top:10px;
+  border-radius:10px;
+  cursor:pointer;
+  border:2px solid #e46d0d;
+  background:#11376b;
+  color:#e46d0d;
+  transition:0.3s;
+}
+button.saveBtn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
 </style>
 </head>
 <body>
@@ -118,7 +123,18 @@ input[type="file"] {
     <h2>Profile Settings</h2>
     <img id="profileImage" src="default-profile.png" alt="Profile Picture">
     <input type="file" accept="image/*" onchange="uploadProfile(event)">
-    <p>Upload your own icon!</p>
+    
+    <p>Username:</p>
+    <input type="text" id="usernameInput" placeholder="Enter your username" oninput="checkTheodore()">
+    
+    <!-- Only Theodore sees this -->
+    <div id="createAccountPanel" style="display:none; margin-top:20px;">
+      <h3>Create Account</h3>
+      <input type="text" id="newUsername" placeholder="New Username">
+      <input type="password" id="newPassword" placeholder="New Password">
+      <button class="saveBtn" onclick="createAccount()">Create Account</button>
+      <p id="createAccountMsg" style="color:#e46d0d;"></p>
+    </div>
   </div>
 
   <!-- Settings Panel -->
@@ -136,7 +152,7 @@ input[type="file"] {
     <input type="text" id="googleText" placeholder="Google Btn Emoji/Text">
     <input type="text" id="profileText" placeholder="Profile Btn Emoji/Text">
     <input type="text" id="settingsText" placeholder="Settings Btn Emoji/Text">
-    <button onclick="saveSidebarSettings()">Save Settings</button>
+    <button class="saveBtn" onclick="saveSidebarSettings()">Save Settings</button>
   </div>
 </div>
 
@@ -165,6 +181,41 @@ function uploadProfile(event){
   }
 }
 
+// Show create account only for Theodore
+function checkTheodore(){
+  const username = document.getElementById('usernameInput').value.trim();
+  const panel = document.getElementById('createAccountPanel');
+  if(username.toLowerCase() === 'theodore'){
+    panel.style.display='block';
+  } else {
+    panel.style.display='none';
+  }
+}
+
+// Create a new account (stored in localStorage)
+function createAccount(){
+  const newUser = document.getElementById('newUsername').value.trim();
+  const newPass = document.getElementById('newPassword').value.trim();
+  const msg = document.getElementById('createAccountMsg');
+  if(newUser && newPass){
+    let accounts = JSON.parse(localStorage.getItem('accounts')) || {};
+    if(accounts[newUser]){
+      msg.textContent = 'Username already exists!';
+      msg.style.color='orange';
+    } else {
+      accounts[newUser] = newPass;
+      localStorage.setItem('accounts', JSON.stringify(accounts));
+      msg.textContent = `Account "${newUser}" created!`;
+      msg.style.color='#0f0';
+      document.getElementById('newUsername').value='';
+      document.getElementById('newPassword').value='';
+    }
+  } else {
+    msg.textContent='Enter both username and password';
+    msg.style.color='red';
+  }
+}
+
 // Save sidebar settings
 function saveSidebarSettings(){
   localStorage.setItem('sidebarGoogle', document.getElementById('googleText').value);
@@ -190,7 +241,7 @@ function changeSidebarPosition(){
   const main = document.getElementById('mainContent');
 
   sidebar.style.position='fixed';
-  sidebar.style.left=''; sidebar.style.top=''; sidebar.style.bottom='';
+  sidebar.style.left=''; sidebar.style.right=''; sidebar.style.top=''; sidebar.style.bottom='';
   main.style.marginLeft='0'; main.style.marginRight='0'; main.style.marginTop='0'; main.style.marginBottom='0';
 
   if(pos==='left'){ sidebar.style.left='0'; sidebar.style.top='0'; sidebar.style.width='80px'; sidebar.style.height='100%'; sidebar.style.flexDirection='column'; main.style.marginLeft='100px'; }
