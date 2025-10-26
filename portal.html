@@ -5,21 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>User Portal</title>
 <style>
-/* Basic Styles */
 body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background: #0a0f1e; color: #fff; }
 h1 { color: #e46d0d; text-shadow: 0 0 15px #e46d0d; margin-bottom: 20px; }
 p { font-size: 1.2em; }
 a { text-decoration: none; color: #e46d0d; font-weight: bold; }
 
 /* Layout */
-.container { display: flex; min-height: 100vh; }
-.sidebar { width: 220px; background: #11376b; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+.container { display: flex; min-height: 100vh; transition: all 0.3s; }
+.sidebar { width: 220px; background: #11376b; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); transition: all 0.3s; }
 .sidebar button, .sidebar a { background: #0a0f1e; color: #e46d0d; border: 2px solid #e46d0d; padding: 12px; margin: 8px 0; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; text-align: left; }
 .sidebar button:hover, .sidebar a:hover { color: #fff; box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b; transform: scale(1.05); }
 
-.main { flex: 1; padding: 50px; text-align: center; }
+.main { flex: 1; padding: 50px; text-align: center; transition: all 0.3s; }
 
-/* Responsive for mobile */
+/* Sidebar positions */
+.sidebar.left { order: 0; flex-direction: column; width: 220px; height: 100vh; }
+.sidebar.right { order: 1; flex-direction: column; width: 220px; height: 100vh; }
+.sidebar.top { order: 0; flex-direction: row; width: 100%; height: auto; }
+.sidebar.bottom { order: 1; flex-direction: row; width: 100%; height: auto; }
+
+/* Responsive */
 @media(max-width: 800px){
     .container { flex-direction: column; }
     .sidebar { width: 100%; flex-direction: row; justify-content: space-around; padding: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
@@ -31,11 +36,12 @@ a { text-decoration: none; color: #e46d0d; font-weight: bold; }
 
 <div class="container">
   <!-- Sidebar -->
-  <div class="sidebar">
-    <button onclick="showAccount()">Account</button>
-    <button onclick="openLinks()">Links</button>
-    <a href="https://mail.google.com" target="_blank">Gmail</a>
-    <button onclick="logout()">Logout</button>
+  <div class="sidebar left" id="sidebar">
+    <button onclick="showAccount()">👤</button>
+    <button onclick="openLinks()">🔗</button>
+    <a href="https://mail.google.com" target="_blank">✉️</a>
+    <button onclick="showSettings()">⚙️</button>
+    <button onclick="logout()">🚪</button>
   </div>
 
   <!-- Main content -->
@@ -74,8 +80,51 @@ function openLinks(){
 }
 
 function logout(){
-    // Redirect back to index.html without user info
     window.location.href = "index.html";
+}
+
+// Settings tab
+function showSettings(){
+    const accountDiv = document.getElementById('accountContent');
+    accountDiv.innerHTML = `
+      <h2>Settings</h2>
+      <p>Change sidebar position:</p>
+      <select id="sidebarPosition" onchange="changeSidebarPosition(this.value)">
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+        <option value="top">Top</option>
+        <option value="bottom">Bottom</option>
+      </select>
+      <p style="margin-top:20px;">Replace sidebar text with emojis:</p>
+      <button onclick="useEmojis()">Apply Emojis</button>
+      <button onclick="useText()">Use Text</button>
+    `;
+}
+
+// Change sidebar position
+function changeSidebarPosition(pos){
+    const sidebar = document.getElementById('sidebar');
+    sidebar.className = 'sidebar ' + pos;
+}
+
+// Replace sidebar buttons with emojis
+function useEmojis(){
+    const sidebar = document.getElementById('sidebar');
+    const buttons = sidebar.querySelectorAll('button, a');
+    const emojiMap = ['👤','🔗','✉️','⚙️','🚪'];
+    buttons.forEach((btn, i)=>{
+        if(i < emojiMap.length) btn.innerHTML = emojiMap[i];
+    });
+}
+
+// Replace sidebar buttons with text
+function useText(){
+    const sidebar = document.getElementById('sidebar');
+    const buttons = sidebar.querySelectorAll('button, a');
+    const textMap = ['Account','Links','Gmail','Settings','Logout'];
+    buttons.forEach((btn, i)=>{
+        if(i < textMap.length) btn.innerHTML = textMap[i];
+    });
 }
 </script>
 
