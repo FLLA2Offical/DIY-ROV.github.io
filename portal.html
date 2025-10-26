@@ -5,18 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>User Portal</title>
 <style>
-body { font-family: 'Segoe UI', sans-serif; background: #0a0f1e; color: #fff; text-align: center; padding: 50px; }
-h1 { color: #e46d0d; text-shadow: 0 0 15px #e46d0d; }
-p { font-size: 1.2em; margin-top: 20px; }
-a { display: inline-block; margin-top: 30px; padding: 10px 20px; background: #11376b; color: #e46d0d; text-decoration: none; border-radius: 10px; font-weight: bold; transition: 0.3s; }
-a:hover { color: #fff; box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b; transform: scale(1.05); }
+/* Basic Styles */
+body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background: #0a0f1e; color: #fff; }
+h1 { color: #e46d0d; text-shadow: 0 0 15px #e46d0d; margin-bottom: 20px; }
+p { font-size: 1.2em; }
+a { text-decoration: none; color: #e46d0d; font-weight: bold; }
+
+/* Layout */
+.container { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; background: #11376b; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+.sidebar button, .sidebar a { background: #0a0f1e; color: #e46d0d; border: 2px solid #e46d0d; padding: 12px; margin: 8px 0; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; text-align: left; }
+.sidebar button:hover, .sidebar a:hover { color: #fff; box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b; transform: scale(1.05); }
+
+.main { flex: 1; padding: 50px; text-align: center; }
+
+/* Responsive for mobile */
+@media(max-width: 800px){
+    .container { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; justify-content: space-around; padding: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .sidebar button, .sidebar a { flex: 1; margin: 5px; text-align: center; }
+}
 </style>
 </head>
 <body>
 
-<h1 id="welcomeMessage">Welcome!</h1>
-<p>This is your personal portal where you can access your content and settings.</p>
-<a href="index.html">Back to Home</a>
+<div class="container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <button onclick="showAccount()">Account</button>
+    <button onclick="openLinks()">Links</button>
+    <a href="https://mail.google.com" target="_blank">Gmail</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <h1 id="welcomeMessage">Welcome!</h1>
+    <p>This is your personal portal where you can access your content and settings.</p>
+    <div id="accountContent" style="margin-top:20px;"></div>
+  </div>
+</div>
 
 <script>
 // Get username from URL
@@ -26,6 +54,28 @@ if(user){
     document.getElementById('welcomeMessage').textContent = `Welcome, ${user}!`;
 } else {
     document.getElementById('welcomeMessage').textContent = `Welcome!`;
+}
+
+// Sidebar button functions
+function showAccount(){
+    const accountDiv = document.getElementById('accountContent');
+    accountDiv.innerHTML = `<p><strong>Username:</strong> ${user}</p>
+                            <p>Here you can change your password or update your settings.</p>`;
+}
+
+function openLinks(){
+    const accountDiv = document.getElementById('accountContent');
+    accountDiv.innerHTML = `<p>Here are some useful links:</p>
+                            <ul style="list-style:none; padding:0;">
+                              <li><a href="https://www.firstinspires.org/" target="_blank">FIRST Official Site</a></li>
+                              <li><a href="https://www.firstlegoleague.org/" target="_blank">FIRST Lego League</a></li>
+                              <li><a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">YouTube Channel</a></li>
+                            </ul>`;
+}
+
+function logout(){
+    // Redirect back to index.html without user info
+    window.location.href = "index.html";
 }
 </script>
 
