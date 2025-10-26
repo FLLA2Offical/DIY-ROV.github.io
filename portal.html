@@ -8,27 +8,29 @@
 body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background: #0a0f1e; color: #fff; }
 h1 { color: #e46d0d; text-shadow: 0 0 15px #e46d0d; margin-bottom: 20px; }
 p { font-size: 1.2em; }
-a { text-decoration: none; color: #e46d0d; font-weight: bold; }
-
-/* Layout */
 .container { display: flex; min-height: 100vh; transition: all 0.3s; }
-.sidebar { width: 220px; background: #11376b; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); transition: all 0.3s; }
-.sidebar button, .sidebar a { background: #0a0f1e; color: #e46d0d; border: 2px solid #e46d0d; padding: 12px; margin: 8px 0; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; text-align: left; }
-.sidebar button:hover, .sidebar a:hover { color: #fff; box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b; transform: scale(1.05); }
-
 .main { flex: 1; padding: 50px; text-align: center; transition: all 0.3s; }
 
+/* Sidebar base */
+.sidebar { background: #11376b; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); transition: all 0.3s; }
+.sidebar button { background: #0a0f1e; color: #e46d0d; border: 2px solid #e46d0d; width: 50px; height: 50px; margin: 10px auto; border-radius: 10px; cursor: pointer; font-size: 1.5em; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+.sidebar button:hover { color: #fff; box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b; transform: scale(1.2); }
+.sidebar a.button { display: flex; align-items:center; justify-content:center; text-decoration:none; width:50px; height:50px; background:#0a0f1e; color:#e46d0d; border:2px solid #e46d0d; border-radius:10px; margin:10px auto; font-size:1.5em; transition:0.3s; }
+.sidebar a.button:hover { color:#fff; box-shadow:0 0 15px #e46d0d,0 0 30px #11376b; transform: scale(1.2); }
+
 /* Sidebar positions */
-.sidebar.left { order: 0; flex-direction: column; width: 220px; height: 100vh; }
-.sidebar.right { order: 1; flex-direction: column; width: 220px; height: 100vh; }
-.sidebar.top { order: 0; flex-direction: row; width: 100%; height: auto; }
-.sidebar.bottom { order: 1; flex-direction: row; width: 100%; height: auto; }
+.sidebar.left { order:0; flex-direction: column; width:80px; height:100vh; }
+.sidebar.right { order:1; flex-direction: column; width:80px; height:100vh; }
+.sidebar.top { order:0; flex-direction: row; width:100%; height:auto; padding:10px; }
+.sidebar.top button, .sidebar.top a.button { width:50px; height:50px; margin:5px; }
+.sidebar.bottom { order:1; flex-direction: row; width:100%; height:auto; padding:10px; }
+.sidebar.bottom button, .sidebar.bottom a.button { width:50px; height:50px; margin:5px; }
 
 /* Responsive */
-@media(max-width: 800px){
-    .container { flex-direction: column; }
-    .sidebar { width: 100%; flex-direction: row; justify-content: space-around; padding: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-    .sidebar button, .sidebar a { flex: 1; margin: 5px; text-align: center; }
+@media(max-width:800px){
+  .container { flex-direction: column; }
+  .sidebar { width:100%; flex-direction: row; justify-content: space-around; padding:10px; height:auto; box-shadow:0 2px 10px rgba(0,0,0,0.5);}
+  .sidebar button, .sidebar a.button { flex:1; margin:5px; }
 }
 </style>
 </head>
@@ -36,12 +38,15 @@ a { text-decoration: none; color: #e46d0d; font-weight: bold; }
 
 <div class="container">
   <!-- Sidebar -->
-  <div class="sidebar left" id="sidebar">
-    <button onclick="showAccount()">👤</button>
-    <button onclick="openLinks()">🔗</button>
-    <a href="https://mail.google.com" target="_blank">✉️</a>
-    <button onclick="showSettings()">⚙️</button>
-    <button onclick="logout()">🚪</button>
+  <div class="sidebar" id="sidebar">
+    <button onclick="showAccount()" id="btnAccount">👤</button>
+    <button onclick="openLinks()" id="btnLinks">🔗</button>
+    <a href="https://mail.google.com" target="_blank" class="button" id="btnGmail">✉️</a>
+    <a href="https://drive.google.com" target="_blank" class="button" id="btnDrive">🟢</a>
+    <a href="https://calendar.google.com" target="_blank" class="button" id="btnCalendar">📅</a>
+    <a href="https://docs.google.com" target="_blank" class="button" id="btnDocs">📄</a>
+    <button onclick="showSettings()" id="btnSettings">⚙️</button>
+    <button onclick="logout()" id="btnLogout">🚪</button>
   </div>
 
   <!-- Main content -->
@@ -55,12 +60,14 @@ a { text-decoration: none; color: #e46d0d; font-weight: bold; }
 <script>
 // Get username from URL
 const params = new URLSearchParams(window.location.search);
-const user = params.get('user');
-if(user){
-    document.getElementById('welcomeMessage').textContent = `Welcome, ${user}!`;
-} else {
-    document.getElementById('welcomeMessage').textContent = `Welcome!`;
-}
+const user = params.get('user') || "Guest";
+document.getElementById('welcomeMessage').textContent = `Welcome, ${user}!`;
+
+// Load saved preferences
+const savedPosition = localStorage.getItem('sidebarPosition') || 'left';
+const savedMode = localStorage.getItem('sidebarMode') || 'emoji';
+changeSidebarPosition(savedPosition);
+if(savedMode==='text') useText(); else useEmojis();
 
 // Sidebar button functions
 function showAccount(){
@@ -71,7 +78,7 @@ function showAccount(){
 
 function openLinks(){
     const accountDiv = document.getElementById('accountContent');
-    accountDiv.innerHTML = `<p>Here are some useful links:</p>
+    accountDiv.innerHTML = `<p>Useful links:</p>
                             <ul style="list-style:none; padding:0;">
                               <li><a href="https://www.firstinspires.org/" target="_blank">FIRST Official Site</a></li>
                               <li><a href="https://www.firstlegoleague.org/" target="_blank">FIRST Lego League</a></li>
@@ -79,52 +86,48 @@ function openLinks(){
                             </ul>`;
 }
 
-function logout(){
-    window.location.href = "index.html";
-}
+function logout(){ window.location.href="index.html"; }
 
 // Settings tab
 function showSettings(){
     const accountDiv = document.getElementById('accountContent');
     accountDiv.innerHTML = `
       <h2>Settings</h2>
-      <p>Change sidebar position:</p>
-      <select id="sidebarPosition" onchange="changeSidebarPosition(this.value)">
+      <p>Sidebar position:</p>
+      <select id="sidebarPositionSelect" onchange="changeSidebarPosition(this.value)">
         <option value="left">Left</option>
         <option value="right">Right</option>
         <option value="top">Top</option>
         <option value="bottom">Bottom</option>
       </select>
-      <p style="margin-top:20px;">Replace sidebar text with emojis:</p>
-      <button onclick="useEmojis()">Apply Emojis</button>
+      <p style="margin-top:20px;">Sidebar mode:</p>
+      <button onclick="useEmojis()">Use Emojis</button>
       <button onclick="useText()">Use Text</button>
     `;
+    document.getElementById('sidebarPositionSelect').value = localStorage.getItem('sidebarPosition') || 'left';
 }
 
 // Change sidebar position
 function changeSidebarPosition(pos){
     const sidebar = document.getElementById('sidebar');
     sidebar.className = 'sidebar ' + pos;
+    localStorage.setItem('sidebarPosition', pos);
 }
 
 // Replace sidebar buttons with emojis
 function useEmojis(){
-    const sidebar = document.getElementById('sidebar');
-    const buttons = sidebar.querySelectorAll('button, a');
-    const emojiMap = ['👤','🔗','✉️','⚙️','🚪'];
-    buttons.forEach((btn, i)=>{
-        if(i < emojiMap.length) btn.innerHTML = emojiMap[i];
-    });
+    const btns = document.querySelectorAll('#sidebar button, #sidebar a.button');
+    const emojiMap = ['👤','🔗','✉️','🟢','📅','📄','⚙️','🚪'];
+    btns.forEach((btn,i)=>{ if(i<emojiMap.length) btn.innerHTML = emojiMap[i]; });
+    localStorage.setItem('sidebarMode','emoji');
 }
 
 // Replace sidebar buttons with text
 function useText(){
-    const sidebar = document.getElementById('sidebar');
-    const buttons = sidebar.querySelectorAll('button, a');
-    const textMap = ['Account','Links','Gmail','Settings','Logout'];
-    buttons.forEach((btn, i)=>{
-        if(i < textMap.length) btn.innerHTML = textMap[i];
-    });
+    const btns = document.querySelectorAll('#sidebar button, #sidebar a.button');
+    const textMap = ['Account','Links','Gmail','Drive','Calendar','Docs','Settings','Logout'];
+    btns.forEach((btn,i)=>{ if(i<textMap.length) btn.innerHTML = textMap[i]; });
+    localStorage.setItem('sidebarMode','text');
 }
 </script>
 
