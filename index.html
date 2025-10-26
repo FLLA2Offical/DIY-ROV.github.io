@@ -14,25 +14,6 @@ header img:first-child { height: 80px; }
 header img:nth-child(2) { height: 120px; }
 header img:last-child { height: 100px; }
 
-/* Login button */
-.login-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #11376b;
-  border: 2px solid #e46d0d;
-  color: #e46d0d;
-  padding: 10px 18px;
-  font-weight: bold;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.login-btn:hover {
-  color: #fff;
-  box-shadow: 0 0 15px #e46d0d, 0 0 30px #11376b;
-}
-
 nav.subnav { display: flex; justify-content: center; flex-wrap: wrap; background: #11376b; padding: 15px 0; box-shadow: 0 0 20px rgba(20,20,60,0.8); }
 nav.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
 nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
@@ -43,101 +24,32 @@ section:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 0 50px #
 h2 { color: #e46d0d; font-size: 2.2em; margin-bottom: 20px; text-shadow: 0 0 10px #e46d0d; }
 p { font-size: 1.1em; line-height: 1.8em; color: #ddd; }
 
-.subnav { display: flex; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
-.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
-.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
-
 .ai-card { background: rgba(17,55,107,0.4); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid rgba(228,109,13,0.3); transition: all 0.3s ease; }
 .ai-card:hover { box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b; transform: scale(1.02); }
 
 #uploadedImage, #rock-uploadedImage { max-width: 100%; display: none; margin: 20px 0; border: 3px solid #e46d0d; border-radius: 15px; box-shadow: 0 6px 20px rgba(228,109,13,0.3); transition: transform 0.3s ease; }
 #result, #rock-label-container { margin-top: 20px; font-size: 1.2em; font-weight: bold; color: #e46d0d; }
 
-#webcam-container, #rock-webcam-container { margin: 20px auto; }
-
-button.ai-btn {
-  background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s;
-}
+button.ai-btn { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
 button.ai-btn:hover { color: #fff; box-shadow: 0 0 20px #e46d0d,0 0 40px #11376b; transform: scale(1.05); }
-
-.bar-container { width: 60%; margin: 6px auto 12px; background: #ddd; border-radius: 8px; overflow: hidden; }
-.bar { height: 20px; text-align: left; padding-left: 8px; line-height: 20px; color: #fff; font-size: 0.9em; background: #e46d0d; transition: width 0.3s ease; }
 
 footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; font-size: 1em; }
 footer a { display:inline-block; margin-top:10px; padding:10px 20px; background:#e46d0d; color:#fff; text-decoration:none; border-radius:12px; font-weight:bold; box-shadow:0 0 15px #e46d0d, 0 0 30px #11376b; transition:0.3s; }
 footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale(1.05); }
 
-@media (max-width: 600px) { nav.subnav { flex-direction: column; } .subnav { flex-direction: column; } .subnav button { margin: 5px 0; } }
-
-/* Login popup */
-#loginPopup {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(17,55,107,0.95);
-  padding: 40px 30px;
-  border-radius: 15px;
-  box-shadow: 0 0 40px #e46d0d;
-  text-align: center;
-  z-index: 1000;
-}
-#loginPopup input {
-  display: block;
-  width: 80%;
-  margin: 10px auto;
-  padding: 10px;
-  border: 2px solid #e46d0d;
-  border-radius: 8px;
-  background: #001a3d;
-  color: #fff;
-}
-#loginPopup button {
-  background: #11376b;
-  border: 2px solid #e46d0d;
-  color: #e46d0d;
-  padding: 10px 20px;
-  margin-top: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-#loginPopup button:hover {
-  color: #fff;
-  box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
-}
-#overlay {
-  display: none;
-  position: fixed;
-  top:0; left:0; width:100%; height:100%;
-  background: rgba(0,0,0,0.7);
-  z-index: 900;
-}
+@media (max-width: 600px) { nav.subnav { flex-direction: column; } .subnav button { margin: 5px 0; } }
 </style>
 </head>
 <body>
 
 <header>
-  <button class="login-btn" onclick="openLogin()">Login</button>
-  <div>
-    <img src="2023_Collegiate_School_Logo_1_A1.1.webp">
-    <img src="69309logo.png">
-    <img src="1AEB9244-1D70-4692-8E0A-53BC04AFC0B5-removebg-preview.png">
-  </div>
-  FLL 69309 and 69310 Collegiate
+    <div>
+        <img src="2023_Collegiate_School_Logo_1_A1.1.webp">
+        <img src="69309logo.png">
+        <img src="1AEB9244-1D70-4692-8E0A-53BC04AFC0B5-removebg-preview.png">
+    </div>
+    FLL 69309 and 69310 Collegiate
 </header>
-
-<!-- Login Popup -->
-<div id="overlay" onclick="closeLogin()"></div>
-<div id="loginPopup">
-  <h2>Login</h2>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <button onclick="closeLogin()">Cancel</button>
-  <div id="loginMessage" style="color:#e46d0d; margin-top:10px;"></div>
-</div>
 
 <nav class="subnav">
     <button onclick="showSection('home')">Home</button>
@@ -145,8 +57,10 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
     <button onclick="showSection('lego')">Lego Robot</button>
     <button onclick="showSection('photos')">Photos</button>
     <button onclick="showSection('who')">Who we are</button>
+    <button onclick="showLoginModal()">Login</button>
 </nav>
 
+<!-- Sections -->
 <section id="home" class="active">
     <h2>Welcome</h2>
     <p>Explore our futuristic robotics projects and see our innovative solutions!</p>
@@ -181,18 +95,28 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
         <img id="rock-uploadedImage" />
     </div>
 </section>
-
+  
 <section id="who">
-    <h2>We are a First Lego Leuge team based in the City of New York</h2>
-    <p>FIRST is a nonprofit organization that promotes STEM. The FIRST Lego Le ge competition is one of 3 FIRST competitions.
-    FIRST Lego Leuge promotes STEM, problem solving and Gracious Professionalism. Every year there is a new season. This year's
-    season is Unearthed, Unearthing the future. The competition is broken into 4 sections, the robot game, the innovation project,
-    core vaules and the robot design presentation. The innovation project is the project where you design something to help solvve 
-    a problem related to the season's theme.</p>
+    <h2>We are a First Lego League team based in New York</h2>
+    <p>FIRST is a nonprofit organization that promotes STEM. The FIRST Lego League competition is one of 3 FIRST competitions.
+    It promotes STEM, problem solving, and Gracious Professionalism. Every year there is a new season. This year's season is Unearthed.</p>
     <a href="https://www.firstinspires.org/" target="_blank">Learn more about FIRST</a>
     <br>
-    <a href="https://www.firstlegoleague.org/" target="_blank">Learn more about FIRST Lego Leuge</a>
+    <a href="https://www.firstlegoleague.org/" target="_blank">Learn more about FIRST Lego League</a>
 </section>
+
+<!-- Login Modal -->
+<div id="loginModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:#11376b; padding:40px; border-radius:15px; text-align:center;">
+    <h2>Login</h2>
+    <input id="username" type="text" placeholder="Username" style="padding:10px; margin:10px; border-radius:10px;">
+    <input id="password" type="password" placeholder="Password" style="padding:10px; margin:10px; border-radius:10px;">
+    <br>
+    <button onclick="checkLogin()" style="padding:10px 20px; margin-top:10px; border-radius:10px; cursor:pointer;">Login</button>
+    <button onclick="closeLoginModal()" style="padding:10px 20px; margin-top:10px; border-radius:10px; cursor:pointer;">Cancel</button>
+    <div id="loginError" style="color:#e46d0d; margin-top:10px;"></div>
+  </div>
+</div>
 
 <footer>
     <div>Last updated: October 25, 2025</div>
@@ -205,13 +129,62 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
 
 <script>
 // Section toggling
-function showSection(id){document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function showSubpage(id){document.querySelectorAll('#innovation .ai-card').forEach(c=>c.style.display='none');document.getElementById(id).style.display='block';}
+function showSection(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showSubpage(id){
+  document.querySelectorAll('#innovation .ai-card').forEach(c=>c.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+// Login modal
+function showLoginModal(){ document.getElementById('loginModal').style.display='flex'; }
+function closeLoginModal(){ document.getElementById('loginModal').style.display='none'; }
+function checkLogin(){
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
+  // Example: just one user for now
+  if(user==="theodore" && pass==="1234"){
+    window.location.href="portal.html?user="+encodeURIComponent(user);
+  } else {
+    document.getElementById('loginError').textContent="Incorrect username or password";
+  }
+}
 
 // Mobilenet AI
-let net; async function loadModel(){net=await mobilenet.load(); document.getElementById('result').textContent="Model loaded. Upload or paste an image.";}
-async function loadImage(e){const img=document.getElementById('uploadedImage'); img.src=URL.createObjectURL(e.target.files[0]); img.style.display='block'; img.onload=async()=>{const res=await net.classify(img); if(res.length>0){document.getElementById('result').textContent=`Prediction: ${res[0].className} (${(res[0].probability*100).toFixed(2)}%)`;}else{document.getElementById('result').textContent="Couldn't identify the object.";} } }
-document.addEventListener('paste', e=>{const items=e.clipboardData.items; for(let i=0;i<items.length;i++){if(items[i].type.indexOf("image")!==-1){const blob=items[i].getAsFile(); const img=document.getElementById('uploadedImage'); img.src=URL.createObjectURL(blob); img.style.display='block'; img.onload=async()=>{const res=await net.classify(img); document.getElementById('result').textContent=`Prediction: ${res[0].className} (${(res[0].probability*100).toFixed(2)}%)`; } } }});
+let net; 
+async function loadModel(){
+  net=await mobilenet.load(); 
+  document.getElementById('result').textContent="Model loaded. Upload or paste an image.";
+}
+async function loadImage(e){
+  const img=document.getElementById('uploadedImage'); 
+  img.src=URL.createObjectURL(e.target.files[0]); 
+  img.style.display='block'; 
+  img.onload=async()=>{
+    const res=await net.classify(img); 
+    if(res.length>0){
+      document.getElementById('result').textContent=`Prediction: ${res[0].className} (${(res[0].probability*100).toFixed(2)}%)`;
+    } else { document.getElementById('result').textContent="Couldn't identify the object."; } 
+  }
+}
+document.addEventListener('paste', e=>{
+  const items=e.clipboardData.items;
+  for(let i=0;i<items.length;i++){
+    if(items[i].type.indexOf("image")!==-1){
+      const blob=items[i].getAsFile(); 
+      const img=document.getElementById('uploadedImage'); 
+      img.src=URL.createObjectURL(blob); 
+      img.style.display='block'; 
+      img.onload=async()=>{
+        const res=await net.classify(img); 
+        document.getElementById('result').textContent=`Prediction: ${res[0].className} (${(res[0].probability*100).toFixed(2)}%)`; 
+      }
+    }
+  }
+});
 loadModel();
 
 // Rock & Fossil AI
@@ -222,28 +195,7 @@ async function startRockWebcam(){await loadRockModel(); if(rockRunning) return; 
 async function loopRock(){if(!rockRunning)return; rockWebcam.update(); const pred=await rockModel.predict(rockWebcam.canvas); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); window.requestAnimationFrame(loopRock); }
 function stopRockWebcam(){if(rockWebcam && rockRunning){rockWebcam.stop(); rockRunning=false; document.getElementById('rock-webcam-container').innerHTML=''; rockLabelContainer.innerHTML='';}}
 async function switchRockCamera(){rockFacingMode=(rockFacingMode==="user")?"environment":"user"; stopRockWebcam(); await startRockWebcam();}
-async function loadRockImage(e){await loadRockModel(); const img=document.getElementById('rock-uploadedImage'); img.src=URL.createObjectURL(e.target.files[0]); img.style.display='block'; img.onload=async()=>{const pred=await rockModel.predict(img); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); }}
-
-// Login functionality
-const validUsers = {
-  "user1": "password1",
-  "user2": "password2"
-};
-function openLogin(){document.getElementById('loginPopup').style.display='block'; document.getElementById('overlay').style.display='block';}
-function closeLogin(){document.getElementById('loginPopup').style.display='none'; document.getElementById('overlay').style.display='none'; document.getElementById('loginMessage').textContent='';}
-function login(){ 
-    const u = document.getElementById('username').value; 
-    const p = document.getElementById('password').value; 
-    if(validUsers[u] && validUsers[u] === p){
-        // Redirect to portal page with username in URL
-        window.location.href = `portal.html?user=${encodeURIComponent(u)}`;
-    } else {
-        document.getElementById('loginMessage').textContent = 'Invalid username or password.';
-    }
-}
-
-}
+async function loadRockImage(e){await loadRockModel(); const img=document.getElementById('rock-uploadedImage'); img.src=URL.createObjectURL(e.target.files[0]); img.style.display='block'; img.onload=async()=>{const pred=await rockModel.predict(img); pred.sort((a,b)=>b.probability-a.probability); rockLabelContainer.innerHTML=''; pred.forEach(p=>{const per=(p.probability*100).toFixed(2); const w=document.createElement('div'); w.innerHTML=`<div>${p.className}: ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; rockLabelContainer.appendChild(w);}); URL.revokeObjectURL(img.src);}}
 </script>
-
 </body>
 </html>
