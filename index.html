@@ -232,14 +232,16 @@ const validUsers = {
 function openLogin(){document.getElementById('loginPopup').style.display='block'; document.getElementById('overlay').style.display='block';}
 function closeLogin(){document.getElementById('loginPopup').style.display='none'; document.getElementById('overlay').style.display='none'; document.getElementById('loginMessage').textContent='';}
 function login(){ 
-    const u=document.getElementById('username').value; 
-    const p=document.getElementById('password').value; 
-    if(validUsers[u] && validUsers[u]===p){
-        // Redirect to portal page
-        window.location.href = "portal.html";
+    const u = document.getElementById('username').value; 
+    const p = document.getElementById('password').value; 
+    if(validUsers[u] && validUsers[u] === p){
+        // Redirect to portal page with username in URL
+        window.location.href = `portal.html?user=${encodeURIComponent(u)}`;
     } else {
-        document.getElementById('loginMessage').textContent='Invalid username or password.';
+        document.getElementById('loginMessage').textContent = 'Invalid username or password.';
     }
+}
+
 }
 </script>
 
