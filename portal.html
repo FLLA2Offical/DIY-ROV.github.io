@@ -11,17 +11,19 @@ body {
   background:#0a0f1e;
   color:#fff;
   display:flex;
+  flex-direction:row;
   height:100vh;
-  overflow:hidden;
+  transition: all 0.3s;
 }
 #sidebar {
   background:#11376b;
-  width:80px;
   display:flex;
   flex-direction:column;
   align-items:center;
   padding-top:20px;
   transition: all 0.3s;
+  position:fixed;
+  z-index:100;
 }
 #sidebar button {
   background:#11376b; color:#e46d0d;
@@ -29,16 +31,21 @@ body {
   border-radius:12px; margin:10px;
   padding:12px; cursor:pointer;
   transition:0.3s;
+  width:60px;
+  height:60px;
+  font-size:1.5em;
 }
-#sidebar button:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
+#sidebar button:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.1); }
 
 #mainContent {
   flex:1;
+  margin-left:100px;
   padding:20px;
   display:flex;
   flex-direction:column;
   align-items:center;
   overflow-y:auto;
+  transition: all 0.3s;
 }
 
 .service-btn {
@@ -53,16 +60,11 @@ body {
 }
 .service-btn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
 
-#googleServices {
+#googleServices, #profileSettings, #settingsPanel {
   display:none;
   flex-wrap:wrap;
   justify-content:center;
   margin-top:20px;
-}
-
-#profileSettings {
-  display:none;
-  text-align:center;
 }
 
 #profileSettings img {
@@ -77,13 +79,27 @@ input[type="file"] {
   display:block;
   margin:10px auto;
 }
+
+#settingsPanel input[type="text"]{
+  text-align:center;
+  padding:5px;
+  border-radius:8px;
+  margin:5px;
+}
+
+#positionSelect{
+  margin:10px;
+  padding:5px;
+  border-radius:8px;
+}
 </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <button onclick="showPanel('google')">🟢 Google Services</button>
-  <button onclick="showPanel('profile')">👤 Profile / Settings</button>
+  <button id="googleBtn" onclick="showPanel('google')">🟢</button>
+  <button id="profileBtn" onclick="showPanel('profile')">👤</button>
+  <button id="settingsBtn" onclick="showPanel('settings')">⚙️</button>
 </div>
 
 <div id="mainContent">
@@ -104,24 +120,97 @@ input[type="file"] {
     <input type="file" accept="image/*" onchange="uploadProfile(event)">
     <p>Upload your own icon!</p>
   </div>
+
+  <!-- Settings Panel -->
+  <div id="settingsPanel">
+    <h2>Sidebar Settings</h2>
+    <label>Sidebar Position:</label>
+    <select id="positionSelect" onchange="changeSidebarPosition()">
+      <option value="left">Left</option>
+      <option value="right">Right</option>
+      <option value="top">Top</option>
+      <option value="bottom">Bottom</option>
+    </select>
+
+    <h3>Change Sidebar Buttons</h3>
+    <input type="text" id="googleText" placeholder="Google Btn Emoji/Text">
+    <input type="text" id="profileText" placeholder="Profile Btn Emoji/Text">
+    <input type="text" id="settingsText" placeholder="Settings Btn Emoji/Text">
+    <button onclick="saveSidebarSettings()">Save Settings</button>
+  </div>
 </div>
 
 <script>
-// Show panels
-function showPanel(panel) {
-  document.getElementById('googleServices').style.display = 'none';
-  document.getElementById('profileSettings').style.display = 'none';
+// Panels
+function showPanel(panel){
+  document.getElementById('googleServices').style.display='none';
+  document.getElementById('profileSettings').style.display='none';
+  document.getElementById('settingsPanel').style.display='none';
   if(panel==='google') document.getElementById('googleServices').style.display='flex';
   if(panel==='profile') document.getElementById('profileSettings').style.display='block';
+  if(panel==='settings') document.getElementById('settingsPanel').style.display='block';
 }
 
-// Profile upload
+// Profile upload with save
 function uploadProfile(event){
   const file = event.target.files[0];
   if(file){
     const img = document.getElementById('profileImage');
-    img.src = URL.createObjectURL(file);
+    const reader = new FileReader();
+    reader.onload = function(e){
+      img.src = e.target.result;
+      localStorage.setItem('profileImage', e.target.result);
+    }
+    reader.readAsDataURL(file);
   }
+}
+
+// Save sidebar settings
+function saveSidebarSettings(){
+  localStorage.setItem('sidebarGoogle', document.getElementById('googleText').value);
+  localStorage.setItem('sidebarProfile', document.getElementById('profileText').value);
+  localStorage.setItem('sidebarSettings', document.getElementById('settingsText').value);
+  applySidebarSettings();
+}
+
+// Apply saved sidebar settings
+function applySidebarSettings(){
+  const google = localStorage.getItem('sidebarGoogle') || '🟢';
+  const profile = localStorage.getItem('sidebarProfile') || '👤';
+  const settings = localStorage.getItem('sidebarSettings') || '⚙️';
+  document.getElementById('googleBtn').textContent = google;
+  document.getElementById('profileBtn').textContent = profile;
+  document.getElementById('settingsBtn').textContent = settings;
+}
+
+// Sidebar position
+function changeSidebarPosition(){
+  const pos = document.getElementById('positionSelect').value;
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('mainContent');
+
+  sidebar.style.position='fixed';
+  sidebar.style.left=''; sidebar.style.top=''; sidebar.style.bottom='';
+  main.style.marginLeft='0'; main.style.marginRight='0'; main.style.marginTop='0'; main.style.marginBottom='0';
+
+  if(pos==='left'){ sidebar.style.left='0'; sidebar.style.top='0'; sidebar.style.width='80px'; sidebar.style.height='100%'; sidebar.style.flexDirection='column'; main.style.marginLeft='100px'; }
+  if(pos==='right'){ sidebar.style.right='0'; sidebar.style.top='0'; sidebar.style.width='80px'; sidebar.style.height='100%'; sidebar.style.flexDirection='column'; main.style.marginRight='100px'; }
+  if(pos==='top'){ sidebar.style.top='0'; sidebar.style.left='0'; sidebar.style.width='100%'; sidebar.style.height='60px'; sidebar.style.flexDirection='row'; main.style.marginTop='80px'; }
+  if(pos==='bottom'){ sidebar.style.bottom='0'; sidebar.style.left='0'; sidebar.style.width='100%'; sidebar.style.height='60px'; sidebar.style.flexDirection='row'; main.style.marginBottom='80px'; }
+
+  localStorage.setItem('sidebarPosition', pos);
+}
+
+// Load saved profile, sidebar settings and position
+window.onload=function(){
+  const savedImg = localStorage.getItem('profileImage');
+  if(savedImg) document.getElementById('profileImage').src = savedImg;
+
+  applySidebarSettings();
+
+  const pos = localStorage.getItem('sidebarPosition') || 'left';
+  document.getElementById('positionSelect').value = pos;
+  changeSidebarPosition();
 }
 </script>
 
