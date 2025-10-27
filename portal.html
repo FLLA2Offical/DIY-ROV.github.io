@@ -24,6 +24,18 @@ body {
   transition: all 0.3s;
   position:fixed;
   z-index:100;
+  width:80px;
+  height:100%;
+}
+#sidebar-top img {
+  width:70px; height:70px;
+  border-radius:50%;
+  border:2px solid #e46d0d;
+  margin-bottom:20px;
+  cursor:pointer;
+}
+#sidebar-buttons {
+  flex:1; display:flex; flex-direction:column; align-items:center;
 }
 #sidebar button {
   background:#11376b; color:#e46d0d;
@@ -31,11 +43,12 @@ body {
   border-radius:12px; margin:10px;
   padding:12px; cursor:pointer;
   transition:0.3s;
-  width:60px;
-  height:60px;
-  font-size:1.5em;
+  width:60px; height:60px; font-size:1.5em;
 }
 #sidebar button:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.1); }
+#sidebar-bottom { margin-top:auto; text-align:center; }
+#sidebar-bottom img { vertical-align:middle; }
+#sidebarTime { margin-bottom:10px; font-size:0.9em; }
 
 #mainContent {
   flex:1;
@@ -45,7 +58,7 @@ body {
   flex-direction:column;
   align-items:center;
   overflow-y:auto;
-  transition: all 0.3s;
+  transition:all 0.3s;
 }
 
 .service-btn {
@@ -60,54 +73,54 @@ body {
 }
 .service-btn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
 
-#googleServices, #profileSettings, #settingsPanel {
-  display:none;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-top:20px;
-}
+#googleServices, #settingsPanel, #welcomeScreen { display:none; flex-wrap:wrap; justify-content:center; margin-top:20px; }
 
-#profileSettings img {
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  border:3px solid #e46d0d;
-  margin-bottom:20px;
-}
-
-input[type="file"], input[type="text"], input[type="password"], select {
-  display:block;
-  margin:10px auto;
-  padding:5px;
-  border-radius:8px;
-}
-
-#createAccountPanel input {
-  width:200px;
-}
-
-button.saveBtn {
-  padding:8px 15px;
-  margin-top:10px;
-  border-radius:10px;
-  cursor:pointer;
-  border:2px solid #e46d0d;
-  background:#11376b;
-  color:#e46d0d;
-  transition:0.3s;
-}
+button.saveBtn { padding:8px 15px; margin-top:10px; border-radius:10px; cursor:pointer; border:2px solid #e46d0d; background:#11376b; color:#e46d0d; transition:0.3s; }
 button.saveBtn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
+
+/* Glowing Welcome Text */
+@keyframes glow {
+  from { text-shadow: 0 0 10px #e46d0d, 0 0 20px #e46d0d, 0 0 30px #e46d0d; }
+  to   { text-shadow: 0 0 20px #e46d0d, 0 0 40px #e46d0d, 0 0 60px #e46d0d; }
+}
+#welcomeScreen h1 {
+  color:#e46d0d;
+  text-shadow: 0 0 10px #e46d0d, 0 0 20px #e46d0d, 0 0 30px #e46d0d;
+  animation: glow 1.5s infinite alternate;
+}
 </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <button id="googleBtn" onclick="showPanel('google')">🟢</button>
-  <button id="profileBtn" onclick="showPanel('profile')">👤</button>
-  <button id="settingsBtn" onclick="showPanel('settings')">⚙️</button>
+  <!-- Top Profile Photo -->
+  <div id="sidebar-top">
+    <img id="sidebarProfileImg" src="default-profile.png" alt="Profile" onclick="goToWelcome()">
+  </div>
+
+  <!-- Middle Buttons -->
+  <div id="sidebar-buttons">
+    <button id="googleBtn" onclick="showPanel('google')">🟢</button>
+    <button id="settingsBtn" onclick="showPanel('settings')">⚙️</button>
+  </div>
+
+  <!-- Bottom Info -->
+  <div id="sidebar-bottom">
+    <div id="sidebarTime"></div>
+    <div>
+      <img src="notification_bell.png" alt="Bell" style="width:25px; height:25px; margin-right:10px;">
+      <img src="69309logo.png" alt="Team 69309" style="width:30px; height:30px; margin-right:5px;">
+      <img src="1AEB9244-1D70-4692-8E0A-53BC04AFC0B5-removebg-preview.png" alt="Team 69310" style="width:30px; height:30px;">
+    </div>
+  </div>
 </div>
 
 <div id="mainContent">
+  <!-- Welcome Screen -->
+  <div id="welcomeScreen">
+    <h1 id="welcomeText">Welcome, User</h1>
+  </div>
+
   <!-- Google Services -->
   <div id="googleServices">
     <button class="service-btn" onclick="window.open('https://mail.google.com','_blank')">📧 Gmail</button>
@@ -118,28 +131,26 @@ button.saveBtn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(
     <button class="service-btn" onclick="window.open('https://slides.google.com','_blank')">🎞️ Slides</button>
   </div>
 
-  <!-- Profile / Settings -->
-  <div id="profileSettings">
-    <h2>Profile Settings</h2>
-    <img id="profileImage" src="default-profile.png" alt="Profile Picture">
+  <!-- Settings Panel -->
+  <div id="settingsPanel">
+    <h2>Settings</h2>
+
+    <!-- Profile Settings -->
+    <h3>Profile</h3>
+    <img id="profileImage" src="default-profile.png" alt="Profile Picture" style="width:120px; height:120px; border-radius:50%; border:3px solid #e46d0d;">
     <input type="file" accept="image/*" onchange="uploadProfile(event)">
-    
     <p>Username:</p>
     <input type="text" id="usernameInput" placeholder="Enter your username" oninput="checkTheodore()">
-    
-    <!-- Only Theodore sees this -->
-    <div id="createAccountPanel" style="display:none; margin-top:20px;">
-      <h3>Create Account</h3>
+    <div id="createAccountPanel" style="display:none; margin-top:10px;">
+      <h4>Create Account</h4>
       <input type="text" id="newUsername" placeholder="New Username">
       <input type="password" id="newPassword" placeholder="New Password">
       <button class="saveBtn" onclick="createAccount()">Create Account</button>
       <p id="createAccountMsg" style="color:#e46d0d;"></p>
     </div>
-  </div>
 
-  <!-- Settings Panel -->
-  <div id="settingsPanel">
-    <h2>Sidebar Settings</h2>
+    <!-- Sidebar Settings -->
+    <h3>Sidebar</h3>
     <label>Sidebar Position:</label>
     <select id="positionSelect" onchange="changeSidebarPosition()">
       <option value="left">Left</option>
@@ -147,10 +158,8 @@ button.saveBtn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(
       <option value="top">Top</option>
       <option value="bottom">Bottom</option>
     </select>
-
-    <h3>Change Sidebar Buttons</h3>
+    <h4>Change Sidebar Buttons</h4>
     <input type="text" id="googleText" placeholder="Google Btn Emoji/Text">
-    <input type="text" id="profileText" placeholder="Profile Btn Emoji/Text">
     <input type="text" id="settingsText" placeholder="Settings Btn Emoji/Text">
     <button class="saveBtn" onclick="saveSidebarSettings()">Save Settings</button>
   </div>
@@ -159,40 +168,46 @@ button.saveBtn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(
 <script>
 // Panels
 function showPanel(panel){
+  document.getElementById('welcomeScreen').style.display='none';
   document.getElementById('googleServices').style.display='none';
-  document.getElementById('profileSettings').style.display='none';
   document.getElementById('settingsPanel').style.display='none';
   if(panel==='google') document.getElementById('googleServices').style.display='flex';
-  if(panel==='profile') document.getElementById('profileSettings').style.display='block';
   if(panel==='settings') document.getElementById('settingsPanel').style.display='block';
 }
 
-// Profile upload with save
+// Welcome Screen
+function showWelcome(username){
+  document.getElementById('welcomeScreen').style.display='flex';
+  document.getElementById('googleServices').style.display='none';
+  document.getElementById('settingsPanel').style.display='none';
+  document.getElementById('welcomeText').textContent = `Welcome, ${username}`;
+}
+function goToWelcome(){ 
+  const username = localStorage.getItem('currentUser') || 'User';
+  showWelcome(username);
+}
+
+// Profile Image Upload
 function uploadProfile(event){
   const file = event.target.files[0];
   if(file){
     const img = document.getElementById('profileImage');
+    const sidebarImg = document.getElementById('sidebarProfileImg');
     const reader = new FileReader();
     reader.onload = function(e){
       img.src = e.target.result;
+      sidebarImg.src = e.target.result;
       localStorage.setItem('profileImage', e.target.result);
     }
     reader.readAsDataURL(file);
   }
 }
 
-// Show create account only for Theodore
+// Theodore Only Account Creation
 function checkTheodore(){
   const username = document.getElementById('usernameInput').value.trim();
-  const panel = document.getElementById('createAccountPanel');
-  if(username.toLowerCase() === 'theodore'){
-    panel.style.display='block';
-  } else {
-    panel.style.display='none';
-  }
+  document.getElementById('createAccountPanel').style.display = (username.toLowerCase() === 'theodore') ? 'block' : 'none';
 }
-
-// Create a new account (stored in localStorage)
 function createAccount(){
   const newUser = document.getElementById('newUsername').value.trim();
   const newPass = document.getElementById('newPassword').value.trim();
@@ -200,68 +215,67 @@ function createAccount(){
   if(newUser && newPass){
     let accounts = JSON.parse(localStorage.getItem('accounts')) || {};
     if(accounts[newUser]){
-      msg.textContent = 'Username already exists!';
+      msg.textContent='Username already exists!';
       msg.style.color='orange';
     } else {
       accounts[newUser] = newPass;
       localStorage.setItem('accounts', JSON.stringify(accounts));
-      msg.textContent = `Account "${newUser}" created!`;
+      msg.textContent=`Account "${newUser}" created!`;
       msg.style.color='#0f0';
       document.getElementById('newUsername').value='';
       document.getElementById('newPassword').value='';
     }
-  } else {
-    msg.textContent='Enter both username and password';
-    msg.style.color='red';
-  }
+  } else { msg.textContent='Enter both username and password'; msg.style.color='red'; }
 }
 
-// Save sidebar settings
+// Sidebar Settings
 function saveSidebarSettings(){
   localStorage.setItem('sidebarGoogle', document.getElementById('googleText').value);
-  localStorage.setItem('sidebarProfile', document.getElementById('profileText').value);
   localStorage.setItem('sidebarSettings', document.getElementById('settingsText').value);
   applySidebarSettings();
 }
-
-// Apply saved sidebar settings
 function applySidebarSettings(){
-  const google = localStorage.getItem('sidebarGoogle') || '🟢';
-  const profile = localStorage.getItem('sidebarProfile') || '👤';
-  const settings = localStorage.getItem('sidebarSettings') || '⚙️';
-  document.getElementById('googleBtn').textContent = google;
-  document.getElementById('profileBtn').textContent = profile;
-  document.getElementById('settingsBtn').textContent = settings;
+  document.getElementById('googleBtn').textContent = localStorage.getItem('sidebarGoogle') || '🟢';
+  document.getElementById('settingsBtn').textContent = localStorage.getItem('sidebarSettings') || '⚙️';
 }
 
-// Sidebar position
+// Sidebar Position
 function changeSidebarPosition(){
   const pos = document.getElementById('positionSelect').value;
   const sidebar = document.getElementById('sidebar');
   const main = document.getElementById('mainContent');
-
-  sidebar.style.position='fixed';
   sidebar.style.left=''; sidebar.style.right=''; sidebar.style.top=''; sidebar.style.bottom='';
   main.style.marginLeft='0'; main.style.marginRight='0'; main.style.marginTop='0'; main.style.marginBottom='0';
-
   if(pos==='left'){ sidebar.style.left='0'; sidebar.style.top='0'; sidebar.style.width='80px'; sidebar.style.height='100%'; sidebar.style.flexDirection='column'; main.style.marginLeft='100px'; }
   if(pos==='right'){ sidebar.style.right='0'; sidebar.style.top='0'; sidebar.style.width='80px'; sidebar.style.height='100%'; sidebar.style.flexDirection='column'; main.style.marginRight='100px'; }
   if(pos==='top'){ sidebar.style.top='0'; sidebar.style.left='0'; sidebar.style.width='100%'; sidebar.style.height='60px'; sidebar.style.flexDirection='row'; main.style.marginTop='80px'; }
   if(pos==='bottom'){ sidebar.style.bottom='0'; sidebar.style.left='0'; sidebar.style.width='100%'; sidebar.style.height='60px'; sidebar.style.flexDirection='row'; main.style.marginBottom='80px'; }
-
   localStorage.setItem('sidebarPosition', pos);
 }
 
-// Load saved profile, sidebar settings and position
-window.onload=function(){
+// Live Clock
+function updateTime() {
+  const now = new Date();
+  document.getElementById('sidebarTime').textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  setTimeout(updateTime, 1000);
+}
+
+// Load Saved Data
+window.onload = function(){
   const savedImg = localStorage.getItem('profileImage');
-  if(savedImg) document.getElementById('profileImage').src = savedImg;
-
+  if(savedImg){
+    document.getElementById('profileImage').src = savedImg;
+    document.getElementById('sidebarProfileImg').src = savedImg;
+  }
   applySidebarSettings();
-
   const pos = localStorage.getItem('sidebarPosition') || 'left';
   document.getElementById('positionSelect').value = pos;
   changeSidebarPosition();
+  updateTime();
+  
+  // Show welcome screen by default
+  const user = localStorage.getItem('currentUser') || 'User';
+  showWelcome(user);
 }
 </script>
 
