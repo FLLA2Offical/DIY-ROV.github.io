@@ -18,6 +18,35 @@ nav.subnav { display: flex; justify-content: center; flex-wrap: wrap; background
 nav.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
 nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
 
+    .subnav-inner {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #11376b; /* same deep blue as top bar */
+  padding: 15px 0;
+  box-shadow: 0 0 20px rgba(20,20,60,0.8);
+  border-radius: 12px; /* optional */
+}
+
+.subnav-inner button {
+  background: #11376b;
+  border: 2px solid #e46d0d;
+  color: #e46d0d;
+  padding: 12px 20px;
+  margin: 5px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+
+.subnav-inner button:hover {
+  color: #fff;
+  box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
+  transform: scale(1.05);
+}
+
+
 section { display: none; padding: 60px 20px; text-align: center; position: relative; transition: transform 0.3s, box-shadow 0.3s; margin: 40px auto; max-width: 1000px; border-radius: 15px; background: rgba(17,55,107,0.4); box-shadow: 0 0 20px rgba(17,55,107,0.6); }
 section.active { display: block; }
 section:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b; }
@@ -68,7 +97,7 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
 
 <section id="innovation">
     <h2>Innovation Project</h2>
-    <div class="subnav">
+    <div class="subnav-inner">
         <button onclick="showSubpage('ai')">AI Analysis</button>
         <button onclick="showSubpage('cad')">CAD Design</button>
         <button onclick="showSubpage('materials')">Materials</button>
