@@ -15,7 +15,7 @@
 }
 * { box-sizing: border-box; margin:0; padding:0; font-family: Arial,sans-serif; }
 body { background: var(--primary-blue); color: var(--text-light); overflow-x:hidden; }
-header { background: var(--accent-orange); padding: 15px; text-align:center; }
+header { background: var(--accent-orange); padding: 15px; text-align:center; position: relative; z-index: 1001; }
 header img { max-height: 80px; margin-bottom:8px; }
 h1 { font-size:1.8em; margin:0; }
 
@@ -26,7 +26,7 @@ h1 { font-size:1.8em; margin:0; }
 #sidebar.show { transform: translateX(0); }
 #sidebar button { width:100%; padding: 15px; text-align:left; border:none; background:none; color:var(--text-light); font-size:1em; cursor:pointer; border-bottom:1px solid #333; }
 #sidebar button:hover { background: var(--accent-orange); color:#000; }
-#toggleSidebar { position: fixed; top:15px; left:15px; font-size:1.5em; cursor:pointer; background:none; border:none; color:var(--text-light); z-index:1000; }
+#toggleSidebar { position: fixed; top:15px; left:15px; font-size:1.5em; cursor:pointer; background:none; border:none; color:var(--text-light); z-index:1002; }
 
 main { margin-left:0; padding:20px; transition: margin-left 0.3s; }
 main.showSidebar { margin-left:250px; }
@@ -45,10 +45,43 @@ img, video, canvas { border:4px solid var(--accent-orange); border-radius:10px; 
 /* Change Color Page */
 #gradientPreview { width:80%; height:150px; margin:20px auto; border:3px solid var(--accent-orange); border-radius:10px; background: linear-gradient(90deg,#002D62,#FF7300); }
 
-/* Chat Page */
-#chatContainer { width:100%; max-width:800px; margin:0 auto; }
-#chatPassword { width:80%; padding:10px; margin:20px auto; display:block; border-radius:6px; border:none; }
-#chatSubmit { display:block; margin:10px auto; }
+/* Chat Page (FULL SCREEN, iframe scrollable) */
+#chatPage {
+  position: fixed;
+  top: 110px; /* below header */
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 110px);
+  background: var(--primary-blue);
+  z-index: 1000;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+#chatPage h2 { display:none; }
+#chatPassword, #chatSubmit {
+  width: 80%;
+  max-width: 400px;
+  margin: 20px auto;
+  display: block;
+  border-radius: 6px;
+  border: none;
+  padding: 12px;
+  font-size: 1em;
+}
+#chatSubmit { background: var(--accent-orange); color: var(--text-light); cursor: pointer; }
+
+/* Make chat iframe scrollable */
+#chatContainer {
+  flex: 1; /* take all remaining space */
+  width: 100%;
+  overflow: auto; /* scroll independently */
+}
+#chatContainer iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 
 /* Footer */
 footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin-top:40px; font-size:0.9em; }
@@ -120,8 +153,8 @@ footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin
 <h2>Team Chat (Password Protected)</h2>
 <input type="password" id="chatPassword" placeholder="Enter Password">
 <button id="chatSubmit" onclick="checkPassword()">Enter</button>
-<div id="chatContainer" style="display:none;">
-<iframe src="https://deadsimplechat.com/715zJlZR3" width="100%" height="600px"></iframe>
+<div id="chatContainer">
+<iframe src="https://deadsimplechat.com/715zJlZR3"></iframe>
 </div>
 </div>
 </main>
@@ -194,47 +227,6 @@ function resetObject(){
   resEl.textContent="Upload new image or start webcam.";
   fileInput.value=''; resetBtn.style.display='none';
 }
-
-// Webcam
-async function startObjectWebcam(){
-  const video=document.getElementById('objWebcam');
-  const startBtn=document.getElementById('objStart');
-  const stopBtn=document.getElementById('objStop');
-  const switchBtn=document.getElementById('objSwitch');
-  const badge=document.getElementById('objLiveBadge');
-  const resEl=document.getElementById('objResult');
-  try{
-    objWebcamStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:objCurrentFacing}, audio:false});
-    video.srcObject=objWebcamStream;
-    await video.play();
-    video.style.display='block'; startBtn.disabled=true; stopBtn.disabled=false; switchBtn.disabled=false;
-    objWebcamRunning=true; badge.style.display='block'; resEl.textContent="Starting live analysis…";
-    runObjWebcamLoop();
-  }catch(e){ console.error(e); resEl.textContent="Could not access webcam.";}
-}
-function stopObjectWebcam(){
-  objWebcamRunning=false;
-  if(objLoop) cancelAnimationFrame(objLoop);
-  if(objWebcamStream){ objWebcamStream.getTracks().forEach(t=>t.stop()); objWebcamStream=null; }
-  const video=document.getElementById('objWebcam');
-  video.srcObject=null; video.style.display='none';
-  document.getElementById('objStart').disabled=false;
-  document.getElementById('objStop').disabled=true;
-  document.getElementById('objSwitch').disabled=true;
-  document.getElementById('objLiveBadge').style.display='none';
-}
-async function switchObjectCamera(){ objCurrentFacing=(objCurrentFacing==="environment")?"user":"environment"; stopObjectWebcam(); await startObjectWebcam(); }
-let lastTs=0; const INTERVAL=500;
-async function runObjWebcamLoop(ts){
-  if(!objWebcamRunning) return;
-  objLoop=requestAnimationFrame(runObjWebcamLoop);
-  if(!lastTs || ts-lastTs>=INTERVAL){
-    lastTs=ts;
-    try{ const results=await objNet.classify(document.getElementById('objWebcam')); showObjResults(results);}
-    catch(e){ console.error(e);}
-  }
-}
-loadObjectModel();
 
 // ---------------- Rock Identifier ----------------
 const ROCK_MODEL_URL="https://teachablemachine.withgoogle.com/models/IZwfz2mDI/";
