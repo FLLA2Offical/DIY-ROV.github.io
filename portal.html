@@ -2,283 +2,284 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal - FLL Robotics</title>
+<title>Team 69310 Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 <style>
-body {
-  margin:0;
-  font-family: 'Segoe UI', sans-serif;
-  background:#0a0f1e;
-  color:#fff;
-  display:flex;
-  flex-direction:row;
-  height:100vh;
-  transition: all 0.3s;
+:root {
+  --primary-blue: #002D62;
+  --accent-orange: #FF7300;
+  --text-light: #ffffff;
 }
+* { box-sizing: border-box; margin:0; padding:0; font-family: Arial,sans-serif; }
+body { background: var(--primary-blue); color: var(--text-light); overflow-x:hidden; }
+header { background: var(--accent-orange); padding: 15px; text-align:center; }
+header img { max-height: 80px; margin-bottom:8px; }
+h1 { font-size:1.8em; margin:0; }
+
 #sidebar {
-  background:#11376b;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding-top:20px;
-  transition: all 0.3s;
-  position:fixed;
-  z-index:100;
-  width:80px;
-  height:100%;
+  position: fixed; left: 0; top: 0; width: 250px; height: 100%; background: #001d3d;
+  padding-top: 60px; transition: 0.3s; overflow-x:hidden; transform: translateX(-250px);
 }
-#sidebar-top img {
-  width:70px; height:70px;
-  border-radius:50%;
-  border:2px solid #e46d0d;
-  margin-bottom:20px;
-  cursor:pointer;
-}
-#sidebar-buttons {
-  flex:1; display:flex; flex-direction:column; align-items:center;
-}
-#sidebar button {
-  background:#11376b; color:#e46d0d;
-  border:2px solid #e46d0d;
-  border-radius:12px; margin:10px;
-  padding:12px; cursor:pointer;
-  transition:0.3s;
-  width:60px; height:60px; font-size:1.5em;
-}
-#sidebar button:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.1); }
-#sidebar-bottom { margin-top:auto; text-align:center; }
-#sidebar-bottom img { vertical-align:middle; }
-#sidebarTime { margin-bottom:10px; font-size:0.9em; }
+#sidebar.show { transform: translateX(0); }
+#sidebar button { width:100%; padding: 15px; text-align:left; border:none; background:none; color:var(--text-light); font-size:1em; cursor:pointer; border-bottom:1px solid #333; }
+#sidebar button:hover { background: var(--accent-orange); color:#000; }
+#toggleSidebar { position: fixed; top:15px; left:15px; font-size:1.5em; cursor:pointer; background:none; border:none; color:var(--text-light); z-index:1000; }
 
-#mainContent {
-  flex:1;
-  margin-left:100px;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  overflow-y:auto;
-  transition:all 0.3s;
-}
+main { margin-left:0; padding:20px; transition: margin-left 0.3s; }
+main.showSidebar { margin-left:250px; }
 
-.service-btn {
-  background:#11376b; color:#e46d0d;
-  border:2px solid #e46d0d;
-  border-radius:12px;
-  padding:20px;
-  margin:10px;
-  cursor:pointer;
-  font-size:1.2em;
-  transition:0.3s;
-}
-.service-btn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
+/* Common Styles for Pages */
+.page { display:none; }
+input[type="file"], .webcam-btn, .reset-button, button { border:none; border-radius:6px; padding:10px 20px; background: var(--accent-orange); color:var(--text-light); cursor:pointer; margin:5px; }
+input[type="color"] { margin:10px; padding:5px; border-radius:5px; border:none; cursor:pointer; }
+input[type="file"]:disabled, .webcam-btn[disabled] { background:#888; cursor:not-allowed; }
+img, video, canvas { border:4px solid var(--accent-orange); border-radius:10px; max-width:90%; margin:15px auto; display:block; }
+.bar-container { width:90%; max-width:350px; margin:6px auto; background:#ddd; border-radius:8px; overflow:hidden; }
+.bar { height:20px; text-align:left; padding-left:8px; line-height:20px; color:#fff; font-size:0.9em; background:var(--accent-orange); transition: width 0.3s ease; }
+.spinner { border:6px solid #f3f3f3; border-top:6px solid var(--accent-orange); border-radius:50%; width:40px; height:40px; animation: spin 1s linear infinite; margin:20px auto; display:none; }
+@keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 
-#googleServices, #settingsPanel, #welcomeScreen { display:none; flex-wrap:wrap; justify-content:center; margin-top:20px; }
+/* Change Color Page */
+#gradientPreview { width:80%; height:150px; margin:20px auto; border:3px solid var(--accent-orange); border-radius:10px; background: linear-gradient(90deg,#002D62,#FF7300); }
 
-button.saveBtn { padding:8px 15px; margin-top:10px; border-radius:10px; cursor:pointer; border:2px solid #e46d0d; background:#11376b; color:#e46d0d; transition:0.3s; }
-button.saveBtn:hover { color:#fff; box-shadow:0 0 20px #e46d0d; transform:scale(1.05); }
+/* Chat Page */
+#chatContainer { width:100%; max-width:800px; margin:0 auto; }
+#chatPassword { width:80%; padding:10px; margin:20px auto; display:block; border-radius:6px; border:none; }
+#chatSubmit { display:block; margin:10px auto; }
 
-/* Glowing Welcome Text */
-@keyframes glow {
-  from { text-shadow: 0 0 10px #e46d0d, 0 0 20px #e46d0d, 0 0 30px #e46d0d; }
-  to   { text-shadow: 0 0 20px #e46d0d, 0 0 40px #e46d0d, 0 0 60px #e46d0d; }
-}
-#welcomeScreen h1 {
-  color:#e46d0d;
-  text-shadow: 0 0 10px #e46d0d, 0 0 20px #e46d0d, 0 0 30px #e46d0d;
-  animation: glow 1.5s infinite alternate;
-}
+/* Footer */
+footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin-top:40px; font-size:0.9em; }
 </style>
 </head>
 <body>
+<header>
+<img src="https://i.ibb.co/CpCHwdwv/IMG-2312.png" alt="Team 69310 Logo">
+<h1>Team 69310 Portal</h1>
+</header>
 
+<button id="toggleSidebar">&#9776;</button>
 <div id="sidebar">
-  <!-- Top Profile Photo -->
-  <div id="sidebar-top">
-    <img id="sidebarProfileImg" src="default-profile.png" alt="Profile" onclick="goToWelcome()">
-  </div>
-
-  <!-- Middle Buttons -->
-  <div id="sidebar-buttons">
-    <button id="googleBtn" onclick="showPanel('google')">🟢</button>
-    <button id="settingsBtn" onclick="showPanel('settings')">⚙️</button>
-  </div>
-
-  <!-- Bottom Info -->
-  <div id="sidebar-bottom">
-    <div id="sidebarTime"></div>
-    <div>
-      <img src="notification_bell.png" alt="Bell" style="width:25px; height:25px; margin-right:10px;">
-      <img src="69309logo.png" alt="Team 69309" style="width:30px; height:30px; margin-right:5px;">
-      <img src="1AEB9244-1D70-4692-8E0A-53BC04AFC0B5-removebg-preview.png" alt="Team 69310" style="width:30px; height:30px;">
-    </div>
-  </div>
+<button onclick="showPage('objectPage')">Object Identifier</button>
+<button onclick="showPage('rockPage')">Rock Identifier</button>
+<button onclick="showPage('colorPage')">Change Color</button>
+<button onclick="showPage('chatPage')">Team Chat</button>
 </div>
 
-<div id="mainContent">
-  <!-- Welcome Screen -->
-  <div id="welcomeScreen">
-    <h1 id="welcomeText">Welcome, User</h1>
-  </div>
-
-  <!-- Google Services -->
-  <div id="googleServices">
-    <button class="service-btn" onclick="window.open('https://mail.google.com','_blank')">📧 Gmail</button>
-    <button class="service-btn" onclick="window.open('https://drive.google.com','_blank')">🗂️ Drive</button>
-    <button class="service-btn" onclick="window.open('https://calendar.google.com','_blank')">📅 Calendar</button>
-    <button class="service-btn" onclick="window.open('https://docs.google.com','_blank')">📄 Docs</button>
-    <button class="service-btn" onclick="window.open('https://sheets.google.com','_blank')">📊 Sheets</button>
-    <button class="service-btn" onclick="window.open('https://slides.google.com','_blank')">🎞️ Slides</button>
-    <button class="service-btn" onclick="window.open('https://www.canva.com/','_blank')">Canva</button>
-  </div>
-
-  <!-- Settings Panel -->
-  <div id="settingsPanel">
-    <h2>Settings</h2>
-
-    <!-- Profile Settings -->
-    <h3>Profile</h3>
-    <img id="profileImage" src="default-profile.png" alt="Profile Picture" style="width:120px; height:120px; border-radius:50%; border:3px solid #e46d0d;">
-    <input type="file" accept="image/*" onchange="uploadProfile(event)">
-    <p>Username:</p>
-    <input type="text" id="usernameInput" placeholder="Enter your username" oninput="checkTheodore()">
-    <div id="createAccountPanel" style="display:none; margin-top:10px;">
-      <h4>Create Account</h4>
-      <input type="text" id="newUsername" placeholder="New Username">
-      <input type="password" id="newPassword" placeholder="New Password">
-      <button class="saveBtn" onclick="createAccount()">Create Account</button>
-      <p id="createAccountMsg" style="color:#e46d0d;"></p>
-    </div>
-
-    <!-- Sidebar Settings -->
-    <h3>Sidebar</h3>
-    <label>Sidebar Position:</label>
-    <select id="positionSelect" onchange="changeSidebarPosition()">
-      <option value="left">Left</option>
-      <option value="right">Right</option>
-      <option value="top">Top</option>
-      <option value="bottom">Bottom</option>
-    </select>
-    <h4>Change Sidebar Buttons</h4>
-    <input type="text" id="googleText" placeholder="Google Btn Emoji/Text">
-    <input type="text" id="settingsText" placeholder="Settings Btn Emoji/Text">
-    <button class="saveBtn" onclick="saveSidebarSettings()">Save Settings</button>
-  </div>
+<main id="mainContent">
+<!-- Object Identifier -->
+<div class="page" id="objectPage">
+<h2>Object Identifier</h2>
+<p>Upload an image or use your webcam:</p>
+<input id="objFile" type="file" accept="image/*" onchange="loadObjectImage(event)" disabled>
+<button class="reset-button" id="objReset" onclick="resetObject()">Reset</button>
+<br>
+<img id="objImage" alt="Uploaded Preview">
+<div class="spinner" id="objSpinner"></div>
+<div class="webcam-controls">
+<button id="objStart" class="webcam-btn" onclick="startObjectWebcam()" disabled>Start Webcam</button>
+<button id="objStop" class="webcam-btn" onclick="stopObjectWebcam()" disabled>Stop Webcam</button>
+<button id="objSwitch" class="webcam-btn" onclick="switchObjectCamera()" disabled>Switch Camera</button>
+<video id="objWebcam" playsinline autoplay muted></video>
+<div id="objLiveBadge">Live classification running…</div>
 </div>
+<div id="objResult" aria-live="polite">Loading AI model...</div>
+</div>
+
+<!-- Rock Identifier -->
+<div class="page" id="rockPage">
+<h2>Rock Identifier</h2>
+<p>Upload image or use webcam:</p>
+<input id="rockFile" type="file" accept="image/*" onchange="loadRockImage(event)">
+<div id="rockStatus"></div>
+<div id="rockWebcamContainer"></div>
+<div id="rockLabelContainer"></div>
+<img id="rockImage" alt="Uploaded Preview">
+<div id="rockResult"></div>
+<button onclick="startRockWebcam()">Start Webcam</button>
+<button onclick="switchRockCamera()">Switch Camera</button>
+<button onclick="stopRockWebcam()">Stop Webcam</button>
+</div>
+
+<!-- Change Color -->
+<div class="page" id="colorPage">
+<h2>Change Background</h2>
+<p>Pick a solid color or set a gradient:</p>
+<input type="color" id="solidColor" value="#002D62">
+<input type="color" id="gradientStart" value="#002D62">
+<input type="color" id="gradientEnd" value="#FF7300">
+<div id="gradientPreview"></div>
+<button onclick="applySolid()">Apply Solid</button>
+<button onclick="applyGradient()">Apply Gradient</button>
+</div>
+
+<!-- Team Chat -->
+<div class="page" id="chatPage">
+<h2>Team Chat (Password Protected)</h2>
+<input type="password" id="chatPassword" placeholder="Enter Password">
+<button id="chatSubmit" onclick="checkPassword()">Enter</button>
+<div id="chatContainer" style="display:none;">
+<iframe src="https://deadsimplechat.com/715zJlZR3" width="100%" height="600px"></iframe>
+</div>
+</div>
+</main>
+
+<footer>
+&copy; 2025 Team 69310 Collegiate. All rights reserved.
+</footer>
 
 <script>
-// Panels
-function showPanel(panel){
-  document.getElementById('welcomeScreen').style.display='none';
-  document.getElementById('googleServices').style.display='none';
-  document.getElementById('settingsPanel').style.display='none';
-  if(panel==='google') document.getElementById('googleServices').style.display='flex';
-  if(panel==='settings') document.getElementById('settingsPanel').style.display='block';
+// Sidebar toggle
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('mainContent');
+document.getElementById('toggleSidebar').onclick = () => {
+  sidebar.classList.toggle('show');
+  mainContent.classList.toggle('showSidebar');
+};
+
+// Page switch
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='block';
+  sidebar.classList.remove('show');
+  mainContent.classList.remove('showSidebar');
 }
 
-// Welcome Screen
-function showWelcome(username){
-  document.getElementById('welcomeScreen').style.display='flex';
-  document.getElementById('googleServices').style.display='none';
-  document.getElementById('settingsPanel').style.display='none';
-  document.getElementById('welcomeText').textContent = `Welcome, ${username}`;
-}
-function goToWelcome(){ 
-  const username = localStorage.getItem('currentUser') || 'User';
-  showWelcome(username);
-}
+// ---------------- Object Identifier ----------------
+let objNet, objWebcamStream=null, objWebcamRunning=false, objCurrentFacing="environment", objLoop=null;
 
-// Profile Image Upload
-function uploadProfile(event){
-  const file = event.target.files[0];
-  if(file){
-    const img = document.getElementById('profileImage');
-    const sidebarImg = document.getElementById('sidebarProfileImg');
-    const reader = new FileReader();
-    reader.onload = function(e){
-      img.src = e.target.result;
-      sidebarImg.src = e.target.result;
-      localStorage.setItem('profileImage', e.target.result);
-    }
-    reader.readAsDataURL(file);
+async function loadObjectModel(){
+  const resEl = document.getElementById('objResult');
+  resEl.textContent="Loading AI model...";
+  objNet = await mobilenet.load({version:2, alpha:0.75});
+  resEl.textContent="Model loaded. Upload image or start webcam.";
+  document.getElementById('objFile').disabled=false;
+  document.getElementById('objStart').disabled=false;
+}
+async function loadObjectImage(event){
+  const img=document.getElementById('objImage');
+  const resEl=document.getElementById('objResult');
+  const spinner=document.getElementById('objSpinner');
+  const resetBtn=document.getElementById('objReset');
+  img.src=URL.createObjectURL(event.target.files[0]);
+  img.style.display='block';
+  resetBtn.style.display='inline-block';
+  img.onload=async ()=>{
+    spinner.style.display='block';
+    resEl.textContent="Analyzing...";
+    const results = await objNet.classify(img);
+    spinner.style.display='none';
+    showObjResults(results);
+    URL.revokeObjectURL(img.src);
   }
 }
-
-// Theodore Only Account Creation
-function checkTheodore(){
-  const username = document.getElementById('usernameInput').value.trim();
-  document.getElementById('createAccountPanel').style.display = (username.toLowerCase() === 'theodore') ? 'block' : 'none';
+function showObjResults(results){
+  const resEl=document.getElementById('objResult');
+  if(results && results.length){
+    resEl.innerHTML = results.slice(0,3).map(r=>{
+      const percent=(r.probability*100).toFixed(2);
+      return `<div>${r.className} - ${percent}%</div>
+      <div class="bar-container"><div class="bar" style="width:${percent}%">${percent}%</div></div>`;
+    }).join('');
+  }else resEl.textContent="No prediction.";
 }
-function createAccount(){
-  const newUser = document.getElementById('newUsername').value.trim();
-  const newPass = document.getElementById('newPassword').value.trim();
-  const msg = document.getElementById('createAccountMsg');
-  if(newUser && newPass){
-    let accounts = JSON.parse(localStorage.getItem('accounts')) || {};
-    if(accounts[newUser]){
-      msg.textContent='Username already exists!';
-      msg.style.color='orange';
-    } else {
-      accounts[newUser] = newPass;
-      localStorage.setItem('accounts', JSON.stringify(accounts));
-      msg.textContent=`Account "${newUser}" created!`;
-      msg.style.color='#0f0';
-      document.getElementById('newUsername').value='';
-      document.getElementById('newPassword').value='';
-    }
-  } else { msg.textContent='Enter both username and password'; msg.style.color='red'; }
+function resetObject(){
+  const img=document.getElementById('objImage');
+  const resEl=document.getElementById('objResult');
+  const fileInput=document.getElementById('objFile');
+  const resetBtn=document.getElementById('objReset');
+  img.style.display='none'; img.src='';
+  resEl.textContent="Upload new image or start webcam.";
+  fileInput.value=''; resetBtn.style.display='none';
 }
 
-// Sidebar Settings
-function saveSidebarSettings(){
-  localStorage.setItem('sidebarGoogle', document.getElementById('googleText').value);
-  localStorage.setItem('sidebarSettings', document.getElementById('settingsText').value);
-  applySidebarSettings();
+// Webcam
+async function startObjectWebcam(){
+  const video=document.getElementById('objWebcam');
+  const startBtn=document.getElementById('objStart');
+  const stopBtn=document.getElementById('objStop');
+  const switchBtn=document.getElementById('objSwitch');
+  const badge=document.getElementById('objLiveBadge');
+  const resEl=document.getElementById('objResult');
+  try{
+    objWebcamStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:objCurrentFacing}, audio:false});
+    video.srcObject=objWebcamStream;
+    await video.play();
+    video.style.display='block'; startBtn.disabled=true; stopBtn.disabled=false; switchBtn.disabled=false;
+    objWebcamRunning=true; badge.style.display='block'; resEl.textContent="Starting live analysis…";
+    runObjWebcamLoop();
+  }catch(e){ console.error(e); resEl.textContent="Could not access webcam.";}
 }
-function applySidebarSettings(){
-  document.getElementById('googleBtn').textContent = localStorage.getItem('sidebarGoogle') || '🟢';
-  document.getElementById('settingsBtn').textContent = localStorage.getItem('sidebarSettings') || '⚙️';
+function stopObjectWebcam(){
+  objWebcamRunning=false;
+  if(objLoop) cancelAnimationFrame(objLoop);
+  if(objWebcamStream){ objWebcamStream.getTracks().forEach(t=>t.stop()); objWebcamStream=null; }
+  const video=document.getElementById('objWebcam');
+  video.srcObject=null; video.style.display='none';
+  document.getElementById('objStart').disabled=false;
+  document.getElementById('objStop').disabled=true;
+  document.getElementById('objSwitch').disabled=true;
+  document.getElementById('objLiveBadge').style.display='none';
 }
-
-// Sidebar Position
-function changeSidebarPosition(){
-  const pos = document.getElementById('positionSelect').value;
-  const sidebar = document.getElementById('sidebar');
-  const main = document.getElementById('mainContent');
-  sidebar.style.left=''; sidebar.style.right=''; sidebar.style.top=''; sidebar.style.bottom='';
-  main.style.marginLeft='0'; main.style.marginRight='0'; main.style.marginTop='0'; main.style.marginBottom='0';
-  if(pos==='left'){ sidebar.style.left='0'; sidebar.style.top='0'; sidebar.style.width='80px'; sidebar.style.height='100%'; sidebar.style.flexDirection='column'; main.style.marginLeft='100px'; }
-  if(pos==='right'){ sidebar.style.right='0'; sidebar.style.top='0'; sidebar.style.width='80px'; sidebar.style.height='100%'; sidebar.style.flexDirection='column'; main.style.marginRight='100px'; }
-  if(pos==='top'){ sidebar.style.top='0'; sidebar.style.left='0'; sidebar.style.width='100%'; sidebar.style.height='60px'; sidebar.style.flexDirection='row'; main.style.marginTop='80px'; }
-  if(pos==='bottom'){ sidebar.style.bottom='0'; sidebar.style.left='0'; sidebar.style.width='100%'; sidebar.style.height='60px'; sidebar.style.flexDirection='row'; main.style.marginBottom='80px'; }
-  localStorage.setItem('sidebarPosition', pos);
-}
-
-// Live Clock
-function updateTime() {
-  const now = new Date();
-  document.getElementById('sidebarTime').textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  setTimeout(updateTime, 1000);
-}
-
-// Load Saved Data
-window.onload = function(){
-  const savedImg = localStorage.getItem('profileImage');
-  if(savedImg){
-    document.getElementById('profileImage').src = savedImg;
-    document.getElementById('sidebarProfileImg').src = savedImg;
+async function switchObjectCamera(){ objCurrentFacing=(objCurrentFacing==="environment")?"user":"environment"; stopObjectWebcam(); await startObjectWebcam(); }
+let lastTs=0; const INTERVAL=500;
+async function runObjWebcamLoop(ts){
+  if(!objWebcamRunning) return;
+  objLoop=requestAnimationFrame(runObjWebcamLoop);
+  if(!lastTs || ts-lastTs>=INTERVAL){
+    lastTs=ts;
+    try{ const results=await objNet.classify(document.getElementById('objWebcam')); showObjResults(results);}
+    catch(e){ console.error(e);}
   }
-  applySidebarSettings();
-  const pos = localStorage.getItem('sidebarPosition') || 'left';
-  document.getElementById('positionSelect').value = pos;
-  changeSidebarPosition();
-  updateTime();
-  
-  // Show welcome screen by default
-  const user = localStorage.getItem('currentUser') || 'User';
-  showWelcome(user);
+}
+loadObjectModel();
+
+// ---------------- Rock Identifier ----------------
+const ROCK_MODEL_URL="https://teachablemachine.withgoogle.com/models/IZwfz2mDI/";
+let rockModel, rockWebcam=null, rockLabelContainer, rockMaxPredictions, rockRunning=false, rockFacing="environment";
+
+async function loadRockModel(){ 
+  const status=document.getElementById('rockStatus'); 
+  status.textContent="Loading rock model...";
+  rockModel=await tmImage.load(ROCK_MODEL_URL+"model.json", ROCK_MODEL_URL+"metadata.json");
+  rockMaxPredictions=rockModel.getTotalClasses();
+  status.textContent="Model loaded!"; setTimeout(()=>status.textContent="",2000);
+}
+async function startRockWebcam(){
+  if(!rockModel) await loadRockModel();
+  if(rockRunning) return;
+  const status=document.getElementById('rockStatus'); status.textContent="Starting webcam...";
+  rockWebcam=new tmImage.Webcam(300,300,false);
+  await rockWebcam.setup({facingMode:rockFacing}); await rockWebcam.play(); rockRunning=true;
+  window.requestAnimationFrame(rockLoop);
+  const container=document.getElementById('rockWebcamContainer'); container.innerHTML=""; container.appendChild(rockWebcam.canvas);
+  rockLabelContainer=document.getElementById('rockLabelContainer'); rockLabelContainer.innerHTML="";
+  for(let i=0;i<rockMaxPredictions;i++){
+    let wrap=document.createElement('div');
+    wrap.innerHTML=`<div></div><div class="bar-container"><div class="bar"></div></div>`;
+    rockLabelContainer.appendChild(wrap);
+  }
+  status.textContent="Webcam started!"; setTimeout(()=>status.textContent="",2000);
+}
+function stopRockWebcam(){ if(rockWebcam && rockRunning){ rockWebcam.stop(); rockRunning=false; document.getElementById('rockWebcamContainer').innerHTML=""; document.getElementById('rockLabelContainer').innerHTML=""; }}
+async function switchRockCamera(){ stopRockWebcam(); rockFacing=(rockFacing==="user")?"environment":"user"; await startRockWebcam(); }
+async function rockLoop(){ if(!rockRunning) return; rockWebcam.update(); await rockPredict(); window.requestAnimationFrame(rockLoop); }
+async function rockPredict(){ const pred=await rockModel.predict(rockWebcam.canvas); pred.sort((a,b)=>b.probability-a.probability); for(let i=0;i<pred.length;i++){ const percent=(pred[i].probability*100).toFixed(2); const wrap=rockLabelContainer.childNodes[i]; wrap.querySelector("div").textContent=`${pred[i].className}: ${percent}%`; wrap.querySelector(".bar").style.width=percent+"%"; wrap.querySelector(".bar").textContent=percent+"%"; }}
+async function loadRockImage(event){ if(!rockModel) await loadRockModel(); const file=event.target.files[0]; if(!file) return; const img=document.getElementById('rockImage'); const res=document.getElementById('rockResult'); res.innerHTML=""; img.style.display='none'; const url=URL.createObjectURL(file); img.src=url; img.onload=async ()=>{ let predictions=await rockModel.predict(img); predictions.sort((a,b)=>b.probability-a.probability); img.style.display='block'; res.innerHTML=predictions.slice(0,3).map(p=>{ const per=(p.probability*100).toFixed(2); return `<div>${p.className} - ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; }).join(''); URL.revokeObjectURL(url); }}
+
+// ---------------- Change Color ----------------
+const preview=document.getElementById('gradientPreview');
+function applySolid(){ preview.style.background=document.getElementById('solidColor').value; document.body.style.background=preview.style.background;}
+function applyGradient(){ preview.style.background=`linear-gradient(90deg, ${document.getElementById('gradientStart').value}, ${document.getElementById('gradientEnd').value})`; document.body.style.background=preview.style.background;}
+
+// ---------------- Chat ----------------
+function checkPassword(){
+  const pw=document.getElementById('chatPassword').value;
+  if(pw==="69310@67FLL"){ document.getElementById('chatContainer').style.display='block'; document.getElementById('chatPassword').style.display='none'; document.getElementById('chatSubmit').style.display='none'; }
+  else{ alert("Incorrect password."); }
 }
 </script>
-
 </body>
 </html>
