@@ -15,20 +15,52 @@
 }
 * { box-sizing: border-box; margin:0; padding:0; font-family: Arial,sans-serif; }
 body { background: var(--primary-blue); color: var(--text-light); overflow-x:hidden; }
-header { background: var(--accent-orange); padding: 15px; text-align:center; position: relative; z-index: 1001; }
+
+/* Header */
+header { 
+  background: var(--accent-orange); 
+  padding: 15px; 
+  text-align:center; 
+  height:110px; 
+  box-sizing:border-box;
+  position: fixed; 
+  top:0; 
+  left:0; 
+  width:100%;
+  z-index:1000;
+}
 header img { max-height: 80px; margin-bottom:8px; }
 h1 { font-size:1.8em; margin:0; }
 
+/* Sidebar */
 #sidebar {
-  position: fixed; left: 0; top: 0; width: 250px; height: 100%; background: #001d3d;
-  padding-top: 60px; transition: 0.3s; overflow-x:hidden; transform: translateX(-250px);
+  position: fixed; 
+  top: 110px; /* below header */
+  left:0; 
+  width: 250px; 
+  height: calc(100% - 110px); 
+  background: #001d3d;
+  padding-top: 10px;
+  transition: 0.3s; 
+  overflow-x:hidden; 
+  transform: translateX(-250px);
+  z-index:999;
 }
 #sidebar.show { transform: translateX(0); }
 #sidebar button { width:100%; padding: 15px; text-align:left; border:none; background:none; color:var(--text-light); font-size:1em; cursor:pointer; border-bottom:1px solid #333; }
 #sidebar button:hover { background: var(--accent-orange); color:#000; }
-#toggleSidebar { position: fixed; top:15px; left:15px; font-size:1.5em; cursor:pointer; background:none; border:none; color:var(--text-light); z-index:1002; }
 
-main { margin-left:0; padding:20px; transition: margin-left 0.3s; }
+/* Sidebar toggle button */
+#toggleSidebar { position: fixed; top:15px; left:15px; font-size:1.5em; cursor:pointer; background:none; border:none; color:var(--text-light); z-index:1001; }
+
+/* Main content */
+main { 
+  margin-left:0; 
+  padding:20px; 
+  padding-top:130px; /* space for header */
+  transition: margin-left 0.3s; 
+  min-height: calc(100vh - 110px);
+}
 main.showSidebar { margin-left:250px; }
 
 /* Common Styles for Pages */
@@ -45,37 +77,11 @@ img, video, canvas { border:4px solid var(--accent-orange); border-radius:10px; 
 /* Change Color Page */
 #gradientPreview { width:80%; height:150px; margin:20px auto; border:3px solid var(--accent-orange); border-radius:10px; background: linear-gradient(90deg,#002D62,#FF7300); }
 
-/* Chat Page (FULL SCREEN, iframe scrollable) */
-#chatPage {
-  position: fixed;
-  top: 110px; /* below header */
-  left: 0;
-  width: 100%;
-  height: calc(100vh - 110px);
-  background: var(--primary-blue);
-  z-index: 1000;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-#chatPage h2 { display:none; }
-#chatPassword, #chatSubmit {
-  width: 80%;
-  max-width: 400px;
-  margin: 20px auto;
-  display: block;
-  border-radius: 6px;
-  border: none;
-  padding: 12px;
-  font-size: 1em;
-}
-#chatSubmit { background: var(--accent-orange); color: var(--text-light); cursor: pointer; }
-
-/* Make chat iframe scrollable */
+/* Chat Page */
 #chatContainer {
-  flex: 1; /* take all remaining space */
   width: 100%;
-  overflow: auto; /* scroll independently */
+  height: calc(100vh - 20px); /* full height */
+  overflow-y: auto;
 }
 #chatContainer iframe {
   width: 100%;
@@ -88,7 +94,7 @@ footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin
 </style>
 </head>
 <body>
-<header>
+<header id="mainHeader">
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdHi23XxqOV9z8ZQ0pF_c3G-jwIhXylPvJKg&s" alt="Team 69310 Logo">
 <h1>Team 69310 and 69309 Portal</h1>
 </header>
@@ -107,7 +113,7 @@ footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin
 <h2>Object Identifier</h2>
 <p>Upload an image or use your webcam:</p>
 <input id="objFile" type="file" accept="image/*" onchange="loadObjectImage(event)" disabled>
-<button class="reset-button" id="objReset" onclick="resetObject()">Reset</button>
+<button class="reset-button" id="objReset" onclick="resetObject()" disabled>Reset</button>
 <br>
 <img id="objImage" alt="Uploaded Preview">
 <div class="spinner" id="objSpinner"></div>
@@ -153,8 +159,8 @@ footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin
 <h2>Team Chat (Password Protected)</h2>
 <input type="password" id="chatPassword" placeholder="Enter Password">
 <button id="chatSubmit" onclick="checkPassword()">Enter</button>
-<div id="chatContainer">
-<iframe src="https://deadsimplechat.com/715zJlZR3"></iframe>
+<div id="chatContainer" style="display:none;">
+<iframe src="https://deadsimplechat.com/rJ02_uAhy"></iframe>
 </div>
 </div>
 </main>
@@ -164,44 +170,50 @@ footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin
 </footer>
 
 <script>
-// Sidebar toggle
+// ---------------- Sidebar ----------------
 const sidebar = document.getElementById('sidebar');
 const mainContent = document.getElementById('mainContent');
+const headerEl = document.getElementById('mainHeader');
 document.getElementById('toggleSidebar').onclick = () => {
   sidebar.classList.toggle('show');
   mainContent.classList.toggle('showSidebar');
 };
 
-// Page switch
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
   document.getElementById(id).style.display='block';
-  sidebar.classList.remove('show');
-  mainContent.classList.remove('showSidebar');
+
+  // Show or hide header based on chat page
+  if(id === 'chatPage'){ headerEl.style.display='none'; }
+  else { headerEl.style.display='block'; }
+
+  sidebar.classList.remove('show'); mainContent.classList.remove('showSidebar');
 }
 
 // ---------------- Object Identifier ----------------
 let objNet, objWebcamStream=null, objWebcamRunning=false, objCurrentFacing="environment", objLoop=null;
 
 async function loadObjectModel(){
-  const resEl = document.getElementById('objResult');
+  const resEl=document.getElementById('objResult');
   resEl.textContent="Loading AI model...";
   objNet = await mobilenet.load({version:2, alpha:0.75});
   resEl.textContent="Model loaded. Upload image or start webcam.";
   document.getElementById('objFile').disabled=false;
   document.getElementById('objStart').disabled=false;
+  document.getElementById('objReset').disabled=false;
+  document.getElementById('objStop').disabled=false;
+  document.getElementById('objSwitch').disabled=false;
 }
+
 async function loadObjectImage(event){
   const img=document.getElementById('objImage');
   const resEl=document.getElementById('objResult');
   const spinner=document.getElementById('objSpinner');
-  const resetBtn=document.getElementById('objReset');
   img.src=URL.createObjectURL(event.target.files[0]);
   img.style.display='block';
-  resetBtn.style.display='inline-block';
-  img.onload=async ()=>{
-    spinner.style.display='block';
-    resEl.textContent="Analyzing...";
+  spinner.style.display='block';
+  resEl.textContent="Analyzing...";
+  img.onload = async ()=>{
     const results = await objNet.classify(img);
     spinner.style.display='none';
     showObjResults(results);
@@ -222,10 +234,42 @@ function resetObject(){
   const img=document.getElementById('objImage');
   const resEl=document.getElementById('objResult');
   const fileInput=document.getElementById('objFile');
-  const resetBtn=document.getElementById('objReset');
   img.style.display='none'; img.src='';
   resEl.textContent="Upload new image or start webcam.";
-  fileInput.value=''; resetBtn.style.display='none';
+  fileInput.value='';
+}
+
+// Object Webcam
+async function startObjectWebcam(){
+  const video=document.getElementById('objWebcam');
+  try{
+    objWebcamStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:objCurrentFacing}, audio:false});
+    video.srcObject=objWebcamStream;
+    await video.play();
+    objWebcamRunning=true;
+    runObjWebcamLoop();
+  } catch(e){ alert("Cannot access webcam."); }
+}
+function stopObjectWebcam(){
+  objWebcamRunning=false;
+  if(objLoop) cancelAnimationFrame(objLoop);
+  if(objWebcamStream){ objWebcamStream.getTracks().forEach(t=>t.stop()); objWebcamStream=null; }
+  document.getElementById('objWebcam').srcObject=null;
+}
+let lastTs=0; const INTERVAL=500;
+async function runObjWebcamLoop(ts){
+  if(!objWebcamRunning) return;
+  objLoop=requestAnimationFrame(runObjWebcamLoop);
+  if(!lastTs || ts-lastTs>=INTERVAL){
+    lastTs=ts;
+    const results=await objNet.classify(document.getElementById('objWebcam'));
+    showObjResults(results);
+  }
+}
+async function switchObjectCamera(){ 
+  objCurrentFacing=(objCurrentFacing==="environment")?"user":"environment";
+  stopObjectWebcam(); 
+  await startObjectWebcam(); 
 }
 
 // ---------------- Rock Identifier ----------------
@@ -233,19 +277,40 @@ const ROCK_MODEL_URL="https://teachablemachine.withgoogle.com/models/IZwfz2mDI/"
 let rockModel, rockWebcam=null, rockLabelContainer, rockMaxPredictions, rockRunning=false, rockFacing="environment";
 
 async function loadRockModel(){ 
+  if(rockModel) return;
   const status=document.getElementById('rockStatus'); 
   status.textContent="Loading rock model...";
   rockModel=await tmImage.load(ROCK_MODEL_URL+"model.json", ROCK_MODEL_URL+"metadata.json");
   rockMaxPredictions=rockModel.getTotalClasses();
-  status.textContent="Model loaded!"; setTimeout(()=>status.textContent="",2000);
+  status.textContent="Model loaded!";
 }
+
+async function loadRockImage(event){
+  if(!rockModel) await loadRockModel();
+  const file=event.target.files[0]; if(!file) return;
+  const img=document.getElementById('rockImage'); const res=document.getElementById('rockResult');
+  res.innerHTML=""; img.style.display='none';
+  const url=URL.createObjectURL(file); img.src=url;
+  img.onload=async ()=>{
+    const predictions=await rockModel.predict(img);
+    predictions.sort((a,b)=>b.probability-a.probability);
+    img.style.display='block';
+    res.innerHTML=predictions.slice(0,3).map(p=>{
+      const per=(p.probability*100).toFixed(2);
+      return `<div>${p.className} - ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`;
+    }).join('');
+    URL.revokeObjectURL(url);
+  }
+}
+
+// Rock Webcam
 async function startRockWebcam(){
   if(!rockModel) await loadRockModel();
   if(rockRunning) return;
-  const status=document.getElementById('rockStatus'); status.textContent="Starting webcam...";
   rockWebcam=new tmImage.Webcam(300,300,false);
-  await rockWebcam.setup({facingMode:rockFacing}); await rockWebcam.play(); rockRunning=true;
-  window.requestAnimationFrame(rockLoop);
+  await rockWebcam.setup({facingMode:rockFacing}); 
+  await rockWebcam.play(); 
+  rockRunning=true;
   const container=document.getElementById('rockWebcamContainer'); container.innerHTML=""; container.appendChild(rockWebcam.canvas);
   rockLabelContainer=document.getElementById('rockLabelContainer'); rockLabelContainer.innerHTML="";
   for(let i=0;i<rockMaxPredictions;i++){
@@ -253,13 +318,34 @@ async function startRockWebcam(){
     wrap.innerHTML=`<div></div><div class="bar-container"><div class="bar"></div></div>`;
     rockLabelContainer.appendChild(wrap);
   }
-  status.textContent="Webcam started!"; setTimeout(()=>status.textContent="",2000);
+  requestAnimationFrame(rockLoop);
 }
-function stopRockWebcam(){ if(rockWebcam && rockRunning){ rockWebcam.stop(); rockRunning=false; document.getElementById('rockWebcamContainer').innerHTML=""; document.getElementById('rockLabelContainer').innerHTML=""; }}
-async function switchRockCamera(){ stopRockWebcam(); rockFacing=(rockFacing==="user")?"environment":"user"; await startRockWebcam(); }
-async function rockLoop(){ if(!rockRunning) return; rockWebcam.update(); await rockPredict(); window.requestAnimationFrame(rockLoop); }
-async function rockPredict(){ const pred=await rockModel.predict(rockWebcam.canvas); pred.sort((a,b)=>b.probability-a.probability); for(let i=0;i<pred.length;i++){ const percent=(pred[i].probability*100).toFixed(2); const wrap=rockLabelContainer.childNodes[i]; wrap.querySelector("div").textContent=`${pred[i].className}: ${percent}%`; wrap.querySelector(".bar").style.width=percent+"%"; wrap.querySelector(".bar").textContent=percent+"%"; }}
-async function loadRockImage(event){ if(!rockModel) await loadRockModel(); const file=event.target.files[0]; if(!file) return; const img=document.getElementById('rockImage'); const res=document.getElementById('rockResult'); res.innerHTML=""; img.style.display='none'; const url=URL.createObjectURL(file); img.src=url; img.onload=async ()=>{ let predictions=await rockModel.predict(img); predictions.sort((a,b)=>b.probability-a.probability); img.style.display='block'; res.innerHTML=predictions.slice(0,3).map(p=>{ const per=(p.probability*100).toFixed(2); return `<div>${p.className} - ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`; }).join(''); URL.revokeObjectURL(url); }}
+function stopRockWebcam(){ 
+  if(rockWebcam && rockRunning){ 
+    rockWebcam.stop(); rockRunning=false; 
+    document.getElementById('rockWebcamContainer').innerHTML=""; 
+    document.getElementById('rockLabelContainer').innerHTML=""; 
+  }
+}
+async function switchRockCamera(){ 
+  rockFacing=(rockFacing==="user")?"environment":"user"; 
+  stopRockWebcam(); 
+  await startRockWebcam(); 
+}
+async function rockLoop(){ 
+  if(!rockRunning) return; 
+  rockWebcam.update(); 
+  const pred=await rockModel.predict(rockWebcam.canvas); 
+  pred.sort((a,b)=>b.probability-a.probability); 
+  for(let i=0;i<pred.length;i++){ 
+    const percent=(pred[i].probability*100).toFixed(2); 
+    const wrap=rockLabelContainer.childNodes[i]; 
+    wrap.querySelector("div").textContent=`${pred[i].className}: ${percent}%`; 
+    wrap.querySelector(".bar").style.width=percent+"%"; 
+    wrap.querySelector(".bar").textContent=percent+"%"; 
+  }
+  requestAnimationFrame(rockLoop);
+}
 
 // ---------------- Change Color ----------------
 const preview=document.getElementById('gradientPreview');
@@ -273,9 +359,10 @@ function checkPassword(){
     document.getElementById('chatContainer').style.display='block'; 
     document.getElementById('chatPassword').style.display='none'; 
     document.getElementById('chatSubmit').style.display='none'; 
-  }
-  else{ alert("Incorrect password."); }
+  } else { alert("Incorrect password."); }
 }
+
+loadObjectModel();
 </script>
 </body>
 </html>
