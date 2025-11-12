@@ -156,14 +156,47 @@ footer { background:#001d3d; color:#ccc; text-align:center; padding:12px; margin
 
 <!-- Team Chat -->
 <div class="page" id="chatPage">
-<h2>Team Chat (Password Protected)</h2>
-<input type="password" id="chatPassword" placeholder="Enter Password">
-<button id="chatSubmit" onclick="checkPassword()">Enter</button>
-<div id="chatContainer" style="display:none;">
-<iframe src="https://deadsimplechat.com/rJ02_uAhy"></iframe>
+  <h2>Team Chat (Password Protected)</h2>
+  <input type="password" id="chatPassword" placeholder="Enter Password">
+  <button id="chatSubmit" onclick="checkPassword()">Enter</button>
+
+  <div id="chatContainer" style="display:none;">
+    <iframe src="https://deadsimplechat.com/rJ02_uAhy"></iframe>
+    <button class="open-chat-button" onclick="window.open('https://deadsimplechat.com/rJ02_uAhy', '_blank')">
+      Open in new tab
+    </button>
+  </div>
 </div>
-</div>
-</main>
+
+<style>
+  .open-chat-button {
+    background: linear-gradient(135deg, #007BFF, #FF7F50);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .open-chat-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  }
+
+  .open-chat-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  }
+</style>
 
 <footer>
 &copy; 2025 Team 69310 and 69309 Collegiate. All rights reserved.
