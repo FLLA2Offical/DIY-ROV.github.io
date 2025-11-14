@@ -98,6 +98,21 @@ footer { background:#001a3d; color:#888; text-align:center; padding:12px; margin
 </head>
 <body>
 
+<!-- PASSWORD OVERLAY -->
+<div id="passwordOverlay" style="
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.95); color:white; display:flex;
+  justify-content:center; align-items:center; flex-direction:column;
+  z-index:9999; font-family: 'Segoe UI', sans-serif;
+">
+  <h1>Enter Passcode</h1>
+  <input type="password" id="sitePassword" placeholder="Enter Passcode" style="padding:12px; border-radius:8px; border:none; font-size:1.2em;">
+  <button onclick="unlockSite()" style="margin-top:12px; padding:12px 20px; border:none; border-radius:8px; background:#e46d0d; color:white; font-size:1.2em; cursor:pointer;">Enter</button>
+</div>
+
+<!-- MAIN SITE CONTENT -->
+<div id="siteContent" style="display:none;">
+
 <nav class="subnav">
   <button onclick="showPage('objectPage')">Object Identifier</button>
   <button onclick="showPage('rockPage')">Rock Identifier</button>
@@ -162,59 +177,179 @@ footer { background:#001a3d; color:#888; text-align:center; padding:12px; margin
 
 <!-- Team Chat -->
 <div class="page" id="chatPage">
-  <h2>Team Chat (Password Protected)</h2>
-  <input type="password" id="chatPassword" placeholder="Enter Password">
-  <button id="chatSubmit" onclick="checkPassword()">Enter</button>
-  <div id="chatContainer" style="display:none;">
+  <h2>Team Chat</h2>
+  <div id="chatContainer">
     <iframe src="https://deadsimplechat.com/rJ02_uAhy"></iframe>
     <button class="open-chat-button" onclick="window.open('https://deadsimplechat.com/rJ02_uAhy', '_blank')">Open in new tab</button>
   </div>
 </div>
 
+</main>
+
 <footer>
   69309 Portal BUTT OUT 69310
 </footer>
 
+</div> <!-- end siteContent -->
+
 <script>
+// PASSWORD PROTECTION
+function unlockSite() {
+  const pw = document.getElementById('sitePassword').value;
+  if (pw === "GOCSR") {
+    document.getElementById('passwordOverlay').style.display = 'none';
+    document.getElementById('siteContent').style.display = 'block';
+    // Load AI models only after passcode
+    loadObjectModel();
+    loadRockModel();
+  } else {
+    alert("Incorrect passcode!");
+  }
+}
+
 // Show page
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
   document.getElementById(id).style.display='block';
 }
 
-// Object Model
+// OBJECT IDENTIFIER
 let objNet, objWebcamStream=null, objWebcamRunning=false, objCurrentFacing="environment", objLoop=null;
-async function loadObjectModel(){ objNet=await mobilenet.load({version:2, alpha:0.75}); document.getElementById('objFile').disabled=false; document.getElementById('objStart').disabled=false; document.getElementById('objReset').disabled=false; document.getElementById('objStop').disabled=false; document.getElementById('objSwitch').disabled=false; document.getElementById('objResult').textContent="Model loaded.";}
-async function loadObjectImage(event){ const img=document.getElementById('objImage'); const resEl=document.getElementById('objResult'); const spinner=document.getElementById('objSpinner'); img.src=URL.createObjectURL(event.target.files[0]); img.style.display='block'; spinner.style.display='block'; img.onload=async()=>{ const results=await objNet.classify(img); spinner.style.display='none'; showObjResults(results); URL.revokeObjectURL(img.src);}}
-function showObjResults(results){ const resEl=document.getElementById('objResult'); if(results && results.length){ resEl.innerHTML=results.slice(0,3).map(r=>{ const percent=(r.probability*100).toFixed(2); return `<div>${r.className} - ${percent}%</div><div class="bar-container"><div class="bar" style="width:${percent}%">${percent}%</div></div>`; }).join(''); }else resEl.textContent="No prediction.";}
-function resetObject(){ const img=document.getElementById('objImage'); const resEl=document.getElementById('objResult'); const fileInput=document.getElementById('objFile'); img.style.display='none'; img.src=''; resEl.textContent="Upload new image or start webcam."; fileInput.value='';}
-async function startObjectWebcam(){ const video=document.getElementById('objWebcam'); try{ objWebcamStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:objCurrentFacing}, audio:false}); video.srcObject=objWebcamStream; await video.play(); objWebcamRunning=true; runObjWebcamLoop(); }catch(e){alert("Cannot access webcam.");}}
-function stopObjectWebcam(){ objWebcamRunning=false; if(objLoop) cancelAnimationFrame(objLoop); if(objWebcamStream){ objWebcamStream.getTracks().forEach(t=>t.stop()); objWebcamStream=null;} document.getElementById('objWebcam').srcObject=null;}
+async function loadObjectModel(){ 
+  objNet=await mobilenet.load({version:2, alpha:0.75}); 
+  document.getElementById('objFile').disabled=false; 
+  document.getElementById('objStart').disabled=false; 
+  document.getElementById('objReset').disabled=false; 
+  document.getElementById('objStop').disabled=false; 
+  document.getElementById('objSwitch').disabled=false; 
+  document.getElementById('objResult').textContent="Model loaded.";
+}
+async function loadObjectImage(event){ 
+  const img=document.getElementById('objImage'); 
+  const resEl=document.getElementById('objResult'); 
+  const spinner=document.getElementById('objSpinner'); 
+  img.src=URL.createObjectURL(event.target.files[0]); 
+  img.style.display='block'; 
+  spinner.style.display='block'; 
+  img.onload=async()=>{
+    const results=await objNet.classify(img); 
+    spinner.style.display='none'; 
+    showObjResults(results); 
+    URL.revokeObjectURL(img.src);
+  }
+}
+function showObjResults(results){ 
+  const resEl=document.getElementById('objResult'); 
+  if(results && results.length){ 
+    resEl.innerHTML=results.slice(0,3).map(r=>{ 
+      const percent=(r.probability*100).toFixed(2); 
+      return `<div>${r.className} - ${percent}%</div><div class="bar-container"><div class="bar" style="width:${percent}%">${percent}%</div></div>`; 
+    }).join(''); 
+  } else resEl.textContent="No prediction.";
+}
+function resetObject(){ 
+  const img=document.getElementById('objImage'); 
+  const resEl=document.getElementById('objResult'); 
+  const fileInput=document.getElementById('objFile'); 
+  img.style.display='none'; 
+  img.src=''; 
+  resEl.textContent="Upload new image or start webcam."; 
+  fileInput.value='';
+}
+async function startObjectWebcam(){ 
+  const video=document.getElementById('objWebcam'); 
+  try{ 
+    objWebcamStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:objCurrentFacing}, audio:false}); 
+    video.srcObject=objWebcamStream; 
+    await video.play(); 
+    objWebcamRunning=true; 
+    runObjWebcamLoop(); 
+  }catch(e){alert("Cannot access webcam.");}
+}
+function stopObjectWebcam(){ 
+  objWebcamRunning=false; 
+  if(objLoop) cancelAnimationFrame(objLoop); 
+  if(objWebcamStream){ objWebcamStream.getTracks().forEach(t=>t.stop()); objWebcamStream=null;} 
+  document.getElementById('objWebcam').srcObject=null;
+}
 let lastTs=0; const INTERVAL=500;
-async function runObjWebcamLoop(ts){ if(!objWebcamRunning) return; objLoop=requestAnimationFrame(runObjWebcamLoop); if(!lastTs||ts-lastTs>=INTERVAL){ lastTs=ts; const results=await objNet.classify(document.getElementById('objWebcam')); showObjResults(results); }}
-async function switchObjectCamera(){ objCurrentFacing=(objCurrentFacing==="environment")?"user":"environment"; stopObjectWebcam(); await startObjectWebcam();}
+async function runObjWebcamLoop(ts){ 
+  if(!objWebcamRunning) return; 
+  objLoop=requestAnimationFrame(runObjWebcamLoop); 
+  if(!lastTs||ts-lastTs>=INTERVAL){ 
+    lastTs=ts; 
+    const results=await objNet.classify(document.getElementById('objWebcam')); 
+    showObjResults(results); 
+  }
+}
+async function switchObjectCamera(){ 
+  objCurrentFacing=(objCurrentFacing==="environment")?"user":"environment"; 
+  stopObjectWebcam(); 
+  await startObjectWebcam();
+}
 
-// Rock Model
+// ROCK IDENTIFIER
 const ROCK_MODEL_URL="https://teachablemachine.withgoogle.com/models/IZwfz2mDI/";
 let rockModel, rockWebcam=null, rockLabelContainer, rockMaxPredictions, rockRunning=false, rockFacing="environment";
 async function loadRockModel(){ if(rockModel) return; rockModel=await tmImage.load(ROCK_MODEL_URL+"model.json", ROCK_MODEL_URL+"metadata.json"); rockMaxPredictions=rockModel.getTotalClasses();}
-async function loadRockImage(event){ if(!rockModel) await loadRockModel(); const file=event.target.files[0]; if(!file) return; const img=document.getElementById('rockImage'); img.src=URL.createObjectURL(file); img.style.display='block'; const predictions=await rockModel.predict(img); predictions.sort((a,b)=>b.probability-a.probability); rockLabelContainer=document.getElementById('rockLabelContainer'); rockLabelContainer.innerHTML=predictions.slice(0,3).map(p=>{ const per=(p.probability*100).toFixed(2); return `<div>${p.className} - ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`;}).join('');}
-async function startRockWebcam(){ if(!rockModel) await loadRockModel(); if(rockRunning) return; rockWebcam=new tmImage.Webcam(300,300,false); await rockWebcam.setup({facingMode:rockFacing}); await rockWebcam.play(); rockRunning=true; const container=document.getElementById('rockWebcamContainer'); container.innerHTML=""; container.appendChild(rockWebcam.canvas); rockLabelContainer=document.getElementById('rockLabelContainer'); rockLabelContainer.innerHTML=""; requestAnimationFrame(rockLoop);}
-function stopRockWebcam(){ if(rockWebcam && rockRunning){ rockWebcam.stop(); rockRunning=false; document.getElementById('rockWebcamContainer').innerHTML=""; document.getElementById('rockLabelContainer').innerHTML="";}}
-async function switchRockCamera(){ rockFacing=(rockFacing==="user")?"environment":"user"; stopRockWebcam(); await startRockWebcam();}
-async function rockLoop(){ if(!rockRunning) return; rockWebcam.update(); const pred=await rockModel.predict(rockWebcam.canvas); pred.sort((a,b)=>b.probability-a.probability); for(let i=0;i<pred.length;i++){ const percent=(pred[i].probability*100).toFixed(2); const wrap=rockLabelContainer.childNodes[i]; wrap.querySelector("div").textContent=`${pred[i].className}: ${percent}%`; wrap.querySelector(".bar").style.width=percent+"%"; wrap.querySelector(".bar").textContent=percent+"%"; } requestAnimationFrame(rockLoop);}
+async function loadRockImage(event){ 
+  if(!rockModel) await loadRockModel(); 
+  const file=event.target.files[0]; if(!file) return; 
+  const img=document.getElementById('rockImage'); 
+  img.src=URL.createObjectURL(file); 
+  img.style.display='block'; 
+  const predictions=await rockModel.predict(img); 
+  predictions.sort((a,b)=>b.probability-a.probability); 
+  rockLabelContainer=document.getElementById('rockLabelContainer'); 
+  rockLabelContainer.innerHTML=predictions.slice(0,3).map(p=>{ 
+    const per=(p.probability*100).toFixed(2); 
+    return `<div>${p.className} - ${per}%</div><div class="bar-container"><div class="bar" style="width:${per}%">${per}%</div></div>`;
+  }).join('');
+}
+async function startRockWebcam(){ 
+  if(!rockModel) await loadRockModel(); 
+  if(rockRunning) return; 
+  rockWebcam=new tmImage.Webcam(300,300,false); 
+  await rockWebcam.setup({facingMode:rockFacing}); 
+  await rockWebcam.play(); 
+  rockRunning=true; 
+  const container=document.getElementById('rockWebcamContainer'); 
+  container.innerHTML=""; container.appendChild(rockWebcam.canvas); 
+  rockLabelContainer=document.getElementById('rockLabelContainer'); 
+  rockLabelContainer.innerHTML=""; 
+  requestAnimationFrame(rockLoop);
+}
+function stopRockWebcam(){ 
+  if(rockWebcam && rockRunning){ 
+    rockWebcam.stop(); rockRunning=false; 
+    document.getElementById('rockWebcamContainer').innerHTML=""; 
+    document.getElementById('rockLabelContainer').innerHTML=""; 
+  }
+}
+async function switchRockCamera(){ 
+  rockFacing=(rockFacing==="user")?"environment":"user"; 
+  stopRockWebcam(); 
+  await startRockWebcam();
+}
+async function rockLoop(){ 
+  if(!rockRunning) return; 
+  rockWebcam.update(); 
+  const pred=await rockModel.predict(rockWebcam.canvas); 
+  pred.sort((a,b)=>b.probability-a.probability); 
+  for(let i=0;i<pred.length;i++){ 
+    const percent=(pred[i].probability*100).toFixed(2); 
+    const wrap=rockLabelContainer.childNodes[i]; 
+    wrap.querySelector("div").textContent=`${pred[i].className}: ${percent}%`; 
+    wrap.querySelector(".bar").style.width=percent+"%"; 
+    wrap.querySelector(".bar").textContent=percent+"%"; 
+  } 
+  requestAnimationFrame(rockLoop); 
+}
 
-// Color change
+// COLOR CHANGE
 const preview=document.getElementById('gradientPreview');
 function applySolid(){ preview.style.background=document.getElementById('solidColor').value; document.body.style.background=preview.style.background;}
 function applyGradient(){ preview.style.background=`linear-gradient(90deg, ${document.getElementById('gradientStart').value}, ${document.getElementById('gradientEnd').value})`; document.body.style.background=preview.style.background;}
-
-// Chat password
-function checkPassword(){ const pw=document.getElementById('chatPassword').value; if(pw==="GOCSR"){ document.getElementById('chatContainer').style.display='block'; document.getElementById('chatSubmit').style.display='none'; document.getElementById('chatPassword').style.display='none'; }else{alert("Incorrect password!");}}
-
-// Load models
-loadObjectModel();
-loadRockModel();
 </script>
 </body>
 </html>
