@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FLL 69309 and 69310 Collegiate Robotics</title>
+<title>FLL 69309 Collegiate Robotics</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: 'Segoe UI', sans-serif; background: #0a0f1e; color: #fff; overflow-x: hidden; }
@@ -18,14 +18,14 @@ nav.subnav { display: flex; justify-content: center; flex-wrap: wrap; background
 nav.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
 nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
 
-    .subnav-inner {
+.subnav-inner {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  background: #11376b; /* same deep blue as top bar */
+  background: #11376b;
   padding: 15px 0;
   box-shadow: 0 0 20px rgba(20,20,60,0.8);
-  border-radius: 12px; /* optional */
+  border-radius: 12px;
 }
 
 .subnav-inner button {
@@ -45,7 +45,6 @@ nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #1
   box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
   transform: scale(1.05);
 }
-
 
 section { display: none; padding: 60px 20px; text-align: center; position: relative; transition: transform 0.3s, box-shadow 0.3s; margin: 40px auto; max-width: 1000px; border-radius: 15px; background: rgba(17,55,107,0.4); box-shadow: 0 0 20px rgba(17,55,107,0.6); }
 section.active { display: block; }
@@ -75,9 +74,8 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
     <div>
         <img src="2023_Collegiate_School_Logo_1_A1.1.webp">
         <img src="69309logo.png">
-        <img src="1AEB9244-1D70-4692-8E0A-53BC04AFC0B5-removebg-preview.png">
     </div>
-    FLL 69309 and 69310 Collegiate
+    FLL 69309 Collegiate
 </header>
 
 <nav class="subnav">
@@ -89,7 +87,6 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
     <button onclick="showLoginModal()">Login</button>
 </nav>
 
-<!-- Sections -->
 <section id="home" class="active">
     <h2>Welcome</h2>
     <p>Explore our futuristic robotics projects and see our innovative solutions!</p>
@@ -124,59 +121,39 @@ footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale
         <img id="rock-uploadedImage" />
     </div>
 </section>
-  
+
 <section id="who">
     <h2>We are a First Lego League team based in New York</h2>
-    <p>FIRST is a nonprofit organization that promotes STEM. The FIRST Lego League competition is one of 3 FIRST competitions.
-    It promotes STEM, problem solving, and Gracious Professionalism. Every year there is a new season. This year's season is Unearthed.</p>
+    <p>FIRST is a nonprofit organization that promotes STEM. The FIRST Lego League competition promotes STEM, problem solving, and teamwork. Every year there is a new season. This year's season is Unearthed.</p>
     <a href="https://www.firstinspires.org/" target="_blank">Learn more about FIRST</a>
     <br>
     <a href="https://www.firstlegoleague.org/" target="_blank">Learn more about FIRST Lego League</a>
 </section>
 
-<!-- Login Modal -->
 <button onclick="window.location.href='https://diy-rov.com/portal'">Go to DIY ROV Portal</button>
-
-
 
 <footer>
     <div>Last updated: November 5, 2025</div>
     <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">Visit our YouTube Channel</a>
 </footer>
 
-<style>a:link {
-  color: orange;
-  background-color: transparent;
-  text-decoration: none;
-}
-a:visited {
-  color: orange;
-  background-color: transparent;
-  text-decoration: none;
-}
-a:hover {
-  color: blue;
-  background-color: transparent;
-  text-decoration: underline;
-}
-a:active {
-  color: blue;
-  background-color: transparent;
-  text-decoration: underline;
-}
+<style>
+a:link { color: orange; background-color: transparent; text-decoration: none; }
+a:visited { color: orange; background-color: transparent; text-decoration: none; }
+a:hover { color: blue; background-color: transparent; text-decoration: underline; }
+a:active { color: blue; background-color: transparent; text-decoration: underline; }
 header img:hover {
   box-shadow: 0 0 20px #e46d0d;
   transform: scale(1.05);
   transition: all 0.3s ease;
 }
-
 </style>
+
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
 <script>
-// Section toggling
 function showSection(id){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -187,9 +164,6 @@ function showSubpage(id){
   document.getElementById(id).style.display='block';
 }
 
-
-
-// Mobilenet AI
 let net; 
 async function loadModel(){
   net=await mobilenet.load(); 
@@ -223,7 +197,6 @@ document.addEventListener('paste', e=>{
 });
 loadModel();
 
-// Rock & Fossil AI
 const ROCK_URL="https://teachablemachine.withgoogle.com/models/IZwfz2mDI/";
 let rockModel, rockWebcam, rockLabelContainer, rockRunning=false, rockFacingMode="environment";
 async function loadRockModel(){if(rockModel) return; rockModel=await tmImage.load(ROCK_URL+"model.json", ROCK_URL+"metadata.json"); rockLabelContainer=document.getElementById('rock-label-container'); }
