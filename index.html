@@ -4,31 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLL 69309 Collegiate Robotics</title>
+
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: 'Segoe UI', sans-serif; background: #0a0f1e; color: #fff; overflow-x: hidden; }
-header { background: linear-gradient(90deg, #11376b, #e46d0d); color: #fff; text-align: center; padding: 60px 20px; font-size: 2.8em; font-weight: bold; text-shadow: 0 0 15px rgba(255,255,255,0.5); position: relative; }
+
+header { background: linear-gradient(90deg, #11376b, #e46d0d); color: #fff; text-align: center; padding: 60px 20px; font-size: 2.8em; font-weight: bold; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
 header div { display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px; }
 header img { border-radius:10px; }
-header img:first-child { height: 80px; }
-header img:nth-child(2) { height: 120px; }
-header img:last-child { height: 100px; }
 
-nav.subnav { display: flex; justify-content: center; flex-wrap: wrap; background: #11376b; padding: 15px 0; box-shadow: 0 0 20px rgba(20,20,60,0.8); }
-nav.subnav button { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
-nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b; transform: scale(1.05); }
-
-.subnav-inner {
+nav.subnav, .subnav-inner {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   background: #11376b;
   padding: 15px 0;
   box-shadow: 0 0 20px rgba(20,20,60,0.8);
-  border-radius: 12px;
 }
 
-.subnav-inner button {
+nav.subnav button, .subnav-inner button {
   background: #11376b;
   border: 2px solid #e46d0d;
   color: #e46d0d;
@@ -40,98 +34,130 @@ nav.subnav button:hover { color: #fff; box-shadow: 0 0 20px #e46d0d, 0 0 40px #1
   transition: 0.3s;
 }
 
-.subnav-inner button:hover {
+nav.subnav button:hover, .subnav-inner button:hover {
   color: #fff;
   box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
   transform: scale(1.05);
 }
 
-section { display: none; padding: 60px 20px; text-align: center; position: relative; transition: transform 0.3s, box-shadow 0.3s; margin: 40px auto; max-width: 1000px; border-radius: 15px; background: rgba(17,55,107,0.4); box-shadow: 0 0 20px rgba(17,55,107,0.6); }
+section { display: none; padding: 60px 20px; text-align: center; margin: 40px auto; max-width: 1000px; border-radius: 15px; background: rgba(17,55,107,0.4); box-shadow: 0 0 20px rgba(17,55,107,0.6); }
 section.active { display: block; }
-section:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b; }
-h2 { color: #e46d0d; font-size: 2.2em; margin-bottom: 20px; text-shadow: 0 0 10px #e46d0d; }
-p { font-size: 1.1em; line-height: 1.8em; color: #ddd; }
 
-.ai-card { background: rgba(17,55,107,0.4); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px 30px; max-width: 600px; margin: 0 auto; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid rgba(228,109,13,0.3); transition: all 0.3s ease; }
-.ai-card:hover { box-shadow: 0 0 50px #e46d0d, 0 0 100px #11376b; transform: scale(1.02); }
+h2 { color: #e46d0d; font-size: 2.2em; margin-bottom: 20px; }
 
-#uploadedImage, #rock-uploadedImage { max-width: 100%; display: none; margin: 20px 0; border: 3px solid #e46d0d; border-radius: 15px; box-shadow: 0 6px 20px rgba(228,109,13,0.3); transition: transform 0.3s ease; }
-#result, #rock-label-container { margin-top: 20px; font-size: 1.2em; font-weight: bold; color: #e46d0d; }
-
-button.ai-btn { background: #11376b; border: 2px solid #e46d0d; color: #e46d0d; padding: 12px 20px; margin: 5px 10px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
-button.ai-btn:hover { color: #fff; box-shadow: 0 0 20px #e46d0d,0 0 40px #11376b; transform: scale(1.05); }
-
-footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; font-size: 1em; }
-footer a { display:inline-block; margin-top:10px; padding:10px 20px; background:#e46d0d; color:#fff; text-decoration:none; border-radius:12px; font-weight:bold; box-shadow:0 0 15px #e46d0d, 0 0 30px #11376b; transition:0.3s; }
-footer a:hover { box-shadow:0 0 25px #e46d0d, 0 0 50px #11376b; transform: scale(1.05); }
-
-@media (max-width: 600px) { nav.subnav { flex-direction: column; } .subnav button { margin: 5px 0; } }
+footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; }
+footer a { color: #fff; background:#e46d0d; padding:10px 20px; border-radius:12px; font-weight:bold; }
 </style>
 </head>
 <body>
 
 <header>
     <div>
-        <img src="2023_Collegiate_School_Logo_1_A1.1.webp">
-        <img src="69309logo.png">
+        <img src="2023_Collegiate_School_Logo_1_A1.1.webp" height="80">
+        <img src="69309logo.png" height="120">
     </div>
     FLL 69309 Collegiate
 </header>
 
+<!-- MAIN NAV -->
 <nav class="subnav">
-    <button onclick="showSection('home')">Home</button>
-    <button onclick="showSection('innovation')">Innovation Project</button>
-    <button onclick="showSection('lego')">Lego Robot</button>
-    <button onclick="showSection('photos')">Photos</button>
-    <button onclick="showSection('who')">Who we are</button>
+    <button onclick="loadSubnav('home'); showSection('home')">Home</button>
+    <button onclick="loadSubnav('innovation'); showSection('innovation')">Innovation Project</button>
+    <button onclick="loadSubnav('lego'); showSection('lego')">Lego Robot</button>
+    <button onclick="loadSubnav('photos'); showSection('photos')">Photos</button>
+    <button onclick="loadSubnav('who'); showSection('who')">Who we are</button>
     <button onclick="showLoginModal()">Login</button>
 </nav>
 
+<!-- DYNAMIC SUBNAV GOES HERE -->
+<div id="subnav-container"></div>
+
+<!-- SECTIONS -->
 <section id="home" class="active">
     <h2>Welcome</h2>
-    <p>Explore our futuristic robotics projects and see our innovative solutions!</p>
+    <p>Explore our futuristic robotics projects!</p>
 </section>
 
 <section id="innovation">
     <h2>Innovation Project</h2>
-    <div class="subnav-inner">
-        
-        <button onclick="showSubpage('cad')">CAD Design</button>
-        <button onclick="showSubpage('materials')">Materials</button>
-        <button onclick="showSubpage('wiring')">Wiring</button>
-        <button onclick="showSubpage('problem')">Problem</button>
-        
+    <p>Select a tab above to explore our project details.</p>
+</section>
 
-    
+<section id="lego">
+    <h2>Lego Robot</h2>
+    <p>Lego robot building and programming.</p>
+</section>
+
+<section id="photos">
+    <h2>Team Photos</h2>
+    <p>Photos from events, meetings, and competitions.</p>
+</section>
 
 <section id="who">
     <h2>We are a First Lego League team based in New York</h2>
-    <p>FIRST is a nonprofit organization that promotes STEM. The FIRST Lego League competition promotes STEM, problem solving, and teamwork. Every year there is a new season. This year's season is Unearthed.</p>
-    <a href="https://www.firstinspires.org/" target="_blank">Learn more about FIRST</a>
-    <br>
-    <a href="https://www.firstlegoleague.org/" target="_blank">Learn more about FIRST Lego League</a>
+    <p>FIRST promotes STEM and problem-solving.</p>
 </section>
-
-<button onclick="window.location.href='https://diy-rov.com/portal'">Go to DIY ROV Portal</button>
 
 <footer>
     <div>Last updated: November 5, 2025</div>
-    <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">Visit our YouTube Channel</a>
+    <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">YouTube</a>
 </footer>
 
-<style>
-a:link { color: orange; background-color: transparent; text-decoration: none; }
-a:visited { color: orange; background-color: transparent; text-decoration: none; }
-a:hover { color: blue; background-color: transparent; text-decoration: underline; }
-a:active { color: blue; background-color: transparent; text-decoration: underline; }
-header img:hover {
-  box-shadow: 0 0 20px #e46d0d;
-  transform: scale(1.05);
-  transition: all 0.3s ease;
-}
-</style>
+<script>
+// -----------------------------
+// Subnav definitions by section
+// -----------------------------
+const subnavData = {
+    home: [],
+    innovation: [
+        { name: "CAD Design", func: "showSubpage('cad')" },
+        { name: "Materials", func: "showSubpage('materials')" },
+        { name: "Wiring", func: "showSubpage('wiring')" },
+        { name: "Problem", func: "showSubpage('problem')" }
+    ],
+    lego: [
+        { name: "Build", func: "showSubpage('build')" },
+        { name: "Programs", func: "showSubpage('programs')" }
+    ],
+    photos: [
+        { name: "Events", func: "showSubpage('events')" },
+        { name: "Behind the Scenes", func: "showSubpage('bts')" }
+    ],
+    who: []
+};
 
+// -----------------------------
+// Load subnav bar dynamically
+// -----------------------------
+function loadSubnav(section) {
+    const container = document.getElementById("subnav-container");
+    container.innerHTML = ""; // Clear previous subnav
+
+    const items = subnavData[section];
+    if (!items || items.length === 0) return;
+
+    let html = `<div class="subnav-inner">`;
+    items.forEach(item => {
+        html += `<button onclick="${item.func}">${item.name}</button>`;
+    });
+    html += `</div>`;
+
+    container.innerHTML = html;
+}
+
+// -----------------------------
+// Section switching
+// -----------------------------
+function showSection(id) {
+    document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+function showSubpage(name) {
+    alert("Subpage clicked: " + name);
+}
 
 </script>
+
 </body>
 </html>
