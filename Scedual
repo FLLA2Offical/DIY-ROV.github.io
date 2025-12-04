@@ -1,0 +1,2315 @@
+
+Alex Bannasch
+5:37 PM (0 minutes ago)
+to me
+
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robotics After School Manager</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      min-height: 100%;
+      width: 100%;
+    }
+   
+    * {
+      box-sizing: border-box;
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 4L18 12L11 13L8 20L4 4Z" fill="%232563eb" stroke="white" stroke-width="1.5"/></svg>') 4 4, auto;
+    }
+   
+    button, a, .clickable, .nav-btn, .action-btn, .member-select-card, .job-card, .quick-action-card, .filter-btn, .tutorial-btn, .checkbox-item {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 7L14 21M7 14L21 14" stroke="%23f97316" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="14" r="12" stroke="%232563eb" stroke-width="2" fill="none"/></svg>') 14 14, pointer !important;
+    }
+   
+    input, textarea, select {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="28" viewBox="0 0 24 28" fill="none"><rect x="2" y="2" width="20" height="24" rx="2" fill="%232563eb" stroke="white" stroke-width="1.5"/><line x1="8" y1="8" x2="16" y2="8" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="14" x2="16" y2="14" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="20" x2="13" y2="20" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>') 12 14, text !important;
+    }
+   
+    .app-container {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+   
+    /* Login Screen */
+    .auth-screen {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3%;
+    }
+   
+    .auth-card {
+      background: white;
+      border-radius: 24px;
+      padding: 3%;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+      animation: slideUp 0.5s ease-out;
+    }
+   
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+   
+    .auth-header {
+      text-align: center;
+      margin-bottom: 3%;
+      padding-bottom: 2%;
+      border-bottom: 3px solid #f0f0f0;
+    }
+   
+    .auth-header h1 {
+      margin: 0 0 1% 0;
+      font-size: 2.5em;
+      color: #667eea;
+      font-weight: 800;
+    }
+   
+    .auth-header p {
+      margin: 0;
+      font-size: 1.1em;
+      color: #666;
+    }
+   
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 2%;
+    }
+   
+    .member-select-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f0fe 100%);
+      border: 3px solid #e0e7ff;
+      border-radius: 16px;
+      padding: 3%;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+   
+    .member-select-card:hover {
+      border-color: #2563eb;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+    }
+   
+    .member-avatar-large {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8em;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+   
+    .member-select-info h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.3em;
+      color: #333;
+      font-weight: 700;
+    }
+   
+    .member-select-info p {
+      margin: 0;
+      color: #666;
+      font-size: 0.9em;
+    }
+   
+    /* Tutorial Overlay */
+    .tutorial-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 10000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 3%;
+    }
+   
+    .tutorial-overlay.show {
+      display: flex;
+    }
+   
+    .tutorial-box {
+      background: white;
+      border-radius: 24px;
+      padding: 3%;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+      animation: tutorialPop 0.4s ease-out;
+    }
+   
+    @keyframes tutorialPop {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+   
+    .tutorial-step {
+      display: none;
+    }
+   
+    .tutorial-step.active {
+      display: block;
+    }
+   
+    .tutorial-header {
+      text-align: center;
+      margin-bottom: 3%;
+    }
+   
+    .tutorial-icon {
+      font-size: 4em;
+      margin-bottom: 2%;
+    }
+   
+    .tutorial-header h2 {
+      margin: 0 0 2% 0;
+      font-size: 2.2em;
+      color: #333;
+      font-weight: 800;
+    }
+   
+    .tutorial-content {
+      color: #555;
+      font-size: 1.15em;
+      line-height: 1.8;
+      margin-bottom: 3%;
+    }
+   
+    .tutorial-content ul {
+      margin: 2% 0;
+      padding-left: 5%;
+    }
+   
+    .tutorial-content li {
+      margin: 1.5% 0;
+    }
+   
+    .tutorial-feature {
+      background: #f8f9ff;
+      border-left: 4px solid #667eea;
+      padding: 2%;
+      margin: 2% 0;
+      border-radius: 8px;
+    }
+   
+    .tutorial-feature strong {
+      color: #667eea;
+      font-size: 1.1em;
+    }
+   
+    .tutorial-progress {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 3% 0 2% 0;
+    }
+   
+    .progress-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      transition: all 0.3s;
+    }
+   
+    .progress-dot.active {
+      background: #667eea;
+      width: 30px;
+      border-radius: 6px;
+    }
+   
+    .tutorial-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 3%;
+    }
+   
+    .tutorial-btn {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1em;
+      transition: all 0.3s;
+    }
+   
+    .tutorial-btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      color: white;
+    }
+   
+    .tutorial-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+   
+    .tutorial-btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+   
+    .tutorial-btn-secondary:hover {
+      background: #d0d0d0;
+    }
+   
+    /* Top Navigation */
+    .top-nav {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 1.5% 3%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+   
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+   
+    .logo-section h1 {
+      margin: 0;
+      color: white;
+      font-size: 1.8em;
+      font-weight: 800;
+    }
+   
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: white;
+    }
+   
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: white;
+      color: #667eea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+   
+    .user-name {
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+   
+    .help-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+   
+    .help-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+   
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+   
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+   
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+   
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid transparent;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1em;
+      transition: all 0.3s;
+    }
+   
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+   
+    .nav-btn.active {
+      background: white;
+      color: #2563eb;
+      border-color: white;
+    }
+   
+    .main-content {
+      flex: 1;
+      padding: 2% 3%;
+      overflow-y: auto;
+    }
+   
+    .page {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+   
+    .page.active {
+      display: block;
+    }
+   
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+   
+    .content-card {
+      background: white;
+      border-radius: 20px;
+      padding: 3%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      margin-bottom: 2%;
+    }
+   
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3%;
+      padding-bottom: 2%;
+      border-bottom: 3px solid #f0f0f0;
+    }
+   
+    .page-header h2 {
+      margin: 0;
+      font-size: 2.2em;
+      color: #333;
+      font-weight: 800;
+    }
+   
+    .action-btn {
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1em;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    }
+   
+    .action-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.5);
+    }
+   
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+   
+    .form-group {
+      margin-bottom: 3%;
+    }
+   
+    .form-group label {
+      display: block;
+      margin-bottom: 1%;
+      font-weight: 700;
+      color: #333;
+      font-size: 1em;
+    }
+   
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1em;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+   
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+   
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+   
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 3%;
+    }
+   
+    .stat-card {
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      color: white;
+      padding: 3%;
+      border-radius: 16px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+   
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(249, 115, 22, 0.5);
+    }
+   
+    .stat-number {
+      font-size: 3em;
+      font-weight: 800;
+      margin: 0;
+    }
+   
+    .stat-label {
+      font-size: 1em;
+      opacity: 0.9;
+      margin-top: 1%;
+    }
+   
+    /* Check-in Cards */
+    .check-in-list {
+      display: grid;
+      gap: 15px;
+    }
+   
+    .check-in-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f0fe 100%);
+      border: 2px solid #e0e7ff;
+      border-radius: 16px;
+      padding: 2%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+   
+    .check-in-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+    }
+   
+    .check-in-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+   
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+   
+    .check-in-details h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.3em;
+      color: #333;
+    }
+   
+    .check-in-details p {
+      margin: 0;
+      color: #666;
+      font-size: 0.95em;
+    }
+   
+    .check-in-meta {
+      text-align: right;
+      color: #888;
+      font-size: 0.9em;
+    }
+   
+    .empty-state {
+      text-align: center;
+      padding: 5% 0;
+      color: #999;
+    }
+   
+    .empty-state h3 {
+      font-size: 1.5em;
+      margin: 0 0 1% 0;
+    }
+   
+    /* Jobs */
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 2%;
+    }
+   
+    .job-card {
+      background: white;
+      border: 3px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 2.5%;
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+   
+    .job-card:hover {
+      border-color: #2563eb;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+    }
+   
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2%;
+    }
+   
+    .job-title {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #333;
+      margin: 0;
+      flex: 1;
+      padding-right: 2%;
+    }
+   
+    .job-status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+   
+    .status-todo {
+      background: #fef3c7;
+      color: #92400e;
+    }
+   
+    .status-progress {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+   
+    .status-done {
+      background: #d1fae5;
+      color: #065f46;
+    }
+   
+    .job-priority {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      font-weight: 700;
+      margin-top: 2%;
+    }
+   
+    .priority-high {
+      background: #fee;
+      color: #b91c1c;
+    }
+   
+    .priority-medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+   
+    .priority-low {
+      background: #e0f2fe;
+      color: #075985;
+    }
+   
+    .job-description {
+      color: #666;
+      margin: 2% 0;
+      line-height: 1.5;
+    }
+   
+    .job-category {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin-top: 2%;
+    }
+   
+    .job-progress {
+      margin-top: 2%;
+      padding-top: 2%;
+      border-top: 2px solid #f0f0f0;
+    }
+   
+    .progress-label {
+      font-size: 0.85em;
+      color: #888;
+      font-weight: 600;
+      margin-bottom: 1%;
+    }
+   
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+   
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb 0%, #f97316 100%);
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+   
+    .assigned-people {
+      margin-top: 2%;
+      padding-top: 2%;
+      border-top: 2px solid #f0f0f0;
+    }
+   
+    .assigned-label {
+      font-size: 0.85em;
+      color: #888;
+      font-weight: 600;
+      margin-bottom: 1%;
+    }
+   
+    .people-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+   
+    .person-badge {
+      background: #2563eb;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+   
+    /* Team Members */
+    .member-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 2.5%;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: all 0.3s;
+    }
+   
+    .member-card:hover {
+      border-color: #2563eb;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+    }
+   
+    .member-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+   
+    .member-info {
+      flex: 1;
+    }
+   
+    .member-name {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #333;
+      margin: 0 0 5px 0;
+    }
+   
+    .member-role {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #dbeafe;
+      color: #2563eb;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+   
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 2%;
+      overflow-y: auto;
+    }
+   
+    .modal.show {
+      display: flex;
+    }
+   
+    .modal-content {
+      background: white;
+      padding: 3%;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+      max-height: 90%;
+      overflow-y: auto;
+    }
+   
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3%;
+      padding-bottom: 2%;
+      border-bottom: 3px solid #f0f0f0;
+    }
+   
+    .modal-header h2 {
+      margin: 0;
+      color: #333;
+      font-size: 2em;
+      font-weight: 800;
+    }
+   
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2em;
+      cursor: pointer;
+      color: #999;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+   
+    .close-btn:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+   
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 2%;
+    }
+   
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: #f8f9ff;
+      border: 2px solid #e0e7ff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+   
+    .checkbox-item:hover {
+      background: #dbeafe;
+      border-color: #2563eb;
+    }
+   
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+   
+    .checkbox-item label {
+      cursor: pointer;
+      margin: 0;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+   
+    .modal-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 3%;
+    }
+   
+    .btn {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1em;
+      transition: all 0.3s;
+    }
+   
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+      color: white;
+    }
+   
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.5);
+    }
+   
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+   
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+   
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+   
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+   
+    .delete-section {
+      margin-top: 3%;
+      padding-top: 3%;
+      border-top: 2px solid #fee;
+    }
+   
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      bottom: 3%;
+      right: 3%;
+      background: #333;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      display: none;
+      z-index: 2000;
+      font-size: 1em;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+   
+    .toast.show {
+      display: block;
+      animation: slideInToast 0.3s ease-out;
+    }
+   
+    @keyframes slideInToast {
+      from {
+        transform: translateX(120%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+   
+    /* Status Filters */
+    .filter-section {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 2%;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+   
+    .filter-label {
+      font-weight: 700;
+      color: #555;
+    }
+   
+    .filter-btn {
+      padding: 10px 20px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      font-size: 0.95em;
+    }
+   
+    .filter-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+   
+    .filter-btn:hover {
+      border-color: #667eea;
+    }
+   
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 3%;
+    }
+   
+    .quick-action-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f0fe 100%);
+      border: 2px solid #e0e7ff;
+      border-radius: 16px;
+      padding: 3%;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+   
+    .quick-action-card:hover {
+      border-color: #667eea;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    }
+   
+    .quick-action-icon {
+      font-size: 3em;
+      margin-bottom: 2%;
+    }
+   
+    .quick-action-title {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: #333;
+      margin: 0 0 1% 0;
+    }
+   
+    .quick-action-desc {
+      color: #666;
+      font-size: 0.9em;
+      margin: 0;
+    }
+   
+    /* Responsive */
+    @media (max-width: 768px) {
+      .member-grid {
+        grid-template-columns: 1fr;
+      }
+     
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+     
+      .jobs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-container"><!-- Login Screen -->
+   <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+     <div class="auth-header">
+      <h1>🤖 Select Your Profile</h1>
+      <p>Choose your name to get started</p>
+     </div>
+     <div class="member-grid" id="memberSelectGrid"></div>
+    </div>
+   </div><!-- Main App -->
+   <div id="mainApp" style="display: none; width: 100%; min-height: 100%; flex-direction: column;">
+    <nav class="top-nav">
+     <div class="logo-section">
+      <h1 id="appTitle">🤖 Robotics After School</h1>
+     </div>
+     <div class="user-info"><button class="help-btn" id="helpBtn">📚 Help</button>
+      <div class="user-avatar" id="userAvatar">
+       ?
+      </div>
+      <div class="user-name" id="userName">
+       User
+      </div><button class="logout-btn" id="logoutBtn">Sign Out</button>
+     </div>
+    </nav>
+    <div style="display: flex; background: rgba(255, 255, 255, 0.1); padding: 1% 3%;">
+     <div class="nav-links"><button class="nav-btn active" data-page="dashboard">📊 Dashboard</button> <button class="nav-btn" data-page="check-in">✅ Check In</button> <button class="nav-btn" data-page="jobs">�� Jobs</button> <button class="nav-btn" data-page="team">👥 Team</button> <button class="nav-btn" data-page="announcements">📢 Announcements</button>
+     </div>
+    </div>
+    <main class="main-content"><!-- Dashboard Page -->
+     <div id="dashboard" class="page active">
+      <div class="content-card">
+       <div class="page-header">
+        <h2>🚀 Quick Actions</h2>
+       </div>
+       <div class="quick-actions">
+        <div class="quick-action-card" data-action="check-in">
+         <div class="quick-action-icon">
+          ✅
+         </div>
+         <h3 class="quick-action-title">Check In</h3>
+         <p class="quick-action-desc">Log your arrival &amp; activity</p>
+        </div>
+        <div class="quick-action-card" data-action="create-job">
+         <div class="quick-action-icon">
+          ➕
+         </div>
+         <h3 class="quick-action-title">Create Job</h3>
+         <p class="quick-action-desc">Add new task for team</p>
+        </div>
+        <div class="quick-action-card" data-action="view-team">
+         <div class="quick-action-icon">
+          👥
+         </div>
+         <h3 class="quick-action-title">View Team</h3>
+         <p class="quick-action-desc">See all team members</p>
+        </div>
+        <div class="quick-action-card" data-action="tutorial">
+         <div class="quick-action-icon">
+          📚
+         </div>
+         <h3 class="quick-action-title">Tutorial</h3>
+         <p class="quick-action-desc">Learn how to use app</p>
+        </div>
+       </div>
+      </div>
+      <div class="content-card">
+       <div class="stats-grid">
+        <div class="stat-card">
+         <div class="stat-number" id="statCheckedIn">
+          0
+         </div>
+         <div class="stat-label">
+          Checked In Today
+         </div>
+        </div>
+        <div class="stat-card">
+         <div class="stat-number" id="statActiveJobs">
+          0
+         </div>
+         <div class="stat-label">
+          Active Jobs
+         </div>
+        </div>
+        <div class="stat-card">
+         <div class="stat-number" id="statTotalMembers">
+          11
+         </div>
+         <div class="stat-label">
+          Team Members
+         </div>
+        </div>
+        <div class="stat-card">
+         <div class="stat-number" id="statCompleted">
+          0
+         </div>
+         <div class="stat-label">
+          Completed Jobs
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="content-card">
+       <div class="page-header">
+        <h2>📋 Recent Check-Ins</h2>
+       </div>
+       <div id="recentCheckIns"></div>
+      </div>
+      <div class="content-card">
+       <div class="page-header">
+        <h2>🔥 High Priority Jobs</h2>
+       </div>
+       <div id="priorityJobsList"></div>
+      </div>
+     </div><!-- Check In Page -->
+     <div id="check-in" class="page">
+      <div class="content-card">
+       <div class="page-header">
+        <h2>✅ Check In</h2><button class="action-btn" id="viewHistoryBtn">📜 My History</button>
+       </div>
+       <form id="checkInForm">
+        <div class="form-group"><label for="checkInActivity">What are you working on today? *</label> <select id="checkInActivity" required> <option value="">Select activity...</option> <option value="�� Programming">💻 Programming</option> <option value="🔧 Building">🔧 Building</option> <option value="✏️ Design">✏️ Design</option> <option value="🧪 Testing">🧪 Testing</option> <option value="📝 Documentation">📝 Documentation</option> <option value="📋 Planning">📋 Planning</option> <option value="🎨 CAD Modeling">🎨 CAD Modeling</option> <option value="⚡ Wiring">⚡ Wiring</option> </select>
+        </div>
+        <div class="form-group"><label for="checkInTime">When are you leaving? *</label> <select id="checkInTime" required> <option value="">Select time...</option> <option value="4:30 PM">4:30 PM</option> <option value="5:00 PM">5:00 PM</option> <option value="5:15 PM">5:15 PM</option> <option value="5:30 PM">5:30 PM</option> <option value="6:00 PM">6:00 PM</option> </select>
+        </div>
+        <div class="form-group"><label for="checkInNotes">Additional Notes (Optional)</label> <textarea id="checkInNotes" placeholder="Any goals, questions, or notes for today..."></textarea>
+        </div><button type="submit" class="action-btn" style="width: 100%;">✓ Check In Now</button>
+       </form>
+      </div>
+      <div class="content-card" style="margin-top: 2%;">
+       <div class="page-header">
+        <h2>Today's Check-Ins (Live)</h2>
+       </div>
+       <div id="todayCheckIns"></div>
+      </div>
+     </div><!-- Jobs Page -->
+     <div id="jobs" class="page">
+      <div class="content-card">
+       <div class="page-header">
+        <h2>🔧 Manage Jobs</h2><button class="action-btn" id="createJobBtn">+ Create New Job</button>
+       </div>
+       <div class="filter-section"><span class="filter-label">Status:</span> <button class="filter-btn active" data-filter="status" data-value="all">All</button> <button class="filter-btn" data-filter="status" data-value="To Do">📋 To Do</button> <button class="filter-btn" data-filter="status" data-value="In Progress">🔄 In Progress</button> <button class="filter-btn" data-filter="status" data-value="Done">✅ Done</button>
+       </div>
+       <div class="filter-section"><span class="filter-label">Priority:</span> <button class="filter-btn active" data-filter="priority" data-value="all">All</button> <button class="filter-btn" data-filter="priority" data-value="High">🔴 High</button> <button class="filter-btn" data-filter="priority" data-value="Medium">🟡 Medium</button> <button class="filter-btn" data-filter="priority" data-value="Low">🟢 Low</button>
+       </div>
+       <div class="filter-section"><span class="filter-label">Category:</span> <button class="filter-btn active" data-filter="category" data-value="all">All</button> <button class="filter-btn" data-filter="category" data-value="Robot">🤖 Robot</button> <button class="filter-btn" data-filter="category" data-value="Software">💻 Software</button> <button class="filter-btn" data-filter="category" data-value="Documentation">📝 Docs</button> <button class="filter-btn" data-filter="category" data-value="Other">📦 Other</button>
+       </div>
+       <div id="jobsContainer" class="jobs-grid"></div>
+      </div>
+     </div><!-- Team Page -->
+     <div id="team" class="page">
+      <div class="content-card">
+       <div class="page-header">
+        <h2>�������� Team Members</h2>
+       </div>
+       <div id="teamContainer" style="display: grid; gap: 15px;"></div>
+      </div>
+     </div><!-- Announcements Page -->
+     <div id="announcements" class="page">
+      <div class="content-card">
+       <div class="page-header">
+        <h2>📢 Team Announcements</h2><button class="action-btn" id="createAnnouncementBtn">+ New Announcement</button>
+       </div>
+       <div id="announcementsContainer"></div>
+      </div>
+     </div>
+    </main>
+   </div>
+  </div><!-- Tutorial Overlay -->
+  <div class="tutorial-overlay" id="tutorialOverlay">
+   <div class="tutorial-box"><!-- Step 1: Welcome -->
+    <div class="tutorial-step active" data-step="1">
+     <div class="tutorial-header">
+      <div class="tutorial-icon">
+       👋
+      </div>
+      <h2>Welcome to Robotics Manager!</h2>
+     </div>
+     <div class="tutorial-content">
+      <p>This interactive tutorial will show you everything you need to know to use this app effectively. Let's get started!</p>
+      <div class="tutorial-feature"><strong>🎯 What You'll Learn:</strong>
+       <ul>
+        <li>How to check in and track your time</li>
+        <li>Creating and managing team jobs</li>
+        <li>Collaborating with your teammates</li>
+        <li>Tracking progress and priorities</li>
+       </ul>
+      </div>
+     </div>
+     <div class="tutorial-progress">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+     </div>
+     <div class="tutorial-actions"><button class="tutorial-btn tutorial-btn-secondary" id="skipTutorial">Skip Tutorial</button> <button class="tutorial-btn tutorial-btn-primary" data-next="2">Next →</button>
+     </div>
+    </div><!-- Step 2: Dashboard -->
+    <div class="tutorial-step" data-step="2">
+     <div class="tutorial-header">
+      <div class="tutorial-icon">
+       📊
+      </div>
+      <h2>Dashboard Overview</h2>
+     </div>
+     <div class="tutorial-content">
+      <p>The Dashboard is your command center! Here you can:</p>
+      <div class="tutorial-feature"><strong>🚀 Quick Actions</strong>
+       <p>Jump to any task with one click - check in, create jobs, view team, or restart this tutorial.</p>
+      </div>
+      <div class="tutorial-feature"><strong>📊 Live Stats</strong>
+       <p>See real-time updates: who's checked in, active jobs, team size, and completed tasks.</p>
+      </div>
+      <div class="tutorial-feature"><strong>📋 Recent Activity</strong>
+       <p>View latest check-ins and high-priority jobs that need attention.</p>
+      </div>
+     </div>
+     <div class="tutorial-progress">
+      <div class="progress-dot"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+     </div>
+     <div class="tutorial-actions"><button class="tutorial-btn tutorial-btn-secondary" data-next="1">← Back</button> <button class="tutorial-btn tutorial-btn-primary" data-next="3">Next →</button>
+     </div>
+    </div><!-- Step 3: Check In -->
+    <div class="tutorial-step" data-step="3">
+     <div class="tutorial-header">
+      <div class="tutorial-icon">
+       ✅
+      </div>
+      <h2>Checking In</h2>
+     </div>
+     <div class="tutorial-content">
+      <p>Always check in when you arrive! This helps everyone know who's here and what they're working on.</p>
+      <div class="tutorial-feature"><strong>✓ How to Check In:</strong>
+       <ol>
+        <li>Click "Check In" in the navigation</li>
+        <li>Select your activity (Programming, Building, etc.)</li>
+        <li>Choose your departure time</li>
+        <li>Add optional notes about your goals</li>
+        <li>Click "Check In Now"</li>
+       </ol>
+      </div>
+      <div class="tutorial-feature"><strong>👀 Live Updates</strong>
+       <p>Check-ins appear instantly for everyone on the team! You'll see them on the Dashboard and Check In page.</p>
+      </div>
+     </div>
+     <div class="tutorial-progress">
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+     </div>
+     <div class="tutorial-actions"><button class="tutorial-btn tutorial-btn-secondary" data-next="2">← Back</button> <button class="tutorial-btn tutorial-btn-primary" data-next="4">Next ��</button>
+     </div>
+    </div><!-- Step 4: Jobs -->
+    <div class="tutorial-step" data-step="4">
+     <div class="tutorial-header">
+      <div class="tutorial-icon">
+       🔧
+      </div>
+      <h2>Managing Jobs</h2>
+     </div>
+     <div class="tutorial-content">
+      <p>Jobs help organize your team's work. Everyone can create and update jobs!</p>
+      <div class="tutorial-feature"><strong>➕ Creating Jobs:</strong>
+       <ol>
+        <li>Click "Create New Job" button</li>
+        <li>Enter job title and description</li>
+        <li>Set status (To Do, In Progress, Done)</li>
+        <li>Choose priority (High, Medium, Low)</li>
+        <li>Select category and set progress %</li>
+        <li>Assign team members who'll work on it</li>
+       </ol>
+      </div>
+      <div class="tutorial-feature"><strong>�� Editing Jobs:</strong>
+       <p>Click any job card to edit it. Update status, progress, or reassign people. Changes appear instantly for everyone!</p>
+      </div>
+      <div class="tutorial-feature"><strong>🔍 Smart Filters:</strong>
+       <p>Filter jobs by Status, Priority, or Category to focus on what matters most.</p>
+      </div>
+     </div>
+     <div class="tutorial-progress">
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+     </div>
+     <div class="tutorial-actions"><button class="tutorial-btn tutorial-btn-secondary" data-next="3">← Back</button> <button class="tutorial-btn tutorial-btn-primary" data-next="5">Next →</button>
+     </div>
+    </div><!-- Step 5: Collaboration -->
+    <div class="tutorial-step" data-step="5">
+     <div class="tutorial-header">
+      <div class="tutorial-icon">
+       ��
+      </div>
+      <h2>You're Ready!</h2>
+     </div>
+     <div class="tutorial-content">
+      <div class="tutorial-feature"><strong>🌟 Key Features to Remember:</strong>
+       <ul>
+        <li><strong>Real-Time Sync:</strong> All changes appear instantly for everyone</li>
+        <li><strong>Team Page:</strong> See all 13 team members and their roles</li>
+        <li><strong>Announcements:</strong> Share important updates with the team</li>
+        <li><strong>Help Button:</strong> Restart this tutorial anytime from the top bar</li>
+       </ul>
+      </div>
+      <div class="tutorial-feature"><strong>💡 Pro Tips:</strong>
+       <ul>
+        <li>Check in as soon as you arrive</li>
+        <li>Update job progress regularly</li>
+        <li>Use high priority for urgent tasks</li>
+        <li>Assign jobs to coordinate work</li>
+        <li>Check the dashboard for quick overview</li>
+       </ul>
+      </div>
+      <p style="text-align: center; font-weight: 700; font-size: 1.2em; color: #667eea; margin-top: 3%;">Ready to start? Let's go! 🚀</p>
+     </div>
+     <div class="tutorial-progress">
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot active"></div>
+     </div>
+     <div class="tutorial-actions"><button class="tutorial-btn tutorial-btn-secondary" data-next="4">← Back</button> <button class="tutorial-btn tutorial-btn-primary" id="finishTutorial">Start Using App! 🎉</button>
+     </div>
+    </div>
+   </div>
+  </div><!-- Job Modal -->
+  <div class="modal" id="jobModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h2 id="jobModalTitle">Create New Job</h2><button class="close-btn" id="closeJobModal">×</button>
+    </div>
+    <form id="jobForm">
+     <div class="form-group"><label for="jobTitle">Job Title *</label> <input type="text" id="jobTitle" required placeholder="e.g., Build Intake Mechanism">
+     </div>
+     <div class="form-group"><label for="jobDescription">Description *</label> <textarea id="jobDescription" required placeholder="What needs to be done? Be specific..."></textarea>
+     </div>
+     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2%;">
+      <div class="form-group"><label for="jobStatus">Status *</label> <select id="jobStatus" required> <option value="To Do">📋 To Do</option> <option value="In Progress">🔄 In Progress</option> <option value="Done">✅ Done</option> </select>
+      </div>
+      <div class="form-group"><label for="jobPriority">Priority *</label> <select id="jobPriority" required> <option value="High">🔴 High</option> <option value="Medium">🟡 Medium</option> <option value="Low">🟢 Low</option> </select>
+      </div>
+     </div>
+     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2%;">
+      <div class="form-group"><label for="jobCategory">Category *</label> <select id="jobCategory" required> <option value="Robot">🤖 Robot</option> <option value="Software">💻 Software</option> <option value="Documentation">📝 Documentation</option> <option value="Other">📦 Other</option> </select>
+      </div>
+      <div class="form-group"><label for="jobProgress">Progress % *</label> <input type="number" id="jobProgress" min="0" max="100" value="0" required>
+      </div>
+     </div>
+     <div class="form-group"><label for="jobDueDate">Due Date (Optional)</label> <input type="date" id="jobDueDate">
+     </div>
+     <div class="form-group"><label>Assign Team Members</label>
+      <div class="checkbox-group" id="assignPeopleList"></div>
+     </div>
+     <div class="modal-actions"><button type="submit" class="btn btn-primary" id="saveJobBtn">💾 Save Job</button> <button type="button" class="btn btn-secondary" id="cancelJobBtn">Cancel</button>
+     </div>
+     <div class="delete-section" id="deleteJobSection" style="display: none;"><button type="button" class="btn btn-danger" id="deleteJobBtn" style="width: 100%;">🗑️ Delete Job</button>
+     </div>
+    </form>
+   </div>
+  </div><!-- Announcement Modal -->
+  <div class="modal" id="announcementModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h2>Create Announcement</h2><button class="close-btn" id="closeAnnouncementModal">×</button>
+    </div>
+    <form id="announcementForm">
+     <div class="form-group"><label for="announcementTitle">Title *</label> <input type="text" id="announcementTitle" required placeholder="e.g., Competition Next Week!">
+     </div>
+     <div class="form-group"><label for="announcementMessage">Message *</label> <textarea id="announcementMessage" required placeholder="Share important information with the team..."></textarea>
+     </div>
+     <div class="modal-actions"><button type="submit" class="btn btn-primary">📢 Post Announcement</button> <button type="button" class="btn btn-secondary" id="cancelAnnouncementBtn">Cancel</button>
+     </div>
+    </form>
+   </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    // Predefined team members
+    const TEAM_MEMBERS = [
+      { name: 'Salva', role: 'Team Member', id: 'salva' },
+      { name: 'Alex', role: 'Team Member', id: 'alex' },
+      { name: 'Andrew', role: 'Team Member', id: 'andrew' },
+      { name: 'Mason', role: 'Team Member', id: 'mason' },
+      { name: 'Ian', role: 'Team Member', id: 'ian' },
+      { name: 'Hundon', role: 'Team Member', id: 'hundon' },
+      { name: 'Will', role: 'Team Member', id: 'will' },
+      { name: 'Theodore', role: 'Team Member', id: 'theodore' },
+      { name: 'James', role: 'Team Member', id: 'james' },
+      { name: 'Jake', role: 'Team Member', id: 'jake' },
+      { name: 'Elliot', role: 'Team Member', id: 'elliot' }
+    ];
+   
+    const defaultConfig = {
+      schedule_title: 'Robotics After School',
+      subtitle: 'Tuesday & Thursday 3:30 - 6:00 PM',
+      primary_color: '#2563eb',
+      surface_color: '#ffffff',
+      text_color: '#333333',
+      accent_color: '#f97316',
+      button_color: '#e0e0e0',
+      font_family: 'system-ui',
+      font_size: 16
+    };
+   
+    let currentData = [];
+    let currentUser = null;
+    let selectedDate = new Date().toISOString().split('T')[0];
+    let editingJob = null;
+    let currentPage = 'dashboard';
+    let jobFilters = { status: 'all', priority: 'all', category: 'all' };
+   
+    async function onConfigChange(config) {
+      const appTitle = document.getElementById('appTitle');
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const buttonColor = config.button_color || defaultConfig.button_color;
+     
+      appTitle.textContent = `🤖 ${config.schedule_title || defaultConfig.schedule_title}`;
+     
+      document.body.style.fontFamily = `${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+      document.body.style.fontSize = `${baseSize}px`;
+     
+      document.body.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${accentColor} 100%)`;
+     
+      const contentCards = document.querySelectorAll('.content-card, .modal-content, .auth-card, .tutorial-box');
+      contentCards.forEach(card => {
+        card.style.background = surfaceColor;
+      });
+     
+      const allText = document.querySelectorAll('.page-header h2, .modal-header h2, .job-title, .check-in-details h3, .member-name, label, .auth-header h1, .tutorial-header h2, .quick-action-title');
+      allText.forEach(el => {
+        el.style.color = textColor;
+      });
+     
+      const actionButtons = document.querySelectorAll('.action-btn, .btn-primary, .tutorial-btn-primary');
+      actionButtons.forEach(btn => {
+        btn.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${accentColor} 100%)`;
+      });
+     
+      const navButtons = document.querySelectorAll('.nav-btn.active');
+      navButtons.forEach(btn => {
+        btn.style.background = surfaceColor;
+        btn.style.color = primaryColor;
+      });
+     
+      const secondaryButtons = document.querySelectorAll('.btn-secondary, .filter-btn, .tutorial-btn-secondary');
+      secondaryButtons.forEach(btn => {
+        btn.style.background = buttonColor;
+      });
+     
+      const filterBtnsActive = document.querySelectorAll('.filter-btn.active');
+      filterBtnsActive.forEach(btn => {
+        btn.style.background = primaryColor;
+        btn.style.color = surfaceColor;
+        btn.style.borderColor = primaryColor;
+      });
+    }
+   
+    const dataHandler = {
+      onDataChanged(data) {
+        currentData = data;
+        if (currentUser) {
+          renderDashboard();
+          renderCheckIns();
+          renderJobs();
+          renderTeam();
+          renderAnnouncements();
+        }
+      }
+    };
+   
+    async function initApp() {
+      const sdkResult = await window.dataSdk.init(dataHandler);
+      if (!sdkResult.isOk) {
+        showToast('Failed to initialize app');
+        return;
+      }
+     
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (value) => {
+                  config.primary_color = value;
+                  window.elementSdk.setConfig({ primary_color: value });
+                }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.accent_color || defaultConfig.accent_color,
+                set: (value) => {
+                  config.accent_color = value;
+                  window.elementSdk.setConfig({ accent_color: value });
+                }
+              },
+              {
+                get: () => config.button_color || defaultConfig.button_color,
+                set: (value) => {
+                  config.button_color = value;
+                  window.elementSdk.setConfig({ button_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['schedule_title', config.schedule_title || defaultConfig.schedule_title],
+            ['subtitle', config.subtitle || defaultConfig.subtitle]
+          ])
+        });
+      }
+     
+      renderMemberSelectGrid();
+      setupNavigation();
+      setupEventListeners();
+      setupTutorial();
+      setupQuickActions();
+    }
+   
+    function renderMemberSelectGrid() {
+      const grid = document.getElementById('memberSelectGrid');
+      grid.innerHTML = TEAM_MEMBERS.map(member => `
+        <div class="member-select-card" data-member-id="${member.id}">
+          <div class="member-avatar-large">${member.name[0]}</div>
+          <div class="member-select-info">
+            <h3>${member.name}</h3>
+            <p>${member.role}</p>
+          </div>
+        </div>
+      `).join('');
+     
+      document.querySelectorAll('.member-select-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const memberId = card.dataset.memberId;
+          const member = TEAM_MEMBERS.find(m => m.id === memberId);
+          loginUser(member);
+        });
+      });
+    }
+   
+    function loginUser(member) {
+      currentUser = {
+        id: member.id,
+        person_name: member.name,
+        role: member.role
+      };
+     
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'flex';
+     
+      document.getElementById('userName').textContent = member.name;
+      document.getElementById('userAvatar').textContent = member.name[0].toUpperCase();
+     
+      populateAssignPeopleList();
+      renderDashboard();
+      renderCheckIns();
+      renderJobs();
+      renderTeam();
+      renderAnnouncements();
+     
+      // Show tutorial only for first-time users
+      const hasSeenTutorial = localStorage.getItem(`tutorial_${member.id}`);
+      if (!hasSeenTutorial) {
+        setTimeout(() => showTutorial(), 500);
+      }
+     
+      showToast(`Welcome, ${member.name}! 👋`);
+    }
+   
+    function setupNavigation() {
+      const navButtons = document.querySelectorAll('.nav-btn');
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = btn.dataset.page;
+          switchPage(page);
+        });
+      });
+    }
+   
+    function switchPage(page) {
+      currentPage = page;
+     
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(page).classList.add('active');
+     
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    }
+   
+    function populateAssignPeopleList() {
+      const container = document.getElementById('assignPeopleList');
+      container.innerHTML = TEAM_MEMBERS.map(member => `
+        <div class="checkbox-item">
+          <input type="checkbox" id="assign_${member.id}" value="${member.id}">
+          <label for="assign_${member.id}">${member.name}</label>
+        </div>
+      `).join('');
+    }
+   
+    function setupEventListeners() {
+      document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+      document.getElementById('helpBtn').addEventListener('click', showTutorial);
+      document.getElementById('checkInForm').addEventListener('submit', handleCheckIn);
+      document.getElementById('createJobBtn').addEventListener('click', () => openJobModal());
+      document.getElementById('closeJobModal').addEventListener('click', closeJobModal);
+      document.getElementById('cancelJobBtn').addEventListener('click', closeJobModal);
+      document.getElementById('jobForm').addEventListener('submit', handleJobSave);
+      document.getElementById('deleteJobBtn').addEventListener('click', handleJobDelete);
+      document.getElementById('createAnnouncementBtn').addEventListener('click', openAnnouncementModal);
+      document.getElementById('closeAnnouncementModal').addEventListener('click', closeAnnouncementModal);
+      document.getElementById('cancelAnnouncementBtn').addEventListener('click', closeAnnouncementModal);
+      document.getElementById('announcementForm').addEventListener('submit', handleAnnouncementSubmit);
+     
+      // Job filters
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const filterType = btn.dataset.filter;
+          const filterValue = btn.dataset.value;
+         
+          document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+         
+          jobFilters[filterType] = filterValue;
+          renderJobs();
+        });
+      });
+    }
+   
+    function handleLogout() {
+      currentUser = null;
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('authScreen').style.display = 'flex';
+      currentPage = 'dashboard';
+      jobFilters = { status: 'all', priority: 'all', category: 'all' };
+      showToast('Signed out successfully');
+    }
+   
+    function renderDashboard() {
+      const today = new Date().toISOString().split('T')[0];
+      const checkIns = currentData.filter(d => d.type === 'check-in' && d.date === today);
+      const jobs = currentData.filter(d => d.type === 'job');
+      const completedJobs = jobs.filter(j => j.status === 'Done');
+      const activeJobs = jobs.filter(j => j.status !== 'Done');
+     
+      document.getElementById('statCheckedIn').textContent = checkIns.length;
+      document.getElementById('statActiveJobs').textContent = activeJobs.length;
+      document.getElementById('statCompleted').textContent = completedJobs.length;
+     
+      // Recent check-ins
+      const recentCheckIns = document.getElementById('recentCheckIns');
+      if (checkIns.length === 0) {
+        recentCheckIns.innerHTML = `
+          <div class="empty-state">
+            <h3>No check-ins yet today</h3>
+            <p>Be the first to check in!</p>
+          </div>
+        `;
+      } else {
+        recentCheckIns.innerHTML = checkIns.slice(0, 5).map(checkIn => {
+          const time = new Date(checkIn.checked_in_at).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit'
+          });
+          return `
+            <div class="check-in-card">
+              <div class="check-in-info">
+                <div class="avatar">${checkIn.person_name[0]}</div>
+                <div class="check-in-details">
+                  <h3>${checkIn.person_name}</h3>
+                  <p>${checkIn.activity} �� Leaving at ${checkIn.time_slot}</p>
+                </div>
+              </div>
+              <div class="check-in-meta">
+                ${time}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+     
+      // High priority jobs
+      const priorityJobsList = document.getElementById('priorityJobsList');
+      const highPriorityJobs = jobs.filter(j => j.priority === 'High' && j.status !== 'Done');
+     
+      if (highPriorityJobs.length === 0) {
+        priorityJobsList.innerHTML = `
+          <div class="empty-state">
+            <h3>No high priority jobs</h3>
+            <p>Create jobs to organize team work</p>
+          </div>
+        `;
+      } else {
+        priorityJobsList.innerHTML = `<div class="jobs-grid">${highPriorityJobs.slice(0, 3).map(job => createJobCardHTML(job)).join('')}</div>`;
+       
+        document.querySelectorAll('#priorityJobsList .job-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const jobId = card.dataset.jobId;
+            const job = currentData.find(j => j.__backendId === jobId);
+            if (job) openJobModal(job);
+          });
+        });
+      }
+    }
+   
+    function createJobCardHTML(job) {
+      const assignedIds = job.assigned_people ? job.assigned_people.split(',') : [];
+      const assignedNames = assignedIds.map(id => {
+        const member = TEAM_MEMBERS.find(m => m.id === id);
+        return member ? member.name : '';
+      }).filter(name => name);
+     
+      const statusClass = job.status === 'To Do' ? 'status-todo' :
+                         job.status === 'In Progress' ? 'status-progress' : 'status-done';
+     
+      const priorityClass = job.priority === 'High' ? 'priority-high' :
+                           job.priority === 'Medium' ? 'priority-medium' : 'priority-low';
+     
+      return `
+        <div class="job-card" data-job-id="${job.__backendId}">
+          <div class="job-header">
+            <h3 class="job-title">${job.activity}</h3>
+            <span class="job-status ${statusClass}">${job.status}</span>
+          </div>
+          <span class="job-priority ${priorityClass}">${job.priority} Priority</span>
+          <span class="job-category">${job.category || 'Other'}</span>
+          <div class="job-description">${job.notes || 'No description'}</div>
+          <div class="job-progress">
+            <div class="progress-label">Progress: ${job.progress || 0}%</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${job.progress || 0}%"></div>
+            </div>
+          </div>
+          <div class="assigned-people">
+            <div class="assigned-label">ASSIGNED TO:</div>
+            <div class="people-badges">
+              ${assignedNames.length > 0 ? assignedNames.map(name => `
+                <span class="person-badge">${name}</span>
+              `).join('') : '<span style="color: #999;">No one assigned</span>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+   
+    function renderCheckIns() {
+      const today = new Date().toISOString().split('T')[0];
+      const checkIns = currentData.filter(d => d.type === 'check-in' && d.date === today);
+     
+      const container = document.getElementById('todayCheckIns');
+      if (checkIns.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No check-ins yet</h3>
+            <p>Check in to let everyone know you're here!</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<div class="check-in-list">${checkIns.map(checkIn => {
+          const time = new Date(checkIn.checked_in_at).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit'
+          });
+          return `
+            <div class="check-in-card">
+              <div class="check-in-info">
+                <div class="avatar">${checkIn.person_name[0]}</div>
+                <div class="check-in-details">
+                  <h3>${checkIn.person_name}</h3>
+                  <p>${checkIn.activity} • Leaving at ${checkIn.time_slot}</p>
+                  ${checkIn.notes ? `<p style="margin-top: 5px; font-style: italic;">"${checkIn.notes}"</p>` : ''}
+                </div>
+              </div>
+              <div class="check-in-meta">
+                Checked in at ${time}
+              </div>
+            </div>
+          `;
+        }).join('')}</div>`;
+      }
+    }
+   
+    function renderJobs() {
+      const jobs = currentData.filter(d => d.type === 'job');
+     
+      let filteredJobs = jobs.filter(job => {
+        const statusMatch = jobFilters.status === 'all' || job.status === jobFilters.status;
+        const priorityMatch = jobFilters.priority === 'all' || job.priority === jobFilters.priority;
+        const categoryMatch = jobFilters.category === 'all' || (job.category || 'Other') === jobFilters.category;
+        return statusMatch && priorityMatch && categoryMatch;
+      });
+     
+      const container = document.getElementById('jobsContainer');
+     
+      if (filteredJobs.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <h3>No jobs match filters</h3>
+            <p>Try adjusting your filters or create a new job</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = filteredJobs.map(job => createJobCardHTML(job)).join('');
+       
+        document.querySelectorAll('.job-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const jobId = card.dataset.jobId;
+            const job = currentData.find(j => j.__backendId === jobId);
+            if (job) openJobModal(job);
+          });
+        });
+      }
+    }
+   
+    function renderTeam() {
+      const container = document.getElementById('teamContainer');
+      container.innerHTML = TEAM_MEMBERS.map(member => `
+        <div class="member-card">
+          <div class="member-avatar">${member.name[0].toUpperCase()}</div>
+          <div class="member-info">
+            <h3 class="member-name">${member.name}</h3>
+            <span class="member-role">${member.role}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+   
+    function renderAnnouncements() {
+      const announcements = currentData.filter(d => d.type === 'announcement').sort((a, b) =>
+        new Date(b.created_at) - new Date(a.created_at)
+      );
+     
+      const container = document.getElementById('announcementsContainer');
+     
+      if (announcements.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No announcements yet</h3>
+            <p>Create an announcement to share important updates</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = announcements.map(ann => {
+          const date = new Date(ann.created_at).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+          });
+          return `
+            <div class="check-in-card" style="margin-bottom: 2%;">
+              <div class="check-in-info">
+                <div class="avatar">${ann.person_name[0]}</div>
+                <div class="check-in-details">
+                  <h3>${ann.activity}</h3>
+                  <p style="margin-top: 1%; line-height: 1.5;">${ann.notes}</p>
+                  <p style="margin-top: 1%; color: #888; font-size: 0.85em;">Posted by ${ann.person_name} on ${date}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+   
+    async function handleCheckIn(e) {
+      e.preventDefault();
+     
+      if (!currentUser) return;
+     
+      if (currentData.length >= 999) {
+        showToast('Maximum limit reached (999 records)');
+        return;
+      }
+     
+      const activity = document.getElementById('checkInActivity').value;
+      const timeSlot = document.getElementById('checkInTime').value;
+      const notes = document.getElementById('checkInNotes').value;
+     
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Checking in...';
+     
+      const result = await window.dataSdk.create({
+        id: `checkin_${Date.now()}`,
+        type: 'check-in',
+        person_id: currentUser.id,
+        person_name: currentUser.person_name,
+        activity: activity,
+        time_slot: timeSlot,
+        date: selectedDate,
+        notes: notes,
+        checked_in_at: new Date().toISOString(),
+        email: '',
+        role: '',
+        created_at: '',
+        assigned_people: '',
+        status: '',
+        priority: '',
+        due_date: '',
+        progress: '',
+        category: '',
+        completed: false,
+        tutorial_completed: false
+      });
+     
+      submitBtn.disabled = false;
+      submitBtn.textContent = '✓ Check In Now';
+     
+      if (result.isOk) {
+        showToast('Checked in successfully! 🎉');
+        document.getElementById('checkInForm').reset();
+        switchPage('dashboard');
+      } else {
+        showToast('Check-in failed. Please try again.');
+      }
+    }
+   
+    function openJobModal(job = null) {
+      editingJob = job;
+      const modal = document.getElementById('jobModal');
+      const title = document.getElementById('jobModalTitle');
+      const deleteSection = document.getElementById('deleteJobSection');
+     
+      if (job) {
+        title.textContent = 'Edit Job';
+        document.getElementById('jobTitle').value = job.activity;
+        document.getElementById('jobDescription').value = job.notes || '';
+        document.getElementById('jobStatus').value = job.status || 'To Do';
+        document.getElementById('jobPriority').value = job.priority || 'Medium';
+        document.getElementById('jobCategory').value = job.category || 'Robot';
+        document.getElementById('jobProgress').value = job.progress || 0;
+        document.getElementById('jobDueDate').value = job.due_date || '';
+       
+        const assignedIds = job.assigned_people ? job.assigned_people.split(',') : [];
+        document.querySelectorAll('#assignPeopleList input[type="checkbox"]').forEach(cb => {
+          cb.checked = assignedIds.includes(cb.value);
+        });
+       
+        deleteSection.style.display = 'block';
+      } else {
+        title.textContent = 'Create New Job';
+        document.getElementById('jobForm').reset();
+        document.getElementById('jobPriority').value = 'Medium';
+        document.getElementById('jobCategory').value = 'Robot';
+        document.getElementById('jobProgress').value = 0;
+        deleteSection.style.display = 'none';
+      }
+     
+      modal.classList.add('show');
+    }
+   
+    function closeJobModal() {
+      document.getElementById('jobModal').classList.remove('show');
+      editingJob = null;
+      document.getElementById('jobForm').reset();
+    }
+   
+    async function handleJobSave(e) {
+      e.preventDefault();
+     
+      if (currentData.length >= 999 && !editingJob) {
+        showToast('Maximum limit reached (999 records)');
+        return;
+      }
+     
+      const title = document.getElementById('jobTitle').value;
+      const description = document.getElementById('jobDescription').value;
+      const status = document.getElementById('jobStatus').value;
+      const priority = document.getElementById('jobPriority').value;
+      const category = document.getElementById('jobCategory').value;
+      const progress = document.getElementById('jobProgress').value;
+      const dueDate = document.getElementById('jobDueDate').value;
+     
+      const assignedPeople = Array.from(
+        document.querySelectorAll('#assignPeopleList input[type="checkbox"]:checked')
+      ).map(cb => cb.value).join(',');
+     
+      const saveBtn = document.getElementById('saveJobBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+     
+      const jobData = {
+        id: editingJob ? editingJob.id : `job_${Date.now()}`,
+        type: 'job',
+        activity: title,
+        notes: description,
+        status: status,
+        priority: priority,
+        category: category,
+        progress: progress,
+        due_date: dueDate,
+        assigned_people: assignedPeople,
+        date: selectedDate,
+        person_id: currentUser.id,
+        person_name: currentUser.person_name,
+        time_slot: '',
+        checked_in_at: '',
+        email: '',
+        role: '',
+        created_at: editingJob ? editingJob.created_at : new Date().toISOString(),
+        completed: false,
+        tutorial_completed: false
+      };
+     
+      let result;
+      if (editingJob && editingJob.__backendId) {
+        result = await window.dataSdk.update({ ...editingJob, ...jobData });
+      } else {
+        result = await window.dataSdk.create(jobData);
+      }
+     
+      saveBtn.disabled = false;
+      saveBtn.textContent = '💾 Save Job';
+     
+      if (result.isOk) {
+        showToast(editingJob ? 'Job updated! ���' : 'Job created! ✓');
+        closeJobModal();
+      } else {
+        showToast('Failed to save job');
+      }
+    }
+   
+    async function handleJobDelete() {
+      if (!editingJob || !editingJob.__backendId) return;
+     
+      const deleteBtn = document.getElementById('deleteJobBtn');
+      deleteBtn.disabled = true;
+      deleteBtn.textContent = 'Deleting...';
+     
+      const result = await window.dataSdk.delete(editingJob);
+     
+      deleteBtn.disabled = false;
+      deleteBtn.textContent = '🗑️ Delete Job';
+     
+      if (result.isOk) {
+        showToast('Job deleted');
+        closeJobModal();
+      } else {
+        showToast('Failed to delete job');
+      }
+    }
+   
+    function openAnnouncementModal() {
+      document.getElementById('announcementModal').classList.add('show');
+    }
+   
+    function closeAnnouncementModal() {
+      document.getElementById('announcementModal').classList.remove('show');
+      document.getElementById('announcementForm').reset();
+    }
+   
+    async function handleAnnouncementSubmit(e) {
+      e.preventDefault();
+     
+      if (currentData.length >= 999) {
+        showToast('Maximum limit reached (999 records)');
+        return;
+      }
+     
+      const title = document.getElementById('announcementTitle').value;
+      const message = document.getElementById('announcementMessage').value;
+     
+      const result = await window.dataSdk.create({
+        id: `announcement_${Date.now()}`,
+        type: 'announcement',
+        person_id: currentUser.id,
+        person_name: currentUser.person_name,
+        activity: title,
+        notes: message,
+        created_at: new Date().toISOString(),
+        date: selectedDate,
+        time_slot: '',
+        checked_in_at: '',
+        assigned_people: '',
+        status: '',
+        priority: '',
+        due_date: '',
+        progress: '',
+        category: '',
+        email: '',
+        role: '',
+        completed: false,
+        tutorial_completed: false
+      });
+     
+      if (result.isOk) {
+        showToast('Announcement posted! 📢');
+        closeAnnouncementModal();
+      } else {
+        showToast('Failed to post announcement');
+      }
+    }
+   
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+   
+    function setupTutorial() {
+      let currentStep = 1;
+     
+      // Tutorial navigation
+      document.querySelectorAll('[data-next]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const nextStep = parseInt(btn.dataset.next);
+          showTutorialStep(nextStep);
+        });
+      });
+     
+      document.getElementById('skipTutorial').addEventListener('click', () => {
+        closeTutorial();
+      });
+     
+      document.getElementById('finishTutorial').addEventListener('click', () => {
+        closeTutorial();
+        if (currentUser) {
+          localStorage.setItem(`tutorial_${currentUser.id}`, 'true');
+        }
+      });
+     
+      function showTutorialStep(step) {
+        currentStep = step;
+        document.querySelectorAll('.tutorial-step').forEach(s => s.classList.remove('active'));
+        document.querySelector(`[data-step="${step}"]`).classList.add('active');
+      }
+     
+      function closeTutorial() {
+        document.getElementById('tutorialOverlay').classList.remove('show');
+        showTutorialStep(1);
+      }
+    }
+   
+    function showTutorial() {
+      document.getElementById('tutorialOverlay').classList.add('show');
+    }
+   
+    function setupQuickActions() {
+      document.querySelectorAll('.quick-action-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const action = card.dataset.action;
+          if (action === 'check-in') switchPage('check-in');
+          else if (action === 'create-job') openJobModal();
+          else if (action === 'view-team') switchPage('team');
+          else if (action === 'tutorial') showTutorial();
+        });
+      });
+    }
+   
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a8ec82a45a143b7',t:'MTc2NDg4Nzc3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
