@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FII 693O9 Collegiate Robotics team</title>
+<title>FLL 69309 Collegiate Robotics Team</title>
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -13,11 +13,12 @@ header { background: linear-gradient(90deg, #11376b, #e46d0d); color: #fff; text
 header div { display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px; }
 header img { border-radius:10px; }
 
+/* UPDATED: Purple -> #0a1021 */
 nav.subnav, .subnav-inner {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  background: #3f1785;
+  background: #0a1021;
   padding: 15px 0;
   box-shadow: 0 0 20px rgba(20,20,60,0.8);
 }
@@ -47,6 +48,15 @@ h2 { color: #e46d0d; font-size: 2.2em; margin-bottom: 20px; }
 
 footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; }
 footer a { color: #fff; background:#e46d0d; padding:10px 20px; border-radius:12px; font-weight:bold; }
+
+/* iframe container */
+#dashboard-frame {
+  width: 100%;
+  height: 70vh;
+  border: 2px solid #e46d0d;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
@@ -66,16 +76,20 @@ footer a { color: #fff; background:#e46d0d; padding:10px 20px; border-radius:12p
     <button onclick="loadSubnav('lego'); showSection('lego')">Lego Robot</button>
     <button onclick="loadSubnav('photos'); showSection('photos')">Photos</button>
     <button onclick="loadSubnav('who'); showSection('who')">Who we are</button>
+
+    <!-- NEW BUTTON -->
+    <button onclick="loadSubnav('dashboard'); showSection('dashboard')">Dashboard</button>
+
     <button onclick="showLoginModal()">Login</button>
 </nav>
 
-<!-- DYNAMIC SUBNAV GOES HERE -->
+<!-- DYNAMIC SUBNAV -->
 <div id="subnav-container"></div>
 
 <!-- SECTIONS -->
 <section id="home" class="active">
     <h2>Welcome</h2>
-    <p>Explore our moderenish robotics projects...</p>
+    <p>Explore our modernish robotics projects...</p>
 </section>
 
 <section id="innovation">
@@ -98,15 +112,30 @@ footer a { color: #fff; background:#e46d0d; padding:10px 20px; border-radius:12p
     <p>FIRST promotes STEM and problem-solving.</p>
 </section>
 
+<!-- NEW DASHBOARD SECTION -->
+<section id="dashboard">
+    <h2>Team Dashboard</h2>
+
+    <iframe id="dashboard-frame" src="https://collegiaterobotics.base44.app"></iframe>
+
+    <button onclick="openFullscreen()" style="
+        background:#11376b;
+        border:2px solid #e46d0d;
+        color:#e46d0d;
+        padding:12px 20px;
+        font-weight:bold;
+        border-radius:12px;
+        cursor:pointer;
+    ">Full Screen</button>
+</section>
+
 <footer>
     <div>Last updated: November 5, 2025</div>
     <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">YouTube</a>
 </footer>
 
 <script>
-// -----------------------------
-// Subnav definitions by section
-// -----------------------------
+// Subnav definitions
 const subnavData = {
     home: [],
     innovation: [
@@ -123,15 +152,14 @@ const subnavData = {
         { name: "Events", func: "showSubpage('events')" },
         { name: "Behind the Scenes", func: "showSubpage('bts')" }
     ],
-    who: []
+    who: [],
+    dashboard: []
 };
 
-// -----------------------------
-// Load subnav bar dynamically
-// -----------------------------
+// Load subnav
 function loadSubnav(section) {
     const container = document.getElementById("subnav-container");
-    container.innerHTML = ""; // Clear previous subnav
+    container.innerHTML = "";
 
     const items = subnavData[section];
     if (!items || items.length === 0) return;
@@ -141,13 +169,10 @@ function loadSubnav(section) {
         html += `<button onclick="${item.func}">${item.name}</button>`;
     });
     html += `</div>`;
-
     container.innerHTML = html;
 }
 
-// -----------------------------
 // Section switching
-// -----------------------------
 function showSection(id) {
     document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
     document.getElementById(id).classList.add("active");
@@ -157,6 +182,11 @@ function showSubpage(name) {
     alert("Subpage clicked: " + name);
 }
 
+// Fullscreen for iframe
+function openFullscreen() {
+    const iframe = document.getElementById("dashboard-frame");
+    if (iframe.requestFullscreen) iframe.requestFullscreen();
+}
 </script>
 
 </body>
