@@ -11,6 +11,7 @@ body{
   font-family:Segoe UI,sans-serif;
   background:#0a0f1e;
   color:#fff;
+  overflow-x:hidden;
 }
 
 /* HEADER */
@@ -105,6 +106,21 @@ h2{color:#e46d0d;margin-bottom:20px}
   .santa-frame{height:55vh}
 }
 
+/* ❄️ SNOW */
+.snowflake{
+  position:fixed;
+  top:-10px;
+  color:white;
+  font-size:1em;
+  pointer-events:none;
+  z-index:9999;
+  animation-name:fall;
+  animation-timing-function:linear;
+}
+@keyframes fall{
+  to{transform:translateY(110vh)}
+}
+
 /* FOOTER */
 footer{
   background:#001a3d;
@@ -182,7 +198,8 @@ footer{
 
 <section id="dashboard">
   <h2>Dashboard</h2>
-  <iframe src="https://collegiaterobotics.base44.app"
+  <iframe
+    src="https://collegiaterobotics.base44.app"
     style="width:100%;height:70vh;border:2px solid #e46d0d;border-radius:12px">
   </iframe>
 </section>
@@ -226,14 +243,14 @@ const subnavData={
   santa:[]
 };
 
-/* PAGE SWITCH + SAVE */
+/* PAGE SWITCH */
 function switchPage(page){
   localStorage.setItem("lastPage",page);
   show(page);
   loadSubnav(page);
 }
 
-/* LOAD SUBNAV */
+/* SUBNAV */
 function loadSubnav(page){
   const c=document.getElementById("subnav-container");
   c.innerHTML="";
@@ -267,12 +284,28 @@ function toggleMusic(){
   }
 }
 
-/* 🧭 RESTORE LAST PAGE */
+/* 🧭 RESTORE PAGE */
 window.onload=()=>{
   const last=localStorage.getItem("lastPage")||"home";
   show(last);
   loadSubnav(last);
 };
+
+/* ❄️ SNOW (DECEMBER ONLY) */
+const now=new Date();
+if(now.getMonth()===11){
+  setInterval(()=>{
+    const s=document.createElement("div");
+    s.className="snowflake";
+    s.textContent="❄";
+    s.style.left=Math.random()*window.innerWidth+"px";
+    s.style.fontSize=(Math.random()*10+10)+"px";
+    s.style.animationDuration=(Math.random()*5+5)+"s";
+    s.style.opacity=Math.random();
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),10000);
+  },300);
+}
 </script>
 
 </body>
