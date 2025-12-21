@@ -7,185 +7,248 @@
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: 'Segoe UI', sans-serif; background: #0a0f1e; color: #fff; overflow-x: hidden; }
+body { font-family:'Segoe UI',sans-serif; background:#0a0f1e; color:#fff; overflow-x:hidden; }
 
-header { background: linear-gradient(90deg, #11376b, #e46d0d); color: #fff; text-align: center; padding: 60px 20px; font-size: 2.8em; font-weight: bold; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
-header div { display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px; }
+/* HEADER */
+header {
+  background:linear-gradient(90deg,#11376b,#e46d0d);
+  text-align:center;
+  padding:60px 20px;
+  font-size:2.8em;
+  font-weight:bold;
+}
+header div { display:flex; justify-content:center; gap:20px; margin-bottom:20px; }
 header img { border-radius:10px; }
 
-/* UPDATED: Purple -> #0a1021 */
-nav.subnav, .subnav-inner {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  background: #0a1021;
-  padding: 15px 0;
-  box-shadow: 0 0 20px rgba(20,20,60,0.8);
+/* NAV */
+nav.subnav,.subnav-inner{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  background:#0a1021;
+  padding:15px 0;
+  box-shadow:0 0 20px rgba(20,20,60,.8);
+}
+nav.subnav button,.subnav-inner button{
+  background:#11376b;
+  border:2px solid #e46d0d;
+  color:#e46d0d;
+  padding:12px 20px;
+  margin:5px 10px;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:12px;
+  transition:.3s;
+}
+nav.subnav button:hover,.subnav-inner button:hover{
+  color:#fff;
+  transform:scale(1.05);
 }
 
-nav.subnav button, .subnav-inner button {
-  background: #11376b;
-  border: 2px solid #e46d0d;
-  color: #e46d0d;
-  padding: 12px 20px;
-  margin: 5px 10px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 12px;
-  transition: 0.3s;
+/* 🎅 Santa glow */
+.santa-glow{
+  animation:santaGlow 1.5s infinite alternate;
+}
+@keyframes santaGlow{
+  from{box-shadow:0 0 10px red;border-color:red;}
+  to{box-shadow:0 0 20px lime;border-color:lime;}
 }
 
-nav.subnav button:hover, .subnav-inner button:hover {
-  color: #fff;
-  box-shadow: 0 0 20px #e46d0d, 0 0 40px #11376b;
-  transform: scale(1.05);
+/* SECTIONS */
+section{
+  display:none;
+  padding:60px 20px;
+  text-align:center;
+  margin:40px auto;
+  max-width:1000px;
+  border-radius:15px;
+  background:rgba(17,55,107,.4);
+  box-shadow:0 0 20px rgba(17,55,107,.6);
+}
+section.active{display:block;}
+
+h2{color:#e46d0d;margin-bottom:20px;}
+
+/* IFRAME */
+iframe{
+  border:2px solid #e46d0d;
+  border-radius:12px;
 }
 
-section { display: none; padding: 60px 20px; text-align: center; margin: 40px auto; max-width: 1000px; border-radius: 15px; background: rgba(17,55,107,0.4); box-shadow: 0 0 20px rgba(17,55,107,0.6); }
-section.active { display: block; }
+/* SNOW */
+.snowflake{
+  position:fixed;
+  top:-10px;
+  color:white;
+  pointer-events:none;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);}
+}
 
-h2 { color: #e46d0d; font-size: 2.2em; margin-bottom: 20px; }
-
-footer { width: 100%; text-align: center; padding: 20px 15px; background: #001a3d; color: #888; }
-footer a { color: #fff; background:#e46d0d; padding:10px 20px; border-radius:12px; font-weight:bold; }
-
-/* iframe container */
-#dashboard-frame {
-  width: 100%;
-  height: 70vh;
-  border: 2px solid #e46d0d;
-  border-radius: 12px;
-  margin-bottom: 20px;
+/* FOOTER */
+footer{
+  background:#001a3d;
+  text-align:center;
+  padding:20px;
+  color:#888;
+}
+footer a{
+  background:#e46d0d;
+  color:#fff;
+  padding:10px 20px;
+  border-radius:12px;
 }
 </style>
 </head>
+
 <body>
 
 <header>
-    <div>
-        <img src="2023_Collegiate_School_Logo_1_A1.1.webp" height="80">
-        <img src="69309logo.png" height="120">
-    </div>
-    FLL 69309 Dutchmen
+  <div>
+    <img src="2023_Collegiate_School_Logo_1_A1.1.webp" height="80">
+    <img src="69309logo.png" height="120">
+  </div>
+  FLL 69309 Dutchmen
 </header>
 
 <!-- MAIN NAV -->
 <nav class="subnav">
-    <button onclick="loadSubnav('home'); showSection('home')">Home</button>
-    <button onclick="loadSubnav('innovation'); showSection('innovation')">Innovation Project</button>
-    <button onclick="loadSubnav('lego'); showSection('lego')">Lego Robot</button>
-    <button onclick="loadSubnav('photos'); showSection('photos')">Photos</button>
-    <button onclick="loadSubnav('who'); showSection('who')">Who we are</button>
-
-    <!-- NEW BUTTON -->
-    <button onclick="loadSubnav('dashboard'); showSection('dashboard')">Dashboard</button>
-
-    <button onclick="showLoginModal()">Login</button>
+  <button onclick="loadSubnav('home');showSection('home')">Home</button>
+  <button onclick="loadSubnav('innovation');showSection('innovation')">Innovation Project</button>
+  <button onclick="loadSubnav('lego');showSection('lego')">Lego Robot</button>
+  <button onclick="loadSubnav('photos');showSection('photos')">Photos</button>
+  <button onclick="loadSubnav('who');showSection('who')">Who we are</button>
+  <button onclick="loadSubnav('dashboard');showSection('dashboard')">Dashboard</button>
+  <button id="santaBtn" class="santa-glow" onclick="loadSubnav('santa');showSection('santa')">🎅 Santa Tracker</button>
 </nav>
 
-<!-- DYNAMIC SUBNAV -->
+<!-- SUBNAV -->
 <div id="subnav-container"></div>
 
 <!-- SECTIONS -->
 <section id="home" class="active">
-    <h2>Welcome</h2>
-    <p>Explore our modernish robotics projects...</p>
+  <h2>Welcome</h2>
+  <p>Explore our modernish robotics projects...</p>
 </section>
 
 <section id="innovation">
-    <h2>Innovation Project</h2>
-    <p>Select a tab above to explore our project details.</p>
+  <h2>Innovation Project</h2>
+  <p>Select a tab above to explore our project details.</p>
 </section>
 
 <section id="lego">
-    <h2>Lego Robot</h2>
-    <p>Lego robot building and programming.</p>
+  <h2>Lego Robot</h2>
+  <p>Lego robot building and programming.</p>
 </section>
 
 <section id="photos">
-    <h2>Team Photos</h2>
-    <p>Photos from events, meetings, and competitions.</p>
+  <h2>Team Photos</h2>
+  <p>Photos from events, meetings, and competitions.</p>
 </section>
 
 <section id="who">
-    <h2>We are a First Lego League team based in New York</h2>
-    <p>FIRST promotes STEM and problem-solving.</p>
+  <h2>We are a First Lego League team based in New York</h2>
+  <p>FIRST promotes STEM and problem-solving.</p>
 </section>
 
-<!-- NEW DASHBOARD SECTION -->
 <section id="dashboard">
-    <h2>Team Dashboard</h2>
+  <h2>Team Dashboard</h2>
+  <iframe src="https://collegiaterobotics.base44.app" style="width:100%;height:70vh;"></iframe>
+</section>
 
-    <iframe id="dashboard-frame" src="https://collegiaterobotics.base44.app"></iframe>
+<!-- 🎅 SANTA SECTION -->
+<section id="santa">
+  <h2>🎄 NORAD Santa Tracker</h2>
 
-    <button onclick="openFullscreen()" style="
-        background:#11376b;
-        border:2px solid #e46d0d;
-        color:#e46d0d;
-        padding:12px 20px;
-        font-weight:bold;
-        border-radius:12px;
-        cursor:pointer;
-    ">Full Screen</button>
+  <iframe
+    src="https://www.noradsanta.org/countdownClock.html"
+    style="width:400px;height:232px;margin-bottom:20px;"
+    title="NTS Countdown Clock">
+  </iframe>
+
+  <iframe
+    id="santaFrame"
+    src="https://www.noradsanta.org/embed.html"
+    style="width:100%;height:80vh;"
+    title="NTS Tracking Map">
+  </iframe>
+
+  <br><br>
+  <button onclick="openSantaFullscreen()"
+    style="background:#11376b;border:2px solid #e46d0d;color:#e46d0d;padding:12px 20px;border-radius:12px;font-weight:bold;">
+    Full Screen
+  </button>
 </section>
 
 <footer>
-    <div>Last updated: November 5, 2025</div>
-    <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">YouTube</a>
+  <div>Last updated: November 5, 2025</div>
+  <a href="https://www.youtube.com/@CollegiateRobotics" target="_blank">YouTube</a>
 </footer>
 
 <script>
-// Subnav definitions
-const subnavData = {
-    home: [],
-    innovation: [
-        { name: "CAD Design", func: "showSubpage('cad')" },
-        { name: "Materials", func: "showSubpage('materials')" },
-        { name: "Wiring", func: "showSubpage('wiring')" },
-        { name: "Problem", func: "showSubpage('problem')" }
-    ],
-    lego: [
-        { name: "Build", func: "showSubpage('build')" },
-        { name: "Programs", func: "showSubpage('programs')" }
-    ],
-    photos: [
-        { name: "Events", func: "showSubpage('events')" },
-        { name: "Behind the Scenes", func: "showSubpage('bts')" }
-    ],
-    who: [],
-    dashboard: []
+/* SUBNAV DATA (UNCHANGED) */
+const subnavData={
+  home:[],
+  innovation:[
+    {name:"CAD Design",func:"showSubpage('cad')"},
+    {name:"Materials",func:"showSubpage('materials')"},
+    {name:"Wiring",func:"showSubpage('wiring')"},
+    {name:"Problem",func:"showSubpage('problem')"}
+  ],
+  lego:[
+    {name:"Build",func:"showSubpage('build')"},
+    {name:"Programs",func:"showSubpage('programs')"}
+  ],
+  photos:[
+    {name:"Events",func:"showSubpage('events')"},
+    {name:"Behind the Scenes",func:"showSubpage('bts')"}
+  ],
+  who:[],
+  dashboard:[],
+  santa:[]
 };
 
-// Load subnav
-function loadSubnav(section) {
-    const container = document.getElementById("subnav-container");
-    container.innerHTML = "";
-
-    const items = subnavData[section];
-    if (!items || items.length === 0) return;
-
-    let html = `<div class="subnav-inner">`;
-    items.forEach(item => {
-        html += `<button onclick="${item.func}">${item.name}</button>`;
-    });
-    html += `</div>`;
-    container.innerHTML = html;
+function loadSubnav(section){
+  const c=document.getElementById("subnav-container");
+  c.innerHTML="";
+  const items=subnavData[section];
+  if(!items||items.length===0)return;
+  let html=`<div class="subnav-inner">`;
+  items.forEach(i=>html+=`<button onclick="${i.func}">${i.name}</button>`);
+  html+=`</div>`;
+  c.innerHTML=html;
 }
 
-// Section switching
-function showSection(id) {
-    document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+function showSection(id){
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-function showSubpage(name) {
-    alert("Subpage clicked: " + name);
+function showSubpage(n){alert("Subpage clicked: "+n);}
+
+/* FULLSCREEN */
+function openSantaFullscreen(){
+  const f=document.getElementById("santaFrame");
+  if(f.requestFullscreen)f.requestFullscreen();
 }
 
-// Fullscreen for iframe
-function openFullscreen() {
-    const iframe = document.getElementById("dashboard-frame");
-    if (iframe.requestFullscreen) iframe.requestFullscreen();
+/* DECEMBER LOGIC */
+const month=new Date().getMonth();
+if(month!==11){
+  document.getElementById("santaBtn").style.display="none";
+}else{
+  showSection("santa");
+  setInterval(()=>{
+    const s=document.createElement("div");
+    s.className="snowflake";
+    s.innerHTML="❄";
+    s.style.left=Math.random()*100+"vw";
+    s.style.animationDuration=(Math.random()*3+2)+"s";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),5000);
+  },200);
 }
 </script>
 
