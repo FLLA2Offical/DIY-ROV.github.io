@@ -87,16 +87,14 @@ h2{color:#e46d0d;margin-bottom:20px}
   border-radius:12px;
   border:2px solid #e46d0d;
 }
-.before-img{
-  max-width:320px;
-}
+.before-img{max-width:320px}
 .caption{
   margin:25px 0 10px;
   color:#e46d0d;
   font-weight:bold;
 }
 
-/* SANTA MOBILE FIX */
+/* SANTA MOBILE */
 .santa-frame{
   width:100%;
   height:70vh;
@@ -104,9 +102,7 @@ h2{color:#e46d0d;margin-bottom:20px}
   border-radius:12px;
 }
 @media(max-width:768px){
-  .santa-frame{
-    height:55vh;
-  }
+  .santa-frame{height:55vh}
 }
 
 /* FOOTER */
@@ -130,7 +126,7 @@ footer{
 </header>
 
 <!-- 🎶 MUSIC -->
-<audio id="xmasMusic">
+<audio id="jinglebells" loop>
   <source src="jinglebells.mp3" type="audio/mpeg">
 </audio>
 
@@ -194,14 +190,12 @@ footer{
 <section id="santa">
   <h2>🎄 NORAD Santa Tracker</h2>
 
-  <!-- Countdown -->
   <iframe
     src="https://www.noradsanta.org/countdownClock.html"
     title="NTS Countdown Clock"
     style="width:400px;height:232px;border:none;margin-bottom:20px">
   </iframe>
 
-  <!-- Tracker -->
   <iframe
     src="https://www.noradsanta.org/embed.html"
     class="santa-frame"
@@ -260,9 +254,9 @@ function show(id){
   document.getElementById(id).classList.add("active");
 }
 
-/* MUSIC */
+/* 🎶 MUSIC */
 function toggleMusic(){
-  const m=document.getElementById("xmasMusic");
+  const m=document.getElementById("jinglebells");
   const b=document.getElementById("musicBtn");
   if(m.paused){
     m.play();
