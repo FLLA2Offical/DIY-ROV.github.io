@@ -7,6 +7,7 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
   font-family:Segoe UI,sans-serif;
   background:#0a0f1e;
@@ -14,7 +15,7 @@ body{
   overflow-x:hidden;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 header{
   background:linear-gradient(90deg,#11376b,#e46d0d);
   padding:50px 20px;
@@ -29,7 +30,7 @@ header div{
   margin-bottom:20px;
 }
 
-/* NAV */
+/* ================= NAV ================= */
 nav.subnav,.subnav-inner{
   display:flex;
   justify-content:center;
@@ -53,7 +54,7 @@ nav.subnav button:hover,.subnav-inner button:hover{
   transform:scale(1.05);
 }
 
-/* Santa Glow */
+/* ================= SANTA GLOW ================= */
 .santa-glow{
   animation:santaGlow 1.5s infinite alternate;
 }
@@ -62,7 +63,7 @@ nav.subnav button:hover,.subnav-inner button:hover{
   to{box-shadow:0 0 20px lime}
 }
 
-/* SECTIONS */
+/* ================= SECTIONS ================= */
 section{
   display:none;
   padding:60px 20px;
@@ -75,7 +76,7 @@ section{
 section.active{display:block}
 h2{color:#e46d0d;margin-bottom:20px}
 
-/* LEGO BUILD */
+/* ================= LEGO BUILD ================= */
 .build-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
@@ -95,7 +96,7 @@ h2{color:#e46d0d;margin-bottom:20px}
   font-weight:bold;
 }
 
-/* SANTA MOBILE */
+/* ================= SANTA ================= */
 .santa-frame{
   width:100%;
   height:70vh;
@@ -106,12 +107,11 @@ h2{color:#e46d0d;margin-bottom:20px}
   .santa-frame{height:55vh}
 }
 
-/* ❄️ SNOW */
+/* ================= SNOW ================= */
 .snowflake{
   position:fixed;
   top:-10px;
   color:white;
-  font-size:1em;
   pointer-events:none;
   z-index:9999;
   animation-name:fall;
@@ -121,7 +121,7 @@ h2{color:#e46d0d;margin-bottom:20px}
   to{transform:translateY(110vh)}
 }
 
-/* FOOTER */
+/* ================= FOOTER ================= */
 footer{
   background:#001a3d;
   text-align:center;
@@ -135,18 +135,18 @@ footer{
 
 <header>
   <div>
-    <img src="2023_Collegiate_School_Logo_1_A1.1.webp" height="80">
-    <img src="69309logo.png" height="120">
+    <img src="2023_Collegiate_School_Logo_1_A1.1.webp" height="80" alt="Collegiate School Logo">
+    <img src="69309logo.png" height="120" alt="FLL Team 69309 Logo">
   </div>
   FLL 69309 Dutchmen
 </header>
 
-<!-- 🎶 MUSIC -->
+<!-- ================= MUSIC ================= -->
 <audio id="jinglebells" loop>
   <source src="jinglebells.mp3" type="audio/mpeg">
 </audio>
 
-<!-- MAIN NAV -->
+<!-- ================= MAIN NAV ================= -->
 <nav class="subnav">
   <button onclick="switchPage('home')">Home</button>
   <button onclick="switchPage('innovation')">Innovation Project</button>
@@ -160,7 +160,7 @@ footer{
 
 <div id="subnav-container"></div>
 
-<!-- SECTIONS -->
+<!-- ================= SECTIONS ================= -->
 <section id="home" class="active">
   <h2>Welcome</h2>
   <p>Explore our robotics journey.</p>
@@ -180,16 +180,15 @@ footer{
   <h2>🤖 Robot Build</h2>
 
   <div class="caption">Before</div>
-  <img class="before-img"
-    src="Screenshot_2025-12-21_at_8.35_Background_Removed.18_AM-removebg-preview.png">
+  <img class="before-img" src="Screenshot_2025-12-21_at_8.35_Background_Removed.18_AM-removebg-preview.png" alt="Robot Before">
 
   <div class="caption">After</div>
   <div class="build-grid">
-    <img src="Final_Bot_2_all-removebg-preview.png">
-    <img src="Final_Bot_1_2-removebg-preview.png">
-    <img src="Final_Bot_1_4-removebg-preview.png">
-    <img src="Final_Bot_1_5-removebg-preview.png">
-    <img src="Final_Bot_1_6-removebg-preview.png">
+    <img src="Final_Bot_2_all-removebg-preview.png" alt="Final Robot">
+    <img src="Final_Bot_1_2-removebg-preview.png" alt="Final Robot">
+    <img src="Final_Bot_1_4-removebg-preview.png" alt="Final Robot">
+    <img src="Final_Bot_1_5-removebg-preview.png" alt="Final Robot">
+    <img src="Final_Bot_1_6-removebg-preview.png" alt="Final Robot">
   </div>
 </section>
 
@@ -209,14 +208,12 @@ footer{
 
   <iframe
     src="https://www.noradsanta.org/countdownClock.html"
-    title="NTS Countdown Clock"
     style="width:400px;height:232px;border:none;margin-bottom:20px">
   </iframe>
 
   <iframe
     src="https://www.noradsanta.org/embed.html"
-    class="santa-frame"
-    title="NORAD Santa Tracker">
+    class="santa-frame">
   </iframe>
 </section>
 
@@ -225,7 +222,7 @@ footer{
 </footer>
 
 <script>
-/* SUB NAV DATA */
+/* ================= SUBNAV DATA ================= */
 const subnavData={
   home:[],
   innovation:[
@@ -243,18 +240,18 @@ const subnavData={
   santa:[]
 };
 
-/* PAGE SWITCH */
+/* ================= PAGE SWITCH ================= */
 function switchPage(page){
   localStorage.setItem("lastPage",page);
   show(page);
   loadSubnav(page);
 }
 
-/* SUBNAV */
+/* ================= SUBNAV ================= */
 function loadSubnav(page){
   const c=document.getElementById("subnav-container");
   c.innerHTML="";
-  if(!subnavData[page]||!subnavData[page].length)return;
+  if(!subnavData[page] || !subnavData[page].length) return;
 
   let html='<div class="subnav-inner">';
   subnavData[page].forEach(b=>{
@@ -264,17 +261,18 @@ function loadSubnav(page){
   c.innerHTML=html;
 }
 
-/* SHOW SECTION */
+/* ================= SHOW SECTION ================= */
 function show(id){
   document.querySelectorAll("section")
     .forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* 🎶 MUSIC */
+/* ================= MUSIC ================= */
 function toggleMusic(){
   const m=document.getElementById("jinglebells");
   const b=document.getElementById("musicBtn");
+
   if(m.paused){
     m.play();
     b.textContent="⏸ Music";
@@ -284,14 +282,14 @@ function toggleMusic(){
   }
 }
 
-/* 🧭 RESTORE PAGE */
+/* ================= RESTORE PAGE ================= */
 window.onload=()=>{
-  const last=localStorage.getItem("lastPage")||"home";
+  const last=localStorage.getItem("lastPage") || "home";
   show(last);
   loadSubnav(last);
 };
 
-/* ❄️ SNOW (DECEMBER ONLY) */
+/* ================= SNOW (DECEMBER ONLY) ================= */
 const now=new Date();
 if(now.getMonth()===11){
   setInterval(()=>{
