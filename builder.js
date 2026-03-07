@@ -519,7 +519,7 @@
           {
             state: payload,
             updatedAt: timestamp,
-            team: "FLL Team 69309"
+            team: "Team 69309 Collegiate Dutchem"
           },
           { merge: true }
         ),
@@ -527,7 +527,7 @@
           {
             state: payload,
             updatedAt: timestamp,
-            team: "FLL Team 69309",
+            team: "Team 69309 Collegiate Dutchem",
             publishedBy: firebaseState.user.uid
           },
           { merge: true }
@@ -779,10 +779,10 @@
               id: uid("block"),
               type: "image",
               src: teamPhoto,
-              alt: "FLL Team 69309 with robot",
+              alt: "Team 69309 Collegiate Dutchem with robot",
               featured: true
             },
-            createTitleBlock("FLL Team 69309 - Collegiate School Robotics", 1),
+            createTitleBlock("Team 69309 Collegiate Dutchem", 1),
             createTextBlock(
               "We design, code, and compete with purpose-built robots. Our team blends engineering, teamwork, and outreach to solve real challenges through FIRST LEGO League."
             ),
