@@ -316,7 +316,7 @@
     }
 
     const provider = new window.firebase.auth.GoogleAuthProvider();
-    sessionStorage.setItem(GOOGLE_LOGIN_INTENT_KEY, "1");
+    setGoogleIntent();
 
     try {
       const result = await firebaseState.auth.signInWithPopup(provider);
@@ -336,7 +336,7 @@
         code === "auth/cancelled-popup-request";
 
       if (!needsRedirectFallback) {
-        sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
+        clearGoogleIntent();
         throw new Error(getGoogleLoginErrorMessage(error));
       }
     }
@@ -354,19 +354,39 @@
       if (result && result.user) {
         firebaseState.user = result.user;
         await loadStateFromCloud();
+        if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
+          window.AuthModule.completeExternalLogin("google");
+        } else {
+          window.dispatchEvent(
+            new CustomEvent("admin:external-login-success", {
+              detail: { method: "google" }
+            })
+          );
+        }
+        clearGoogleIntent();
+        showToast("Google login connected.");
       }
     } catch (error) {
       console.error("Google redirect login failed:", error);
-      sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
+      clearGoogleIntent();
     }
   }
 
   function consumeGoogleIntent() {
-    const hadIntent = sessionStorage.getItem(GOOGLE_LOGIN_INTENT_KEY) === "1";
-    if (hadIntent) {
-      sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
-    }
+    const hadIntent =
+      sessionStorage.getItem(GOOGLE_LOGIN_INTENT_KEY) === "1" || localStorage.getItem(GOOGLE_LOGIN_INTENT_KEY) === "1";
+    clearGoogleIntent();
     return hadIntent;
+  }
+
+  function setGoogleIntent() {
+    sessionStorage.setItem(GOOGLE_LOGIN_INTENT_KEY, "1");
+    localStorage.setItem(GOOGLE_LOGIN_INTENT_KEY, "1");
+  }
+
+  function clearGoogleIntent() {
+    sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
+    localStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
   }
 
   function getGoogleLoginErrorMessage(error) {
