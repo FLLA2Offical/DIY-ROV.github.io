@@ -491,7 +491,7 @@
           {
             state: payload,
             updatedAt: timestamp,
-            team: "FLL Team 6959"
+            team: "FLL Team 69309"
           },
           { merge: true }
         ),
@@ -499,7 +499,7 @@
           {
             state: payload,
             updatedAt: timestamp,
-            team: "FLL Team 6959",
+            team: "FLL Team 69309",
             publishedBy: firebaseState.user.uid
           },
           { merge: true }
@@ -723,7 +723,7 @@
   }
 
   function createHomePage(name) {
-    const teamPhoto = svgPlaceholder("Team 6959 Robot Build", 1600, 820, "#0b1f35", "#18b8d2");
+    const teamPhoto = svgPlaceholder("Team 69309 Robot Build", 1600, 820, "#0b1f35", "#18b8d2");
 
     const galleryImages = [
       svgPlaceholder("Drive Base", 600, 420, "#0b1f35", "#38bdf8"),
@@ -751,10 +751,10 @@
               id: uid("block"),
               type: "image",
               src: teamPhoto,
-              alt: "FLL Team 6959 with robot",
+              alt: "FLL Team 69309 with robot",
               featured: true
             },
-            createTitleBlock("FLL Team 6959 - Collegiate School Robotics", 1),
+            createTitleBlock("FLL Team 69309 - Collegiate School Robotics", 1),
             createTextBlock(
               "We design, code, and compete with purpose-built robots. Our team blends engineering, teamwork, and outreach to solve real challenges through FIRST LEGO League."
             ),
@@ -884,7 +884,7 @@
           blocks: [
             createTitleBlock("Contact"),
             createTextBlock("Email us for collaboration, mentorship, or sponsorship opportunities."),
-            createButtonBlock("Contact Team 6959", "mailto:robotics@collegiateschool.org")
+            createButtonBlock("Contact Team 69309", "mailto:robotics@collegiateschool.org")
           ]
         }
       ]
