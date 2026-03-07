@@ -1699,7 +1699,13 @@
     }
 
     render();
-    showToast("Admin editing enabled.");
+    if (hasCloudSync()) {
+      showToast("Admin editing enabled.");
+    } else if (firebaseState.enabled) {
+      showToast("Admin editing enabled. Changes stay on this device until Google sign-in.");
+    } else {
+      showToast("Admin editing enabled. Local storage mode is active.");
+    }
   }
 
   function disableAdminMode() {
@@ -1719,6 +1725,10 @@
     }
 
     elements.adminBadge.textContent = state.adminMode ? "Admin Editing" : "Visitor View";
+  }
+
+  function hasCloudSync() {
+    return Boolean(firebaseState.enabled && firebaseState.user);
   }
 
   function queueSave() {
@@ -1741,7 +1751,15 @@
       const cloudSaved = await saveStateToCloud(payload);
 
       if (options.manual) {
-        showToast(cloudSaved ? "Saved locally and to cloud." : "Saved locally.");
+        if (cloudSaved) {
+          showToast("Saved locally and to cloud.");
+        } else if (firebaseState.enabled && !firebaseState.user) {
+          showToast("Saved on this device only. Use Sign in with Google to sync.");
+        } else if (!firebaseState.enabled) {
+          showToast("Saved on this device only. Cloud sync is unavailable.");
+        } else {
+          showToast("Saved locally.");
+        }
       }
     } catch (error) {
       console.error("Save failed:", error);
