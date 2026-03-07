@@ -14,7 +14,6 @@
   const CLOUD_COLLECTION = "fll6959SiteBuilder";
   const CLOUD_PUBLIC_DOC_ID = "published";
   const SAVE_DEBOUNCE_MS = 450;
-  const GOOGLE_LOGIN_INTENT_KEY = "fll6959_google_login_intent";
 
   const DEFAULT_THEME = {
     primary: "#12b9c9",
@@ -44,6 +43,7 @@
   let dragPayload = null;
   let saveTimer = null;
   let fadeObserver = null;
+  let authLogoutBridgeBound = false;
 
   const imageUploadContext = {
     mode: "image",
@@ -265,6 +265,7 @@
       firebaseState.enabled = true;
 
       configureAuthModuleGoogle(true);
+      bindAuthLogoutBridge();
 
       await loadPublishedState();
       await applyGoogleRedirectResult();
@@ -274,7 +275,6 @@
 
         if (firebaseState.user) {
           await loadStateFromCloud();
-
           if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
             if (!window.AuthModule.isAdmin()) {
               window.AuthModule.completeExternalLogin("google");
@@ -285,10 +285,6 @@
                 detail: { method: "google" }
               })
             );
-          }
-
-          if (consumeGoogleIntent()) {
-            showToast("Google login connected.");
           }
         }
       });
@@ -314,13 +310,34 @@
     }
   }
 
+  function bindAuthLogoutBridge() {
+    if (authLogoutBridgeBound) {
+      return;
+    }
+
+    authLogoutBridgeBound = true;
+    window.addEventListener("admin:auth-logout-request", async () => {
+      if (!firebaseState.auth || !firebaseState.auth.currentUser) {
+        firebaseState.user = null;
+        return;
+      }
+
+      try {
+        await firebaseState.auth.signOut();
+      } catch (error) {
+        console.error("Firebase sign-out failed:", error);
+      } finally {
+        firebaseState.user = null;
+      }
+    });
+  }
+
   async function handleGoogleLogin() {
     if (!firebaseState.enabled || !firebaseState.auth) {
       throw new Error("Google login requires Firebase config.");
     }
 
     const provider = new window.firebase.auth.GoogleAuthProvider();
-    setGoogleIntent();
 
     try {
       const result = await firebaseState.auth.signInWithPopup(provider);
@@ -330,6 +347,9 @@
 
       firebaseState.user = result.user;
       await loadStateFromCloud();
+      if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function" && !window.AuthModule.isAdmin()) {
+        window.AuthModule.completeExternalLogin("google");
+      }
       showToast("Google login connected.");
       return;
     } catch (error) {
@@ -340,7 +360,6 @@
         code === "auth/cancelled-popup-request";
 
       if (!needsRedirectFallback) {
-        clearGoogleIntent();
         throw new Error(getGoogleLoginErrorMessage(error));
       }
     }
@@ -364,33 +383,14 @@
           window.dispatchEvent(
             new CustomEvent("admin:external-login-success", {
               detail: { method: "google" }
-            })
+              })
           );
         }
-        clearGoogleIntent();
         showToast("Google login connected.");
       }
     } catch (error) {
       console.error("Google redirect login failed:", error);
-      clearGoogleIntent();
     }
-  }
-
-  function consumeGoogleIntent() {
-    const hadIntent =
-      sessionStorage.getItem(GOOGLE_LOGIN_INTENT_KEY) === "1" || localStorage.getItem(GOOGLE_LOGIN_INTENT_KEY) === "1";
-    clearGoogleIntent();
-    return hadIntent;
-  }
-
-  function setGoogleIntent() {
-    sessionStorage.setItem(GOOGLE_LOGIN_INTENT_KEY, "1");
-    localStorage.setItem(GOOGLE_LOGIN_INTENT_KEY, "1");
-  }
-
-  function clearGoogleIntent() {
-    sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
-    localStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
   }
 
   function getGoogleLoginErrorMessage(error) {

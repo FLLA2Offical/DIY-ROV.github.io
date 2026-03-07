@@ -5,7 +5,7 @@
   const ADMIN_SESSION_KEY = "fll6959_admin_session";
 
   const authState = {
-    isAdmin: sessionStorage.getItem(ADMIN_SESSION_KEY) === "1" || localStorage.getItem(ADMIN_SESSION_KEY) === "1",
+    isAdmin: getPersistedAdminState(),
     googleEnabled: false,
     googleLoginHandler: null
   };
@@ -23,7 +23,6 @@
 
   function init() {
     refreshElements();
-
     bindEvents();
     syncGoogleButton();
 
@@ -93,18 +92,10 @@
         return;
       }
 
-      if (event.newValue === "1") {
-        if (!authState.isAdmin) {
-          authState.isAdmin = true;
-          closeModal();
-          dispatchAuthSuccess("storage");
-        }
-        return;
-      }
-
+      authState.isAdmin = event.newValue === "1";
       if (authState.isAdmin) {
-        authState.isAdmin = false;
         closeModal();
+        dispatchAuthSuccess("storage");
       }
     });
 
@@ -159,17 +150,8 @@
 
   function markAdmin(method) {
     authState.isAdmin = true;
-    sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
-    localStorage.setItem(ADMIN_SESSION_KEY, "1");
+    persistAdminState(true);
     dispatchAuthSuccess(method);
-  }
-
-  function dispatchAuthSuccess(method) {
-    window.dispatchEvent(
-      new CustomEvent("admin:auth-success", {
-        detail: { method }
-      })
-    );
   }
 
   function completeExternalLogin(method = "google") {
@@ -180,20 +162,24 @@
 
   function logout() {
     authState.isAdmin = false;
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    localStorage.removeItem(ADMIN_SESSION_KEY);
+    persistAdminState(false);
     window.dispatchEvent(new CustomEvent("admin:auth-logout"));
+    window.dispatchEvent(new CustomEvent("admin:auth-logout-request"));
     closeModal();
+  }
+
+  function dispatchAuthSuccess(method) {
+    window.dispatchEvent(
+      new CustomEvent("admin:auth-success", {
+        detail: { method }
+      })
+    );
   }
 
   function openModal() {
     refreshElements();
 
-    if (!elements.modal) {
-      return;
-    }
-
-    if (authState.isAdmin) {
+    if (!elements.modal || authState.isAdmin) {
       closeModal();
       return;
     }
@@ -266,6 +252,21 @@
     elements.googleBtn = elements.googleBtn || document.getElementById("googleLoginBtn");
     elements.hotspot = elements.hotspot || document.getElementById("adminHotspot");
     elements.openBtn = elements.openBtn || document.getElementById("openAdminLoginBtn");
+  }
+
+  function getPersistedAdminState() {
+    return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1" || localStorage.getItem(ADMIN_SESSION_KEY) === "1";
+  }
+
+  function persistAdminState(isAdmin) {
+    if (isAdmin) {
+      sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+      localStorage.setItem(ADMIN_SESSION_KEY, "1");
+      return;
+    }
+
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    localStorage.removeItem(ADMIN_SESSION_KEY);
   }
 
   async function sha256Hex(text) {
