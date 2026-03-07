@@ -47,6 +47,7 @@
   let saveTimer = null;
   let fadeObserver = null;
   let authLogoutBridgeBound = false;
+  let pendingCloudImageUploads = 0;
 
   const imageUploadContext = {
     mode: "image",
@@ -527,6 +528,10 @@
   async function saveStateToCloud(payload) {
     if (!firebaseState.enabled || !firebaseState.db || !firebaseState.user) {
       return { accountSaved: false, publishedSaved: false };
+    }
+
+    if (payloadHasInlineImages(payload)) {
+      return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
     }
 
     let accountSaved = false;
@@ -1779,7 +1784,7 @@
       showToast("Banner image replaced.");
 
       if (firebaseState.enabled && firebaseState.user) {
-        const cloudUrl = await uploadImageToCloud(file);
+        const cloudUrl = await runCloudImageUpload(file);
         if (cloudUrl) {
           const refreshedTarget = findBlockById(targetBlockId);
           if (refreshedTarget && refreshedTarget.type === "image") {
@@ -1816,21 +1821,22 @@
       showToast("Gallery added.");
 
       if (firebaseState.enabled && firebaseState.user) {
-        imageFiles.forEach(async (file, index) => {
-          const cloudUrl = await uploadImageToCloud(file);
+        for (let index = 0; index < imageFiles.length; index += 1) {
+          const file = imageFiles[index];
+          const cloudUrl = await runCloudImageUpload(file);
           if (!cloudUrl) {
-            return;
+            continue;
           }
 
           const target = findBlockById(galleryBlock.id);
           if (!target || !Array.isArray(target.images) || !target.images[index]) {
-            return;
+            continue;
           }
 
           target.images[index].src = cloudUrl;
           queueSave();
           render();
-        });
+        }
       }
 
       return;
@@ -1853,7 +1859,7 @@
     showToast("Image added.");
 
     if (firebaseState.enabled && firebaseState.user) {
-      const cloudUrl = await uploadImageToCloud(file);
+      const cloudUrl = await runCloudImageUpload(file);
       if (!cloudUrl) {
         return;
       }
@@ -1883,6 +1889,15 @@
     } catch (error) {
       console.error("Cloud image upload failed:", error);
       return null;
+    }
+  }
+
+  async function runCloudImageUpload(file) {
+    pendingCloudImageUploads += 1;
+    try {
+      return await uploadImageToCloud(file);
+    } finally {
+      pendingCloudImageUploads = Math.max(0, pendingCloudImageUploads - 1);
     }
   }
 
@@ -2078,6 +2093,8 @@
           showToast("Saved and published for everyone.");
         } else if (cloudStatus.accountSaved) {
           showToast("Saved to your account only. Public publish failed.");
+        } else if (cloudStatus.reason === "inline-images" || pendingCloudImageUploads > 0) {
+          showToast("Images are still uploading. Wait a moment, then Save again.");
         } else if (firebaseState.enabled && !firebaseState.user) {
           showToast("Saved on this device only. Use Sign in with Google to sync.");
         } else if (!firebaseState.enabled) {
@@ -2179,6 +2196,44 @@
     }
 
     return null;
+  }
+
+  function payloadHasInlineImages(payload) {
+    if (!payload || !Array.isArray(payload.pages)) {
+      return false;
+    }
+
+    for (const page of payload.pages) {
+      if (!page || !Array.isArray(page.sections)) {
+        continue;
+      }
+
+      for (const section of page.sections) {
+        if (!section || !Array.isArray(section.blocks)) {
+          continue;
+        }
+
+        for (const block of section.blocks) {
+          if (!block || typeof block !== "object") {
+            continue;
+          }
+
+          if (block.type === "image" && typeof block.src === "string" && block.src.startsWith("data:image/")) {
+            return true;
+          }
+
+          if (block.type === "gallery" && Array.isArray(block.images)) {
+            for (const image of block.images) {
+              if (image && typeof image.src === "string" && image.src.startsWith("data:image/")) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   function applyTheme(theme) {
