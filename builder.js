@@ -14,6 +14,7 @@
   const CLOUD_COLLECTION = "fll6959SiteBuilder";
   const CLOUD_PUBLIC_DOC_ID = "published";
   const SAVE_DEBOUNCE_MS = 450;
+  const DEFAULT_SITE_NAME = "Team 69309 Collegiate Dutchmen";
 
   const DEFAULT_THEME = {
     primary: "#12b9c9",
@@ -26,6 +27,8 @@
     pages: [],
     currentPageId: "",
     theme: { ...DEFAULT_THEME },
+    siteName: DEFAULT_SITE_NAME,
+    browserTitle: DEFAULT_SITE_NAME,
     adminMode: false,
     selectedSectionId: null
   };
@@ -47,7 +50,8 @@
 
   const imageUploadContext = {
     mode: "image",
-    sectionId: null
+    sectionId: null,
+    blockId: null
   };
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -55,6 +59,7 @@
     bindEvents();
     loadInitialState();
     applyTheme(state.theme);
+    applySiteBranding();
     render();
 
     initFirebaseSupport();
@@ -70,6 +75,7 @@
     elements.adminBadge = document.getElementById("adminStateBadge");
     elements.adminToolbar = document.getElementById("adminToolbar");
     elements.pageSelect = document.getElementById("pageSelect");
+    elements.siteHeading = document.getElementById("siteHeading");
 
     elements.btnAddSection = document.getElementById("btnAddSection");
     elements.btnAddTitle = document.getElementById("btnAddTitle");
@@ -80,6 +86,9 @@
     elements.btnChangeColors = document.getElementById("btnChangeColors");
     elements.btnAddPage = document.getElementById("btnAddPage");
     elements.btnDeleteSection = document.getElementById("btnDeleteSection");
+    elements.btnEditSiteName = document.getElementById("btnEditSiteName");
+    elements.btnEditBanner = document.getElementById("btnEditBanner");
+    elements.btnChangeBannerImage = document.getElementById("btnChangeBannerImage");
     elements.btnSave = document.getElementById("btnSave");
     elements.btnRenamePage = document.getElementById("btnRenamePage");
     elements.btnDeletePage = document.getElementById("btnDeletePage");
@@ -154,6 +163,9 @@
     bindIfPresent(elements.btnChangeColors, "click", openColorPanel);
     bindIfPresent(elements.btnAddPage, "click", addPage);
     bindIfPresent(elements.btnDeleteSection, "click", deleteSelectedSection);
+    bindIfPresent(elements.btnEditSiteName, "click", editSiteName);
+    bindIfPresent(elements.btnEditBanner, "click", editBannerTitle);
+    bindIfPresent(elements.btnChangeBannerImage, "click", changeBannerImage);
     bindIfPresent(elements.btnSave, "click", () => persistState({ manual: true }));
     bindIfPresent(elements.btnRenamePage, "click", renameCurrentPage);
     bindIfPresent(elements.btnDeletePage, "click", deleteCurrentPage);
@@ -449,6 +461,8 @@
       state.pages = loaded.pages;
       state.currentPageId = loaded.currentPageId;
       state.theme = loaded.theme;
+      state.siteName = loaded.siteName;
+      state.browserTitle = loaded.browserTitle;
       state.selectedSectionId = getCurrentPage()?.sections[0]?.id || null;
 
       localStorage.setItem(
@@ -457,11 +471,14 @@
           pages: state.pages,
           currentPageId: state.currentPageId,
           theme: state.theme,
+          siteName: state.siteName,
+          browserTitle: state.browserTitle,
           updatedAt: new Date().toISOString()
         })
       );
 
       applyTheme(state.theme);
+      applySiteBranding();
       render();
     } catch (error) {
       console.error("Published load failed:", error);
@@ -494,9 +511,12 @@
       state.pages = loaded.pages;
       state.currentPageId = loaded.currentPageId;
       state.theme = loaded.theme;
+      state.siteName = loaded.siteName;
+      state.browserTitle = loaded.browserTitle;
       state.selectedSectionId = getCurrentPage()?.sections[0]?.id || null;
 
       applyTheme(state.theme);
+      applySiteBranding();
       render();
       showToast("Loaded cloud version.");
     } catch (error) {
@@ -506,38 +526,44 @@
 
   async function saveStateToCloud(payload) {
     if (!firebaseState.enabled || !firebaseState.db || !firebaseState.user) {
-      return false;
+      return { accountSaved: false, publishedSaved: false };
+    }
+
+    let accountSaved = false;
+    let publishedSaved = false;
+
+    try {
+      const userDocRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(firebaseState.user.uid);
+      await userDocRef.set(
+        {
+          state: payload,
+          updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+          team: "Team 69309 Collegiate Dutchmen"
+        },
+        { merge: true }
+      );
+      accountSaved = true;
+    } catch (error) {
+      console.error("Account cloud save failed:", error);
     }
 
     try {
-      const timestamp = window.firebase.firestore.FieldValue.serverTimestamp();
-      const userDocRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(firebaseState.user.uid);
       const publishedDocRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(CLOUD_PUBLIC_DOC_ID);
-
-      await Promise.all([
-        userDocRef.set(
-          {
-            state: payload,
-            updatedAt: timestamp,
-            team: "Team 69309 Collegiate Dutchem"
-          },
-          { merge: true }
-        ),
-        publishedDocRef.set(
-          {
-            state: payload,
-            updatedAt: timestamp,
-            team: "Team 69309 Collegiate Dutchem",
-            publishedBy: firebaseState.user.uid
-          },
-          { merge: true }
-        )
-      ]);
-      return true;
+      await publishedDocRef.set(
+        {
+          state: payload,
+          updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+          team: "Team 69309 Collegiate Dutchmen",
+          publishedBy: firebaseState.user.uid
+        },
+        { merge: true }
+      );
+      publishedSaved = true;
     } catch (error) {
-      console.error("Cloud save failed:", error);
-      return false;
+      console.error("Public publish save failed:", error);
     }
+
+    return { accountSaved, publishedSaved };
   }
 
   function isFirebaseConfigured() {
@@ -552,6 +578,8 @@
       state.pages = defaults.pages;
       state.currentPageId = defaults.currentPageId;
       state.theme = defaults.theme;
+      state.siteName = defaults.siteName;
+      state.browserTitle = defaults.browserTitle;
       state.selectedSectionId = getCurrentPage()?.sections[0]?.id || null;
       return;
     }
@@ -567,6 +595,8 @@
       state.pages = normalized.pages;
       state.currentPageId = normalized.currentPageId;
       state.theme = normalized.theme;
+      state.siteName = normalized.siteName;
+      state.browserTitle = normalized.browserTitle;
       state.selectedSectionId = getCurrentPage()?.sections[0]?.id || null;
     } catch (error) {
       console.warn("Using default state due to load error:", error);
@@ -574,6 +604,8 @@
       state.pages = defaults.pages;
       state.currentPageId = defaults.currentPageId;
       state.theme = defaults.theme;
+      state.siteName = defaults.siteName;
+      state.browserTitle = defaults.browserTitle;
       state.selectedSectionId = getCurrentPage()?.sections[0]?.id || null;
     }
   }
@@ -603,6 +635,8 @@
     return {
       pages: normalizedPages,
       currentPageId,
+      siteName: sanitizeText(candidate.siteName || DEFAULT_SITE_NAME) || DEFAULT_SITE_NAME,
+      browserTitle: sanitizeText(candidate.browserTitle || candidate.siteName || DEFAULT_SITE_NAME) || DEFAULT_SITE_NAME,
       theme: {
         ...DEFAULT_THEME,
         ...(candidate.theme || {})
@@ -746,6 +780,8 @@
     return {
       pages: [homePage],
       currentPageId: homePage.id,
+      siteName: DEFAULT_SITE_NAME,
+      browserTitle: DEFAULT_SITE_NAME,
       theme: { ...DEFAULT_THEME }
     };
   }
@@ -779,10 +815,10 @@
               id: uid("block"),
               type: "image",
               src: teamPhoto,
-              alt: "Team 69309 Collegiate Dutchem with robot",
+              alt: "Team 69309 Collegiate Dutchmen with robot",
               featured: true
             },
-            createTitleBlock("Team 69309 Collegiate Dutchem", 1),
+            createTitleBlock("Team 69309 Collegiate Dutchmen", 1),
             createTextBlock(
               "We design, code, and compete with purpose-built robots. Our team blends engineering, teamwork, and outreach to solve real challenges through FIRST LEGO League."
             ),
@@ -954,6 +990,7 @@
   }
 
   function render() {
+    applySiteBranding();
     renderPageTabs();
     renderPageSelect();
     renderSections();
@@ -1189,6 +1226,18 @@
 
   function handleSiteDoubleClick(event) {
     if (!state.adminMode) {
+      return;
+    }
+
+    const image = event.target.closest(".builder-image-wrap img");
+    if (image) {
+      const blockElement = image.closest(".builder-block");
+      const sectionElement = image.closest(".builder-section");
+      const blockId = blockElement?.dataset.blockId;
+      const sectionId = sectionElement?.dataset.sectionId;
+      if (blockId && sectionId) {
+        openReplaceImageModal(blockId, sectionId);
+      }
       return;
     }
 
@@ -1551,6 +1600,40 @@
     render();
   }
 
+  function editSiteName() {
+    const nextName = window.prompt("Website banner name", state.siteName || DEFAULT_SITE_NAME);
+    if (nextName === null) {
+      return;
+    }
+
+    const cleanName = sanitizeText(nextName) || state.siteName || DEFAULT_SITE_NAME;
+    state.siteName = cleanName;
+
+    const nextBrowserTitle = window.prompt("Browser tab title", state.browserTitle || cleanName);
+    if (nextBrowserTitle !== null) {
+      state.browserTitle = sanitizeText(nextBrowserTitle) || cleanName;
+    } else if (!state.browserTitle) {
+      state.browserTitle = cleanName;
+    }
+
+    queueSave();
+    render();
+  }
+
+  function editBannerTitle() {
+    editSiteName();
+  }
+
+  function changeBannerImage() {
+    const found = findBannerImageBlock();
+    if (!found) {
+      showToast("No banner image found on this page.");
+      return;
+    }
+
+    openReplaceImageModal(found.block.id, found.section.id);
+  }
+
   function deleteSelectedSection() {
     if (!state.selectedSectionId) {
       showToast("Select a section first.");
@@ -1616,6 +1699,7 @@
 
     imageUploadContext.mode = mode;
     imageUploadContext.sectionId = section.id;
+    imageUploadContext.blockId = null;
 
     if (elements.imageModalTitle) {
       elements.imageModalTitle.textContent = mode === "gallery" ? "Upload Gallery Images" : "Upload Image";
@@ -1633,9 +1717,34 @@
     }
   }
 
+  function openReplaceImageModal(blockId, sectionId) {
+    if (!state.adminMode || !blockId || !sectionId) {
+      return;
+    }
+
+    imageUploadContext.mode = "replace";
+    imageUploadContext.sectionId = sectionId;
+    imageUploadContext.blockId = blockId;
+
+    if (elements.imageModalTitle) {
+      elements.imageModalTitle.textContent = "Replace Banner Image";
+    }
+
+    if (elements.imageUploadHint) {
+      elements.imageUploadHint.textContent = "Drop one image to replace the current banner image.";
+    }
+
+    if (elements.imageUploadModal) {
+      elements.imageUploadModal.classList.remove("hidden");
+    }
+  }
+
   function closeImageModal() {
     elements.imageUploadModal?.classList.add("hidden");
     elements.imageDropzone?.classList.remove("drag-over");
+    imageUploadContext.mode = "image";
+    imageUploadContext.sectionId = null;
+    imageUploadContext.blockId = null;
   }
 
   async function processImageFiles(files) {
@@ -1648,6 +1757,38 @@
     const section = getSectionById(imageUploadContext.sectionId) || getSelectedSection();
     if (!section) {
       showToast("Select a section first.");
+      return;
+    }
+
+    if (imageUploadContext.mode === "replace") {
+      const targetBlockId = imageUploadContext.blockId;
+      const targetBlock = findBlockById(targetBlockId);
+      if (!targetBlock || targetBlock.type !== "image") {
+        showToast("Banner image target not found.");
+        return;
+      }
+
+      const file = imageFiles[0];
+      const base64 = await fileToDataUrl(file);
+      targetBlock.src = base64;
+      targetBlock.alt = file.name || targetBlock.alt || "Banner image";
+
+      queueSave();
+      render();
+      closeImageModal();
+      showToast("Banner image replaced.");
+
+      if (firebaseState.enabled && firebaseState.user) {
+        const cloudUrl = await uploadImageToCloud(file);
+        if (cloudUrl) {
+          const refreshedTarget = findBlockById(targetBlockId);
+          if (refreshedTarget && refreshedTarget.type === "image") {
+            refreshedTarget.src = cloudUrl;
+            queueSave();
+            render();
+          }
+        }
+      }
       return;
     }
 
@@ -1899,6 +2040,14 @@
     elements.adminBadge.textContent = state.adminMode ? "Admin Editing" : "Visitor View";
   }
 
+  function applySiteBranding() {
+    if (elements.siteHeading) {
+      elements.siteHeading.textContent = state.siteName || DEFAULT_SITE_NAME;
+    }
+
+    document.title = state.browserTitle || state.siteName || DEFAULT_SITE_NAME;
+  }
+
   function hasCloudSync() {
     return Boolean(firebaseState.enabled && firebaseState.user);
   }
@@ -1914,23 +2063,27 @@
     const payload = {
       pages: state.pages,
       currentPageId: state.currentPageId,
+      siteName: state.siteName,
+      browserTitle: state.browserTitle,
       theme: state.theme,
       updatedAt: new Date().toISOString()
     };
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      const cloudSaved = await saveStateToCloud(payload);
+      const cloudStatus = await saveStateToCloud(payload);
 
       if (options.manual) {
-        if (cloudSaved) {
-          showToast("Saved locally and to cloud.");
+        if (cloudStatus.publishedSaved) {
+          showToast("Saved and published for everyone.");
+        } else if (cloudStatus.accountSaved) {
+          showToast("Saved to your account only. Public publish failed.");
         } else if (firebaseState.enabled && !firebaseState.user) {
           showToast("Saved on this device only. Use Sign in with Google to sync.");
         } else if (!firebaseState.enabled) {
           showToast("Saved on this device only. Cloud sync is unavailable.");
         } else {
-          showToast("Saved locally.");
+          showToast("Saved locally only.");
         }
       }
     } catch (error) {
@@ -1982,6 +2135,31 @@
       const block = section.blocks.find((entry) => entry.id === blockId);
       if (block) {
         return block;
+      }
+    }
+
+    return null;
+  }
+
+  function findBannerImageBlock() {
+    const page = getCurrentPage();
+    if (!page) {
+      return null;
+    }
+
+    for (const section of page.sections) {
+      for (const block of section.blocks) {
+        if (block.type === "image" && block.featured) {
+          return { section, block };
+        }
+      }
+    }
+
+    for (const section of page.sections) {
+      for (const block of section.blocks) {
+        if (block.type === "image") {
+          return { section, block };
+        }
       }
     }
 
