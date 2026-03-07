@@ -1601,33 +1601,33 @@
   }
 
   function editSiteName() {
-    const nextName = window.prompt("Website banner name", state.siteName || DEFAULT_SITE_NAME);
+    const nextName = window.prompt("Website name (browser tab title)", state.browserTitle || state.siteName || DEFAULT_SITE_NAME);
     if (nextName === null) {
       return;
     }
 
-    const cleanName = sanitizeText(nextName) || state.siteName || DEFAULT_SITE_NAME;
-    state.siteName = cleanName;
-
-    const nextBrowserTitle = window.prompt("Browser tab title", state.browserTitle || cleanName);
-    if (nextBrowserTitle !== null) {
-      state.browserTitle = sanitizeText(nextBrowserTitle) || cleanName;
-    } else if (!state.browserTitle) {
-      state.browserTitle = cleanName;
-    }
-
+    state.browserTitle = sanitizeText(nextName) || state.browserTitle || state.siteName || DEFAULT_SITE_NAME;
     queueSave();
     render();
+    showToast("Website name updated.");
   }
 
   function editBannerTitle() {
-    editSiteName();
+    const nextBanner = window.prompt("Banner title", state.siteName || DEFAULT_SITE_NAME);
+    if (nextBanner === null) {
+      return;
+    }
+
+    state.siteName = sanitizeText(nextBanner) || state.siteName || DEFAULT_SITE_NAME;
+    queueSave();
+    render();
+    showToast("Banner title updated.");
   }
 
   function changeBannerImage() {
-    const found = findBannerImageBlock();
+    const found = findBannerImageBlock(true);
     if (!found) {
-      showToast("No banner image found on this page.");
+      showToast("Could not prepare banner image.");
       return;
     }
 
@@ -2141,7 +2141,7 @@
     return null;
   }
 
-  function findBannerImageBlock() {
+  function findBannerImageBlock(createIfMissing = false) {
     const page = getCurrentPage();
     if (!page) {
       return null;
@@ -2161,6 +2161,21 @@
           return { section, block };
         }
       }
+    }
+
+    if (createIfMissing && page.sections.length > 0) {
+      const section = page.sections[0];
+      const newBlock = {
+        id: uid("block"),
+        type: "image",
+        src: svgPlaceholder("Banner Image", 1600, 820, "#0b1f35", "#18b8d2"),
+        alt: "Banner image",
+        featured: true
+      };
+      section.blocks.unshift(newBlock);
+      queueSave();
+      render();
+      return { section, block: newBlock };
     }
 
     return null;
