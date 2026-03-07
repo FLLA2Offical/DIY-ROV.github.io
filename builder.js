@@ -275,11 +275,15 @@
         if (firebaseState.user) {
           await loadStateFromCloud();
           if (consumeGoogleIntent()) {
-            window.dispatchEvent(
-              new CustomEvent("admin:auth-success", {
-                detail: { method: "google" }
-              })
-            );
+            if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
+              window.AuthModule.completeExternalLogin("google");
+            } else {
+              window.dispatchEvent(
+                new CustomEvent("admin:external-login-success", {
+                  detail: { method: "google" }
+                })
+              );
+            }
             showToast("Google login connected.");
           }
         }

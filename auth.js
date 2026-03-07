@@ -82,6 +82,11 @@
       }
     });
 
+    window.addEventListener("admin:external-login-success", (event) => {
+      const method = event && event.detail && event.detail.method ? event.detail.method : "google";
+      completeExternalLogin(method);
+    });
+
     const logoutButton = document.getElementById("btnLogout");
     if (logoutButton) {
       logoutButton.addEventListener("click", logout);
@@ -143,6 +148,12 @@
         detail: { method }
       })
     );
+  }
+
+  function completeExternalLogin(method = "google") {
+    markAdmin(method);
+    closeModal();
+    hideError();
   }
 
   function logout() {
@@ -342,6 +353,7 @@
     closeModal,
     isAdmin: () => authState.isAdmin,
     logout,
+    completeExternalLogin,
     setGoogleEnabled,
     setGoogleLoginHandler,
     sha256Hex
