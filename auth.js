@@ -5,7 +5,7 @@
   const ADMIN_SESSION_KEY = "fll6959_admin_session";
 
   const authState = {
-    isAdmin: sessionStorage.getItem(ADMIN_SESSION_KEY) === "1",
+    isAdmin: sessionStorage.getItem(ADMIN_SESSION_KEY) === "1" || localStorage.getItem(ADMIN_SESSION_KEY) === "1",
     googleEnabled: false,
     googleLoginHandler: null
   };
@@ -88,6 +88,26 @@
       completeExternalLogin(method);
     });
 
+    window.addEventListener("storage", (event) => {
+      if (event.key !== ADMIN_SESSION_KEY) {
+        return;
+      }
+
+      if (event.newValue === "1") {
+        if (!authState.isAdmin) {
+          authState.isAdmin = true;
+          closeModal();
+          dispatchAuthSuccess("storage");
+        }
+        return;
+      }
+
+      if (authState.isAdmin) {
+        authState.isAdmin = false;
+        closeModal();
+      }
+    });
+
     const logoutButton = document.getElementById("btnLogout");
     if (logoutButton) {
       logoutButton.addEventListener("click", logout);
@@ -140,6 +160,7 @@
   function markAdmin(method) {
     authState.isAdmin = true;
     sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+    localStorage.setItem(ADMIN_SESSION_KEY, "1");
     dispatchAuthSuccess(method);
   }
 
@@ -160,6 +181,7 @@
   function logout() {
     authState.isAdmin = false;
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    localStorage.removeItem(ADMIN_SESSION_KEY);
     window.dispatchEvent(new CustomEvent("admin:auth-logout"));
     closeModal();
   }
