@@ -166,8 +166,17 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const modal = document.getElementById("adminLoginModal");
+        const loginForm = document.getElementById("adminLoginForm");
         const passwordInput = document.getElementById("adminPassword");
         const openers = [document.getElementById("openAdminLoginBtn"), document.getElementById("adminHotspot")];
+
+        // Safety guard: never allow the admin form to trigger page navigation.
+        if (loginForm) {
+          loginForm.setAttribute("action", "");
+          loginForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+          });
+        }
 
         const fallbackOpen = () => {
           if (window.AuthModule && typeof window.AuthModule.openModal === "function") {
