@@ -274,16 +274,20 @@
 
         if (firebaseState.user) {
           await loadStateFromCloud();
-          if (consumeGoogleIntent()) {
-            if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
+
+          if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
+            if (!window.AuthModule.isAdmin()) {
               window.AuthModule.completeExternalLogin("google");
-            } else {
-              window.dispatchEvent(
-                new CustomEvent("admin:external-login-success", {
-                  detail: { method: "google" }
-                })
-              );
             }
+          } else {
+            window.dispatchEvent(
+              new CustomEvent("admin:external-login-success", {
+                detail: { method: "google" }
+              })
+            );
+          }
+
+          if (consumeGoogleIntent()) {
             showToast("Google login connected.");
           }
         }

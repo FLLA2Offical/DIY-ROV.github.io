@@ -33,6 +33,7 @@
     }
 
     if (authState.isAdmin) {
+      closeModal();
       setTimeout(() => {
         dispatchAuthSuccess("session");
       }, 0);
@@ -167,6 +168,11 @@
     refreshElements();
 
     if (!elements.modal) {
+      return;
+    }
+
+    if (authState.isAdmin) {
+      closeModal();
       return;
     }
 
