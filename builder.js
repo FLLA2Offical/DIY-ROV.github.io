@@ -12,7 +12,9 @@
 
   const STORAGE_KEY = "fll6959_site_builder_state_v1";
   const CLOUD_COLLECTION = "fll6959SiteBuilder";
+  const CLOUD_PUBLIC_DOC_ID = "published";
   const SAVE_DEBOUNCE_MS = 450;
+  const GOOGLE_LOGIN_INTENT_KEY = "fll6959_google_login_intent";
 
   const DEFAULT_THEME = {
     primary: "#12b9c9",
@@ -264,11 +266,22 @@
 
       configureAuthModuleGoogle(true);
 
+      await loadPublishedState();
+      await applyGoogleRedirectResult();
+
       firebaseState.auth.onAuthStateChanged(async (user) => {
         firebaseState.user = user || null;
 
         if (firebaseState.user) {
           await loadStateFromCloud();
+          if (consumeGoogleIntent()) {
+            window.dispatchEvent(
+              new CustomEvent("admin:auth-success", {
+                detail: { method: "google" }
+              })
+            );
+            showToast("Google login connected.");
+          }
         }
       });
     } catch (error) {
@@ -299,15 +312,132 @@
     }
 
     const provider = new window.firebase.auth.GoogleAuthProvider();
-    const result = await firebaseState.auth.signInWithPopup(provider);
+    sessionStorage.setItem(GOOGLE_LOGIN_INTENT_KEY, "1");
 
-    if (!result || !result.user) {
-      throw new Error("Google login failed.");
+    try {
+      const result = await firebaseState.auth.signInWithPopup(provider);
+      if (!result || !result.user) {
+        throw new Error("Google login failed.");
+      }
+
+      firebaseState.user = result.user;
+      await loadStateFromCloud();
+      showToast("Google login connected.");
+      return;
+    } catch (error) {
+      const code = error && error.code ? String(error.code) : "";
+      const needsRedirectFallback =
+        code === "auth/popup-blocked" ||
+        code === "auth/popup-closed-by-user" ||
+        code === "auth/cancelled-popup-request";
+
+      if (!needsRedirectFallback) {
+        sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
+        throw new Error(getGoogleLoginErrorMessage(error));
+      }
     }
 
-    firebaseState.user = result.user;
-    await loadStateFromCloud();
-    showToast("Google login connected.");
+    await firebaseState.auth.signInWithRedirect(provider);
+  }
+
+  async function applyGoogleRedirectResult() {
+    if (!firebaseState.auth) {
+      return;
+    }
+
+    try {
+      const result = await firebaseState.auth.getRedirectResult();
+      if (result && result.user) {
+        firebaseState.user = result.user;
+        await loadStateFromCloud();
+      }
+    } catch (error) {
+      console.error("Google redirect login failed:", error);
+      sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
+    }
+  }
+
+  function consumeGoogleIntent() {
+    const hadIntent = sessionStorage.getItem(GOOGLE_LOGIN_INTENT_KEY) === "1";
+    if (hadIntent) {
+      sessionStorage.removeItem(GOOGLE_LOGIN_INTENT_KEY);
+    }
+    return hadIntent;
+  }
+
+  function getGoogleLoginErrorMessage(error) {
+    const code = error && error.code ? String(error.code) : "";
+
+    if (code === "auth/unauthorized-domain") {
+      return "Google login is blocked for this site domain. Add your GitHub Pages domain in Firebase Authentication > Authorized domains.";
+    }
+
+    if (code === "auth/popup-blocked") {
+      return "Popup was blocked. Allow popups for this site and try again.";
+    }
+
+    if (code === "auth/network-request-failed") {
+      return "Network issue during Google login. Check your connection and retry.";
+    }
+
+    if (code === "auth/operation-not-allowed") {
+      return "Google sign-in is not enabled in Firebase Authentication.";
+    }
+
+    if (code === "auth/invalid-api-key") {
+      return "Firebase API key is invalid for this build.";
+    }
+
+    if (error && error.message) {
+      return error.message;
+    }
+
+    return "Google login failed.";
+  }
+
+  async function loadPublishedState() {
+    if (!firebaseState.enabled || !firebaseState.db) {
+      return;
+    }
+
+    try {
+      const docRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(CLOUD_PUBLIC_DOC_ID);
+      const docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        return;
+      }
+
+      const data = docSnap.data();
+      if (!data || !data.state) {
+        return;
+      }
+
+      const loaded = normalizePersistedState(data.state);
+      if (!loaded) {
+        return;
+      }
+
+      state.pages = loaded.pages;
+      state.currentPageId = loaded.currentPageId;
+      state.theme = loaded.theme;
+      state.selectedSectionId = getCurrentPage()?.sections[0]?.id || null;
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          pages: state.pages,
+          currentPageId: state.currentPageId,
+          theme: state.theme,
+          updatedAt: new Date().toISOString()
+        })
+      );
+
+      applyTheme(state.theme);
+      render();
+    } catch (error) {
+      console.error("Published load failed:", error);
+    }
   }
 
   async function loadStateFromCloud() {
@@ -352,15 +482,29 @@
     }
 
     try {
-      const docRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(firebaseState.user.uid);
-      await docRef.set(
-        {
-          state: payload,
-          updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
-          team: "FLL Team 6959"
-        },
-        { merge: true }
-      );
+      const timestamp = window.firebase.firestore.FieldValue.serverTimestamp();
+      const userDocRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(firebaseState.user.uid);
+      const publishedDocRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(CLOUD_PUBLIC_DOC_ID);
+
+      await Promise.all([
+        userDocRef.set(
+          {
+            state: payload,
+            updatedAt: timestamp,
+            team: "FLL Team 6959"
+          },
+          { merge: true }
+        ),
+        publishedDocRef.set(
+          {
+            state: payload,
+            updatedAt: timestamp,
+            team: "FLL Team 6959",
+            publishedBy: firebaseState.user.uid
+          },
+          { merge: true }
+        )
+      ]);
       return true;
     } catch (error) {
       console.error("Cloud save failed:", error);
