@@ -339,6 +339,7 @@ body.admin-mode main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow: visible;
 }
 
 .builder-block {
@@ -354,7 +355,11 @@ body.admin-mode main {
 
 .admin-mode .builder-block:hover {
   outline-color: color-mix(in srgb, var(--primary-color) 42%, #cbd5e1 58%);
-  transform: translateY(-1px);
+}
+
+.builder-block.editing-live {
+  outline-color: color-mix(in srgb, var(--primary-color) 55%, #cbd5e1 45%);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
 .block-admin-row {
@@ -376,6 +381,20 @@ body.admin-mode main {
   text-transform: uppercase;
   font-weight: 700;
   color: #475569;
+  cursor: move;
+}
+
+.resize-grip {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  background: rgba(255, 255, 255, 0.9);
+  cursor: nwse-resize;
+  z-index: 6;
 }
 
 .title-large {

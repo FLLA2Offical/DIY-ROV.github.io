@@ -15,6 +15,8 @@
   const CLOUD_PUBLIC_DOC_ID = "published";
   const SAVE_DEBOUNCE_MS = 450;
   const SAVE_OP_TIMEOUT_MS = 15000;
+  const AUTO_SAVE_ENABLED = false;
+  const AUTO_SAVE_DELAY_MS = 9000;
   const DEFAULT_SITE_NAME = "Team 69309 Collegiate Dutchmen";
   const ADMIN_EMAIL_HASH_ALLOWLIST = [
     "51e4a7b04c774ff36a20cb3e9b0b113d42eb7ca952a017011a897eec2b19b8c6",
@@ -55,6 +57,8 @@
   let authLogoutBridgeBound = false;
   let pendingCloudImageUploads = 0;
   let lastUnauthorizedAdminEmail = "";
+  let hasUnsavedChanges = false;
+  let pointerEdit = null;
 
   const imageUploadContext = {
     mode: "image",
@@ -134,11 +138,15 @@
       elements.siteContent.addEventListener("click", handleSiteClick);
       elements.siteContent.addEventListener("dblclick", handleSiteDoubleClick);
       elements.siteContent.addEventListener("input", handleEditableInput);
+      elements.siteContent.addEventListener("mousedown", handlePointerEditStart);
       elements.siteContent.addEventListener("dragstart", handleDragStart);
       elements.siteContent.addEventListener("dragover", handleDragOver);
       elements.siteContent.addEventListener("drop", handleDrop);
       elements.siteContent.addEventListener("dragend", clearDragState);
     }
+
+    window.addEventListener("mousemove", handlePointerEditMove);
+    window.addEventListener("mouseup", handlePointerEditEnd);
 
     if (elements.pageTabs) {
       elements.pageTabs.addEventListener("click", (event) => {
@@ -791,7 +799,12 @@
 
     const common = {
       id: String(block.id || uid("block")),
-      type: String(block.type || "text")
+      type: String(block.type || "text"),
+      offsetX: clampNumber(block.offsetX, -1600, 1600, 0),
+      offsetY: clampNumber(block.offsetY, -1600, 1600, 0),
+      zIndex: clampNumber(block.zIndex, 1, 50, 1),
+      boxWidthPx: clampNumber(block.boxWidthPx, 180, 1400, 0),
+      boxMinHeightPx: clampNumber(block.boxMinHeightPx, 80, 1200, 0)
     };
 
     if (common.type === "title") {
@@ -1194,6 +1207,8 @@
     const dragHandle = state.adminMode
       ? `<div class="block-admin-row">
           <button type="button" class="section-control-btn" data-action="edit-block" data-block-id="${escapeAttr(block.id)}">Edit</button>
+          <button type="button" class="section-control-btn" data-action="layer-down" data-block-id="${escapeAttr(block.id)}">Back</button>
+          <button type="button" class="section-control-btn" data-action="layer-up" data-block-id="${escapeAttr(block.id)}">Front</button>
           ${imageResizeControls}
           ${galleryResizeControls}
           <span class="block-handle" title="Drag block">Drag</span>
@@ -1203,9 +1218,13 @@
         </div>`
       : "";
 
-    const wrapperStart = `<div class="builder-block" data-block-id="${escapeAttr(block.id)}" data-section-id="${escapeAttr(
-      section.id
-    )}" draggable="${state.adminMode}">${dragHandle}`;
+    const runtimeStyle = buildBlockInlineStyle(block);
+    const resizeGrip = state.adminMode
+      ? `<span class="resize-grip" data-action="resize-block" data-block-id="${escapeAttr(block.id)}" title="Drag to resize"></span>`
+      : "";
+    const wrapperStart = `<div class="builder-block" style="${escapeAttr(runtimeStyle)}" data-block-id="${escapeAttr(
+      block.id
+    )}" data-section-id="${escapeAttr(section.id)}" draggable="${state.adminMode}">${dragHandle}${resizeGrip}`;
     const wrapperEnd = "</div>";
 
     if (block.type === "title") {
@@ -1326,6 +1345,24 @@
     }
 
     return `${wrapperStart}<p class="body-text">${escapeHtml(block.text || "")}</p>${wrapperEnd}`;
+  }
+
+  function buildBlockInlineStyle(block) {
+    const translateX = clampNumber(block?.offsetX, -1600, 1600, 0);
+    const translateY = clampNumber(block?.offsetY, -1600, 1600, 0);
+    const zIndex = clampNumber(block?.zIndex, 1, 50, 1);
+    const widthPx = clampNumber(block?.boxWidthPx, 0, 1400, 0);
+    const minHeightPx = clampNumber(block?.boxMinHeightPx, 0, 1200, 0);
+
+    const styles = [`transform:translate(${translateX}px, ${translateY}px)`, `z-index:${zIndex}`];
+    if (widthPx > 0) {
+      styles.push(`width:min(100%, ${widthPx}px)`);
+    }
+    if (minHeightPx > 0) {
+      styles.push(`min-height:${minHeightPx}px`);
+    }
+
+    return styles.join(";");
   }
 
   function handleSiteClick(event) {
@@ -1483,6 +1520,16 @@
       return;
     }
 
+    if (action === "layer-up") {
+      adjustBlockLayer(button.dataset.blockId, 1);
+      return;
+    }
+
+    if (action === "layer-down") {
+      adjustBlockLayer(button.dataset.blockId, -1);
+      return;
+    }
+
     if (action === "image-width-down") {
       resizeImageBlock(button.dataset.blockId, -10, 0);
       return;
@@ -1510,6 +1557,11 @@
 
     if (action === "gallery-height-up") {
       resizeGalleryBlock(button.dataset.blockId, 20);
+      return;
+    }
+
+    if (action === "resize-block") {
+      return;
     }
   }
 
@@ -1582,6 +1634,122 @@
     block.imageHeightPx = clampNumber(Number(block.imageHeightPx || 176) + Number(heightDelta || 0), 100, 520, 176);
     queueSave();
     render();
+  }
+
+  function adjustBlockLayer(blockId, delta) {
+    const block = findBlockById(blockId);
+    if (!block) {
+      return;
+    }
+
+    block.zIndex = clampNumber(Number(block.zIndex || 1) + Number(delta || 0), 1, 50, 1);
+    queueSave();
+    render();
+  }
+
+  function handlePointerEditStart(event) {
+    if (!state.adminMode) {
+      return;
+    }
+
+    const resizeHandle = event.target.closest("[data-action='resize-block']");
+    if (resizeHandle) {
+      const blockId = resizeHandle.dataset.blockId;
+      const blockElement = resizeHandle.closest(".builder-block");
+      const block = findBlockById(blockId);
+      if (!block || !blockElement) {
+        return;
+      }
+
+      const rect = blockElement.getBoundingClientRect();
+      pointerEdit = {
+        mode: "resize",
+        blockId,
+        startX: event.clientX,
+        startY: event.clientY,
+        startWidth: Number(block.boxWidthPx || rect.width),
+        startMinHeight: Number(block.boxMinHeightPx || rect.height),
+        startImageHeight: Number(block.heightPx || 420)
+      };
+      blockElement.classList.add("editing-live");
+      event.preventDefault();
+      return;
+    }
+
+    const dragHandle = event.target.closest(".block-handle");
+    if (!dragHandle) {
+      return;
+    }
+
+    const blockElement = dragHandle.closest(".builder-block");
+    if (!blockElement) {
+      return;
+    }
+
+    const blockId = blockElement.dataset.blockId;
+    const block = findBlockById(blockId);
+    if (!block) {
+      return;
+    }
+
+    pointerEdit = {
+      mode: "drag",
+      blockId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startOffsetX: Number(block.offsetX || 0),
+      startOffsetY: Number(block.offsetY || 0)
+    };
+    blockElement.classList.add("editing-live");
+    event.preventDefault();
+  }
+
+  function handlePointerEditMove(event) {
+    if (!pointerEdit || !state.adminMode) {
+      return;
+    }
+
+    const block = findBlockById(pointerEdit.blockId);
+    if (!block) {
+      return;
+    }
+
+    const deltaX = event.clientX - pointerEdit.startX;
+    const deltaY = event.clientY - pointerEdit.startY;
+
+    if (pointerEdit.mode === "drag") {
+      block.offsetX = clampNumber(pointerEdit.startOffsetX + deltaX, -1600, 1600, 0);
+      block.offsetY = clampNumber(pointerEdit.startOffsetY + deltaY, -1600, 1600, 0);
+    } else if (pointerEdit.mode === "resize") {
+      block.boxWidthPx = clampNumber(pointerEdit.startWidth + deltaX, 180, 1400, pointerEdit.startWidth);
+      if (block.type === "image") {
+        block.heightPx = clampNumber(pointerEdit.startImageHeight + deltaY, 180, 900, pointerEdit.startImageHeight);
+      } else {
+        block.boxMinHeightPx = clampNumber(pointerEdit.startMinHeight + deltaY, 80, 1200, pointerEdit.startMinHeight);
+      }
+    }
+
+    applyLiveBlockStyle(block.id);
+  }
+
+  function handlePointerEditEnd() {
+    if (!pointerEdit) {
+      return;
+    }
+
+    document.querySelectorAll(".builder-block.editing-live").forEach((node) => node.classList.remove("editing-live"));
+    pointerEdit = null;
+    queueSave();
+  }
+
+  function applyLiveBlockStyle(blockId) {
+    const block = findBlockById(blockId);
+    const node = document.querySelector(`.builder-block[data-block-id="${blockId}"]`);
+    if (!block || !node) {
+      return;
+    }
+
+    node.setAttribute("style", buildBlockInlineStyle(block));
   }
 
   function handleDragStart(event) {
@@ -2272,11 +2440,17 @@
   }
 
   function queueSave() {
-    setSaveStatus("Autosaving...", "saving");
+    hasUnsavedChanges = true;
+    setSaveStatus("Unsaved Changes", "warning");
+
+    if (!AUTO_SAVE_ENABLED) {
+      return;
+    }
+
     window.clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
       persistState({ manual: false });
-    }, SAVE_DEBOUNCE_MS);
+    }, Math.max(SAVE_DEBOUNCE_MS, AUTO_SAVE_DELAY_MS));
   }
 
   async function persistState(options = { manual: false }) {
@@ -2311,6 +2485,7 @@
       }
 
       cloudStatus = await saveStateToCloud(payload);
+      hasUnsavedChanges = false;
 
       if (options.manual) {
         if (cloudStatus.publishedSaved && localStatus === "full") {
