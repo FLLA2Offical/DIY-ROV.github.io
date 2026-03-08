@@ -2084,15 +2084,39 @@
       updatedAt: new Date().toISOString()
     };
 
+    let localStatus = "full";
+    let cloudStatus = { accountSaved: false, publishedSaved: false };
+
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      const cloudStatus = await saveStateToCloud(payload);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (storageError) {
+        if (!isStorageQuotaError(storageError)) {
+          throw storageError;
+        }
+
+        const compact = stripInlineImagesFromPayload(payload);
+        if (!compact.stripped) {
+          throw storageError;
+        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(compact.payload));
+        localStatus = "compact";
+      }
+
+      cloudStatus = await saveStateToCloud(payload);
 
       if (options.manual) {
-        if (cloudStatus.publishedSaved) {
+        if (cloudStatus.publishedSaved && localStatus === "full") {
           showToast("Saved and published for everyone.");
+        } else if (cloudStatus.publishedSaved && localStatus === "compact") {
+          showToast("Published for everyone. Local save excluded large inline images.");
+        } else if (cloudStatus.publishedSaved) {
+          showToast("Published for everyone.");
         } else if (cloudStatus.accountSaved) {
           showToast("Saved to your account only. Public publish failed.");
+        } else if (localStatus === "compact") {
+          showToast("Saved locally (without large inline images). Cloud publish pending.");
         } else if (cloudStatus.reason === "inline-images" || pendingCloudImageUploads > 0) {
           showToast("Images are still uploading. Wait a moment, then Save again.");
         } else if (firebaseState.enabled && !firebaseState.user) {
@@ -2106,9 +2130,50 @@
     } catch (error) {
       console.error("Save failed:", error);
       if (options.manual) {
-        showToast("Save failed.");
+        if (isStorageQuotaError(error)) {
+          showToast("Save failed: browser storage is full. Upload images and try Save again.");
+        } else {
+          showToast("Save failed.");
+        }
       }
     }
+  }
+
+  function isStorageQuotaError(error) {
+    if (!error) {
+      return false;
+    }
+
+    const code = Number(error.code);
+    const name = String(error.name || "");
+    return code === 22 || code === 1014 || name === "QuotaExceededError" || name === "NS_ERROR_DOM_QUOTA_REACHED";
+  }
+
+  function stripInlineImagesFromPayload(payload) {
+    const clone = JSON.parse(JSON.stringify(payload));
+    let stripped = false;
+
+    for (const page of clone.pages || []) {
+      for (const section of page.sections || []) {
+        for (const block of section.blocks || []) {
+          if (block.type === "image" && typeof block.src === "string" && block.src.startsWith("data:image/")) {
+            block.src = "";
+            stripped = true;
+          }
+
+          if (block.type === "gallery" && Array.isArray(block.images)) {
+            for (const image of block.images) {
+              if (image && typeof image.src === "string" && image.src.startsWith("data:image/")) {
+                image.src = "";
+                stripped = true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return { payload: clone, stripped };
   }
 
   function getCurrentPage() {
