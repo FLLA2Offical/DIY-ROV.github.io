@@ -14,6 +14,7 @@
   const CLOUD_COLLECTION = "fll6959SiteBuilder";
   const CLOUD_PUBLIC_DOC_ID = "published";
   const SAVE_DEBOUNCE_MS = 450;
+  const SAVE_OP_TIMEOUT_MS = 15000;
   const DEFAULT_SITE_NAME = "Team 69309 Collegiate Dutchmen";
 
   const DEFAULT_THEME = {
@@ -540,13 +541,17 @@
 
     try {
       const userDocRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(firebaseState.user.uid);
-      await userDocRef.set(
-        {
-          state: payload,
-          updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
-          team: "Team 69309 Collegiate Dutchmen"
-        },
-        { merge: true }
+      await withTimeout(
+        userDocRef.set(
+          {
+            state: payload,
+            updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+            team: "Team 69309 Collegiate Dutchmen"
+          },
+          { merge: true }
+        ),
+        SAVE_OP_TIMEOUT_MS,
+        "Account cloud save timed out."
       );
       accountSaved = true;
     } catch (error) {
@@ -555,14 +560,18 @@
 
     try {
       const publishedDocRef = firebaseState.db.collection(CLOUD_COLLECTION).doc(CLOUD_PUBLIC_DOC_ID);
-      await publishedDocRef.set(
-        {
-          state: payload,
-          updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
-          team: "Team 69309 Collegiate Dutchmen",
-          publishedBy: firebaseState.user.uid
-        },
-        { merge: true }
+      await withTimeout(
+        publishedDocRef.set(
+          {
+            state: payload,
+            updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+            team: "Team 69309 Collegiate Dutchmen",
+            publishedBy: firebaseState.user.uid
+          },
+          { merge: true }
+        ),
+        SAVE_OP_TIMEOUT_MS,
+        "Public publish save timed out."
       );
       publishedSaved = true;
     } catch (error) {
@@ -1885,8 +1894,8 @@
       const safeName = String(file.name || "upload").replace(/[^a-zA-Z0-9_.-]/g, "_");
       const path = `images/${firebaseState.user.uid}/${Date.now()}-${safeName}`;
       const storageRef = firebaseState.storage.ref().child(path);
-      await storageRef.put(file);
-      return await storageRef.getDownloadURL();
+      await withTimeout(storageRef.put(file), SAVE_OP_TIMEOUT_MS, "Image upload timed out.");
+      return await withTimeout(storageRef.getDownloadURL(), SAVE_OP_TIMEOUT_MS, "Image URL fetch timed out.");
     } catch (error) {
       console.error("Cloud image upload failed:", error);
       return null;
@@ -2382,14 +2391,25 @@
       const safeHint = String(hint || "upload").replace(/[^a-zA-Z0-9_.-]/g, "_");
       const path = `images/${firebaseState.user.uid}/${Date.now()}-${safeHint}.${ext}`;
       const storageRef = firebaseState.storage.ref().child(path);
-      await storageRef.put(blob, { contentType: mime });
-      return await storageRef.getDownloadURL();
+      await withTimeout(storageRef.put(blob, { contentType: mime }), SAVE_OP_TIMEOUT_MS, "Inline image upload timed out.");
+      return await withTimeout(storageRef.getDownloadURL(), SAVE_OP_TIMEOUT_MS, "Inline image URL fetch timed out.");
     } catch (error) {
       console.error("Inline image upload failed:", error);
       return null;
     } finally {
       pendingCloudImageUploads = Math.max(0, pendingCloudImageUploads - 1);
     }
+  }
+
+  function withTimeout(promise, timeoutMs, message) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        window.setTimeout(() => {
+          reject(new Error(message || "Operation timed out."));
+        }, timeoutMs);
+      })
+    ]);
   }
 
   function applyTheme(theme) {
