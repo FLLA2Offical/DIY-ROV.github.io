@@ -2098,17 +2098,10 @@
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (storageError) {
-        if (!isStorageQuotaError(storageError)) {
+        localStatus = isStorageQuotaError(storageError) ? "quota-failed" : "failed";
+        if (localStatus === "failed") {
           throw storageError;
         }
-
-        const compact = stripInlineImagesFromPayload(payload);
-        if (!compact.stripped) {
-          throw storageError;
-        }
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(compact.payload));
-        localStatus = "compact";
       }
 
       cloudStatus = await saveStateToCloud(payload);
@@ -2117,8 +2110,8 @@
         if (cloudStatus.publishedSaved && localStatus === "full") {
           showToast("Saved and published for everyone.");
           setSaveStatus("Published", "success");
-        } else if (cloudStatus.publishedSaved && localStatus === "compact") {
-          showToast("Published for everyone. Local save excluded large inline images.");
+        } else if (cloudStatus.publishedSaved && localStatus === "quota-failed") {
+          showToast("Published for everyone. Local browser storage is full.");
           setSaveStatus("Published (Cloud)", "warning");
         } else if (cloudStatus.publishedSaved) {
           showToast("Published for everyone.");
@@ -2126,9 +2119,9 @@
         } else if (cloudStatus.accountSaved) {
           showToast("Saved to your account only. Public publish failed.");
           setSaveStatus("Saved (Account Only)", "warning");
-        } else if (localStatus === "compact") {
-          showToast("Saved locally (without large inline images). Cloud publish pending.");
-          setSaveStatus("Local Only (Compact)", "warning");
+        } else if (localStatus === "quota-failed") {
+          showToast("Save failed: local browser storage is full, and cloud publish did not complete.");
+          setSaveStatus("Save Failed (Storage Full)", "error");
         } else if (cloudStatus.reason === "inline-images" || pendingCloudImageUploads > 0) {
           showToast("Images are still uploading. Wait a moment, then Save again.");
           setSaveStatus("Waiting for Images", "warning");
@@ -2194,33 +2187,6 @@
     const code = Number(error.code);
     const name = String(error.name || "");
     return code === 22 || code === 1014 || name === "QuotaExceededError" || name === "NS_ERROR_DOM_QUOTA_REACHED";
-  }
-
-  function stripInlineImagesFromPayload(payload) {
-    const clone = JSON.parse(JSON.stringify(payload));
-    let stripped = false;
-
-    for (const page of clone.pages || []) {
-      for (const section of page.sections || []) {
-        for (const block of section.blocks || []) {
-          if (block.type === "image" && typeof block.src === "string" && block.src.startsWith("data:image/")) {
-            block.src = "";
-            stripped = true;
-          }
-
-          if (block.type === "gallery" && Array.isArray(block.images)) {
-            for (const image of block.images) {
-              if (image && typeof image.src === "string" && image.src.startsWith("data:image/")) {
-                image.src = "";
-                stripped = true;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return { payload: clone, stripped };
   }
 
   function getCurrentPage() {
