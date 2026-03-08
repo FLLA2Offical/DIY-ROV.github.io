@@ -167,6 +167,41 @@ body.admin-mode main {
   color: #7f1d1d;
 }
 
+.save-status {
+  padding: 0.42rem 0.64rem;
+  border-radius: 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  color: #334155;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.save-status.state-saving {
+  border-color: rgba(14, 165, 233, 0.45);
+  color: #0c4a6e;
+  background: rgba(224, 242, 254, 0.85);
+}
+
+.save-status.state-success {
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #065f46;
+  background: rgba(209, 250, 229, 0.88);
+}
+
+.save-status.state-warning {
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #92400e;
+  background: rgba(254, 243, 199, 0.9);
+}
+
+.save-status.state-error {
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #7f1d1d;
+  background: rgba(254, 226, 226, 0.9);
+}
+
 .input-field {
   width: 100%;
   border-radius: 12px;

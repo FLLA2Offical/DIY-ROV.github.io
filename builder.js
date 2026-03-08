@@ -93,6 +93,7 @@
     elements.btnSave = document.getElementById("btnSave");
     elements.btnRenamePage = document.getElementById("btnRenamePage");
     elements.btnDeletePage = document.getElementById("btnDeletePage");
+    elements.saveStatus = document.getElementById("saveStatus");
 
     elements.colorPanel = document.getElementById("colorPanel");
     elements.closeColorPanel = document.getElementById("closeColorPanel");
@@ -2068,6 +2069,7 @@
   }
 
   function queueSave() {
+    setSaveStatus("Autosaving...", "saving");
     window.clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
       persistState({ manual: false });
@@ -2086,8 +2088,13 @@
 
     let localStatus = "full";
     let cloudStatus = { accountSaved: false, publishedSaved: false };
+    setSaveStatus("Saving...", "saving");
 
     try {
+      if (hasCloudSync() && payloadHasInlineImages(payload)) {
+        await replaceInlineImagesWithCloudUrls(payload);
+      }
+
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (storageError) {
@@ -2109,22 +2116,39 @@
       if (options.manual) {
         if (cloudStatus.publishedSaved && localStatus === "full") {
           showToast("Saved and published for everyone.");
+          setSaveStatus("Published", "success");
         } else if (cloudStatus.publishedSaved && localStatus === "compact") {
           showToast("Published for everyone. Local save excluded large inline images.");
+          setSaveStatus("Published (Cloud)", "warning");
         } else if (cloudStatus.publishedSaved) {
           showToast("Published for everyone.");
+          setSaveStatus("Published", "success");
         } else if (cloudStatus.accountSaved) {
           showToast("Saved to your account only. Public publish failed.");
+          setSaveStatus("Saved (Account Only)", "warning");
         } else if (localStatus === "compact") {
           showToast("Saved locally (without large inline images). Cloud publish pending.");
+          setSaveStatus("Local Only (Compact)", "warning");
         } else if (cloudStatus.reason === "inline-images" || pendingCloudImageUploads > 0) {
           showToast("Images are still uploading. Wait a moment, then Save again.");
+          setSaveStatus("Waiting for Images", "warning");
         } else if (firebaseState.enabled && !firebaseState.user) {
           showToast("Saved on this device only. Use Sign in with Google to sync.");
+          setSaveStatus("Local Only", "warning");
         } else if (!firebaseState.enabled) {
           showToast("Saved on this device only. Cloud sync is unavailable.");
+          setSaveStatus("Local Only", "warning");
         } else {
           showToast("Saved locally only.");
+          setSaveStatus("Saved Locally", "warning");
+        }
+      } else {
+        if (cloudStatus.publishedSaved) {
+          setSaveStatus("Published", "success");
+        } else if (cloudStatus.accountSaved) {
+          setSaveStatus("Saved (Account Only)", "warning");
+        } else {
+          setSaveStatus("Saved Locally", "warning");
         }
       }
     } catch (error) {
@@ -2132,10 +2156,33 @@
       if (options.manual) {
         if (isStorageQuotaError(error)) {
           showToast("Save failed: browser storage is full. Upload images and try Save again.");
+          setSaveStatus("Save Failed (Storage Full)", "error");
         } else {
           showToast("Save failed.");
+          setSaveStatus("Save Failed", "error");
         }
+      } else {
+        setSaveStatus("Autosave Failed", "error");
       }
+    }
+  }
+
+  function setSaveStatus(text, tone = "neutral") {
+    if (!elements.saveStatus) {
+      return;
+    }
+
+    elements.saveStatus.textContent = text;
+    elements.saveStatus.classList.remove("state-saving", "state-success", "state-warning", "state-error");
+
+    if (tone === "saving") {
+      elements.saveStatus.classList.add("state-saving");
+    } else if (tone === "success") {
+      elements.saveStatus.classList.add("state-success");
+    } else if (tone === "warning") {
+      elements.saveStatus.classList.add("state-warning");
+    } else if (tone === "error") {
+      elements.saveStatus.classList.add("state-error");
     }
   }
 
@@ -2299,6 +2346,84 @@
     }
 
     return false;
+  }
+
+  async function replaceInlineImagesWithCloudUrls(payload) {
+    if (!hasCloudSync() || !payload || !Array.isArray(payload.pages)) {
+      return 0;
+    }
+
+    let replaced = 0;
+
+    for (const page of payload.pages) {
+      if (!page || !Array.isArray(page.sections)) {
+        continue;
+      }
+
+      for (const section of page.sections) {
+        if (!section || !Array.isArray(section.blocks)) {
+          continue;
+        }
+
+        for (const block of section.blocks) {
+          if (!block || typeof block !== "object") {
+            continue;
+          }
+
+          if (block.type === "image" && typeof block.src === "string" && block.src.startsWith("data:image/")) {
+            const cloudUrl = await uploadDataUrlToCloud(block.src, "image");
+            if (cloudUrl) {
+              block.src = cloudUrl;
+              replaced += 1;
+            }
+          }
+
+          if (block.type === "gallery" && Array.isArray(block.images)) {
+            for (const image of block.images) {
+              if (!image || typeof image.src !== "string" || !image.src.startsWith("data:image/")) {
+                continue;
+              }
+
+              const cloudUrl = await uploadDataUrlToCloud(image.src, "gallery");
+              if (cloudUrl) {
+                image.src = cloudUrl;
+                replaced += 1;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (replaced > 0) {
+      render();
+    }
+
+    return replaced;
+  }
+
+  async function uploadDataUrlToCloud(dataUrl, hint = "upload") {
+    if (!hasCloudSync() || typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) {
+      return null;
+    }
+
+    pendingCloudImageUploads += 1;
+    try {
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const mime = String(blob.type || "image/png");
+      const ext = mime.includes("jpeg") ? "jpg" : mime.includes("webp") ? "webp" : "png";
+      const safeHint = String(hint || "upload").replace(/[^a-zA-Z0-9_.-]/g, "_");
+      const path = `images/${firebaseState.user.uid}/${Date.now()}-${safeHint}.${ext}`;
+      const storageRef = firebaseState.storage.ref().child(path);
+      await storageRef.put(blob, { contentType: mime });
+      return await storageRef.getDownloadURL();
+    } catch (error) {
+      console.error("Inline image upload failed:", error);
+      return null;
+    } finally {
+      pendingCloudImageUploads = Math.max(0, pendingCloudImageUploads - 1);
+    }
   }
 
   function applyTheme(theme) {
