@@ -16,6 +16,11 @@
   const SAVE_DEBOUNCE_MS = 450;
   const SAVE_OP_TIMEOUT_MS = 15000;
   const DEFAULT_SITE_NAME = "Team 69309 Collegiate Dutchmen";
+  const ADMIN_EMAIL_HASH_ALLOWLIST = [
+    "51e4a7b04c774ff36a20cb3e9b0b113d42eb7ca952a017011a897eec2b19b8c6",
+    "61729876c1a924caca603a08887dc053b529b5b2cf94c0ce286a987b0141181c",
+    "bbb28ffe5e460c2d60e355cd06408a8ec20eee033b601de4abbd24d7c339772b"
+  ];
 
   const DEFAULT_THEME = {
     primary: "#12b9c9",
@@ -49,6 +54,7 @@
   let fadeObserver = null;
   let authLogoutBridgeBound = false;
   let pendingCloudImageUploads = 0;
+  let lastUnauthorizedAdminEmail = "";
 
   const imageUploadContext = {
     mode: "image",
@@ -290,16 +296,20 @@
 
         if (firebaseState.user) {
           await loadStateFromCloud();
-          if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
-            if (!window.AuthModule.isAdmin()) {
-              window.AuthModule.completeExternalLogin("google");
+          if (await isAllowedAdminUser(firebaseState.user)) {
+            if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
+              if (!window.AuthModule.isAdmin()) {
+                window.AuthModule.completeExternalLogin("google");
+              }
+            } else {
+              window.dispatchEvent(
+                new CustomEvent("admin:external-login-success", {
+                  detail: { method: "google" }
+                })
+              );
             }
           } else {
-            window.dispatchEvent(
-              new CustomEvent("admin:external-login-success", {
-                detail: { method: "google" }
-              })
-            );
+            setVisitorForUnauthorizedGoogle(firebaseState.user);
           }
         }
       });
@@ -362,8 +372,13 @@
 
       firebaseState.user = result.user;
       await loadStateFromCloud();
-      if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function" && !window.AuthModule.isAdmin()) {
-        window.AuthModule.completeExternalLogin("google");
+      if (await isAllowedAdminUser(firebaseState.user)) {
+        if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function" && !window.AuthModule.isAdmin()) {
+          window.AuthModule.completeExternalLogin("google");
+        }
+      } else {
+        setVisitorForUnauthorizedGoogle(firebaseState.user);
+        return;
       }
       showToast("Google login connected.");
       return;
@@ -392,19 +407,80 @@
       if (result && result.user) {
         firebaseState.user = result.user;
         await loadStateFromCloud();
-        if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
-          window.AuthModule.completeExternalLogin("google");
+        if (await isAllowedAdminUser(firebaseState.user)) {
+          if (window.AuthModule && typeof window.AuthModule.completeExternalLogin === "function") {
+            window.AuthModule.completeExternalLogin("google");
+          } else {
+            window.dispatchEvent(
+              new CustomEvent("admin:external-login-success", {
+                detail: { method: "google" }
+                })
+            );
+          }
+          showToast("Google login connected.");
         } else {
-          window.dispatchEvent(
-            new CustomEvent("admin:external-login-success", {
-              detail: { method: "google" }
-              })
-          );
+          setVisitorForUnauthorizedGoogle(firebaseState.user);
         }
-        showToast("Google login connected.");
       }
     } catch (error) {
       console.error("Google redirect login failed:", error);
+    }
+  }
+
+  function normalizeEmail(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  async function isAllowedAdminUser(user) {
+    const email = normalizeEmail(user && user.email);
+    if (!email) {
+      return false;
+    }
+
+    const emailHash = await sha256Hex(email);
+    if (!emailHash) {
+      return false;
+    }
+
+    return ADMIN_EMAIL_HASH_ALLOWLIST.includes(emailHash);
+  }
+
+  async function sha256Hex(text) {
+    if (!text) {
+      return "";
+    }
+
+    if (window.AuthModule && typeof window.AuthModule.sha256Hex === "function") {
+      return String(await window.AuthModule.sha256Hex(text));
+    }
+
+    if (window.crypto && window.crypto.subtle && typeof window.crypto.subtle.digest === "function") {
+      const encoded = new TextEncoder().encode(text);
+      const hashBuffer = await window.crypto.subtle.digest("SHA-256", encoded);
+      return Array.from(new Uint8Array(hashBuffer))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    return "";
+  }
+
+  function setVisitorForUnauthorizedGoogle(user) {
+    const email = normalizeEmail(user && user.email);
+    if (window.AuthModule && typeof window.AuthModule.setVisitorMode === "function") {
+      window.AuthModule.setVisitorMode();
+    }
+
+    disableAdminMode();
+    if (state.pages.length > 0) {
+      state.currentPageId = state.pages[0].id;
+    }
+    state.selectedSectionId = null;
+    render();
+
+    if (email && email !== lastUnauthorizedAdminEmail) {
+      lastUnauthorizedAdminEmail = email;
+      showToast("Signed in with Google, but this account is not allowed for admin.");
     }
   }
 
@@ -533,16 +609,26 @@
     }
 
     let cloudPayload = payload;
+    try {
+      cloudPayload = JSON.parse(JSON.stringify(payload));
+    } catch (error) {
+      cloudPayload = payload;
+    }
+
     if (payloadHasInlineImages(payload)) {
       if (pendingCloudImageUploads > 0) {
         return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
       }
 
-      const quotaSafe = buildQuotaSafePayload(payload);
-      if (quotaSafe) {
-        cloudPayload = quotaSafe;
-      } else {
-        return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
+      await replaceInlineImagesWithCloudUrls(cloudPayload);
+
+      if (payloadHasInlineImages(cloudPayload)) {
+        const quotaSafe = buildQuotaSafePayload(cloudPayload);
+        if (quotaSafe) {
+          cloudPayload = quotaSafe;
+        } else {
+          return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
+        }
       }
     }
 
@@ -728,7 +814,9 @@
         ...common,
         src: String(block.src || ""),
         alt: String(block.alt || "Image"),
-        featured: Boolean(block.featured)
+        featured: Boolean(block.featured),
+        widthPercent: clampNumber(block.widthPercent, 40, 100, 100),
+        heightPx: clampNumber(block.heightPx, 180, 720, Boolean(block.featured) ? 470 : 420)
       };
     }
 
@@ -743,7 +831,8 @@
 
       return {
         ...common,
-        images
+        images,
+        imageHeightPx: clampNumber(block.imageHeightPx, 100, 520, 176)
       };
     }
 
@@ -1088,8 +1177,25 @@
   }
 
   function renderBlock(block, section) {
+    const imageResizeControls =
+      block.type === "image"
+        ? `<button type="button" class="section-control-btn" data-action="image-width-down" data-block-id="${escapeAttr(block.id)}">W-</button>
+           <button type="button" class="section-control-btn" data-action="image-width-up" data-block-id="${escapeAttr(block.id)}">W+</button>
+           <button type="button" class="section-control-btn" data-action="image-height-down" data-block-id="${escapeAttr(block.id)}">H-</button>
+           <button type="button" class="section-control-btn" data-action="image-height-up" data-block-id="${escapeAttr(block.id)}">H+</button>`
+        : "";
+
+    const galleryResizeControls =
+      block.type === "gallery"
+        ? `<button type="button" class="section-control-btn" data-action="gallery-height-down" data-block-id="${escapeAttr(block.id)}">Tile-</button>
+           <button type="button" class="section-control-btn" data-action="gallery-height-up" data-block-id="${escapeAttr(block.id)}">Tile+</button>`
+        : "";
+
     const dragHandle = state.adminMode
       ? `<div class="block-admin-row">
+          <button type="button" class="section-control-btn" data-action="edit-block" data-block-id="${escapeAttr(block.id)}">Edit</button>
+          ${imageResizeControls}
+          ${galleryResizeControls}
           <span class="block-handle" title="Drag block">Drag</span>
           <button type="button" class="section-control-btn danger" data-action="delete-block" data-block-id="${escapeAttr(
             block.id
@@ -1127,15 +1233,18 @@
     }
 
     if (block.type === "image") {
-      const imageClass = block.featured
-        ? "h-[320px] w-full rounded-3xl object-cover shadow-xl md:h-[470px]"
-        : "max-h-[420px] w-full rounded-2xl object-cover shadow-lg";
-      return `${wrapperStart}<div class="builder-image-wrap"><img src="${escapeAttr(block.src)}" alt="${escapeAttr(
+      const widthPercent = clampNumber(block.widthPercent, 40, 100, 100);
+      const heightPx = clampNumber(block.heightPx, 180, 720, block.featured ? 470 : 420);
+      const imageClass = `${block.featured ? "rounded-3xl shadow-xl" : "rounded-2xl shadow-lg"} w-full object-cover`;
+      return `${wrapperStart}<div class="builder-image-wrap mx-auto" style="max-width:${widthPercent}%"><img src="${escapeAttr(
+        block.src
+      )}" alt="${escapeAttr(
         block.alt || "Image"
-      )}" class="${imageClass}" loading="lazy" /></div>${wrapperEnd}`;
+      )}" class="${imageClass}" loading="lazy" style="height:${heightPx}px" /></div>${wrapperEnd}`;
     }
 
     if (block.type === "gallery") {
+      const tileHeight = clampNumber(block.imageHeightPx, 100, 520, 176);
       return `${wrapperStart}
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           ${(block.images || [])
@@ -1143,7 +1252,7 @@
               (image) =>
                 `<figure class="gallery-card"><img src="${escapeAttr(image.src)}" alt="${escapeAttr(
                   image.alt || "Gallery image"
-                )}" class="h-44 w-full rounded-2xl object-cover" loading="lazy" /></figure>`
+                )}" class="w-full rounded-2xl object-cover" loading="lazy" style="height:${tileHeight}px" /></figure>`
             )
             .join("")}
         </div>
@@ -1361,7 +1470,118 @@
       }
 
       deleteBlock(blockId, sectionId);
+      return;
     }
+
+    if (action === "edit-block") {
+      const blockId = button.dataset.blockId;
+      if (!blockId) {
+        return;
+      }
+
+      editExistingBlock(blockId);
+      return;
+    }
+
+    if (action === "image-width-down") {
+      resizeImageBlock(button.dataset.blockId, -10, 0);
+      return;
+    }
+
+    if (action === "image-width-up") {
+      resizeImageBlock(button.dataset.blockId, 10, 0);
+      return;
+    }
+
+    if (action === "image-height-down") {
+      resizeImageBlock(button.dataset.blockId, 0, -30);
+      return;
+    }
+
+    if (action === "image-height-up") {
+      resizeImageBlock(button.dataset.blockId, 0, 30);
+      return;
+    }
+
+    if (action === "gallery-height-down") {
+      resizeGalleryBlock(button.dataset.blockId, -20);
+      return;
+    }
+
+    if (action === "gallery-height-up") {
+      resizeGalleryBlock(button.dataset.blockId, 20);
+    }
+  }
+
+  function editExistingBlock(blockId) {
+    const block = findBlockById(blockId);
+    if (!block) {
+      return;
+    }
+
+    if (block.type === "title" || block.type === "text") {
+      const nextText = window.prompt("Edit text", block.text || "");
+      if (nextText === null) {
+        return;
+      }
+      block.text = sanitizeText(nextText) || block.text;
+      queueSave();
+      render();
+      return;
+    }
+
+    if (block.type === "button") {
+      const nextText = window.prompt("Button text", block.text || "Learn More");
+      if (nextText === null) {
+        return;
+      }
+      const nextUrl = window.prompt("Button URL", block.url || "#");
+      if (nextUrl === null) {
+        return;
+      }
+      block.text = sanitizeText(nextText) || block.text;
+      block.url = nextUrl.trim() || "#";
+      queueSave();
+      render();
+      return;
+    }
+
+    if (block.type === "image") {
+      const nextAlt = window.prompt("Image alt text", block.alt || "Image");
+      if (nextAlt !== null) {
+        block.alt = sanitizeText(nextAlt) || block.alt;
+      }
+      const featured = window.confirm("Use hero (featured) image style?");
+      block.featured = featured;
+      queueSave();
+      render();
+      return;
+    }
+
+    showToast("This block can be edited by clicking text directly.");
+  }
+
+  function resizeImageBlock(blockId, widthDelta, heightDelta) {
+    const block = findBlockById(blockId);
+    if (!block || block.type !== "image") {
+      return;
+    }
+
+    block.widthPercent = clampNumber(Number(block.widthPercent || 100) + Number(widthDelta || 0), 40, 100, 100);
+    block.heightPx = clampNumber(Number(block.heightPx || (block.featured ? 470 : 420)) + Number(heightDelta || 0), 180, 720, 420);
+    queueSave();
+    render();
+  }
+
+  function resizeGalleryBlock(blockId, heightDelta) {
+    const block = findBlockById(blockId);
+    if (!block || block.type !== "gallery") {
+      return;
+    }
+
+    block.imageHeightPx = clampNumber(Number(block.imageHeightPx || 176) + Number(heightDelta || 0), 100, 520, 176);
+    queueSave();
+    render();
   }
 
   function handleDragStart(event) {
@@ -1794,26 +2014,14 @@
       }
 
       const file = imageFiles[0];
-      const base64 = await fileToDataUrl(file);
-      targetBlock.src = base64;
+      const uploaded = await buildImageSource(file, "banner");
+      targetBlock.src = uploaded.src;
       targetBlock.alt = file.name || targetBlock.alt || "Banner image";
 
       queueSave();
       render();
       closeImageModal();
-      showToast("Banner image replaced.");
-
-      if (firebaseState.enabled && firebaseState.user) {
-        const cloudUrl = await runCloudImageUpload(file);
-        if (cloudUrl) {
-          const refreshedTarget = findBlockById(targetBlockId);
-          if (refreshedTarget && refreshedTarget.type === "image") {
-            refreshedTarget.src = cloudUrl;
-            queueSave();
-            render();
-          }
-        }
-      }
+      showToast(uploaded.cloud ? "Banner image replaced and uploaded." : "Banner image replaced.");
       return;
     }
 
@@ -1826,10 +2034,10 @@
 
       for (let index = 0; index < imageFiles.length; index += 1) {
         const file = imageFiles[index];
-        const base64 = await fileToDataUrl(file);
+        const uploaded = await buildImageSource(file, `gallery-${index + 1}`);
         galleryBlock.images.push({
           id: uid("img"),
-          src: base64,
+          src: uploaded.src,
           alt: file.name || "Gallery image"
         });
       }
@@ -1839,35 +2047,15 @@
       render();
       closeImageModal();
       showToast("Gallery added.");
-
-      if (firebaseState.enabled && firebaseState.user) {
-        for (let index = 0; index < imageFiles.length; index += 1) {
-          const file = imageFiles[index];
-          const cloudUrl = await runCloudImageUpload(file);
-          if (!cloudUrl) {
-            continue;
-          }
-
-          const target = findBlockById(galleryBlock.id);
-          if (!target || !Array.isArray(target.images) || !target.images[index]) {
-            continue;
-          }
-
-          target.images[index].src = cloudUrl;
-          queueSave();
-          render();
-        }
-      }
-
       return;
     }
 
     const file = imageFiles[0];
-    const base64 = await fileToDataUrl(file);
+    const uploaded = await buildImageSource(file, "image");
     const imageBlock = {
       id: uid("block"),
       type: "image",
-      src: base64,
+      src: uploaded.src,
       alt: file.name || "Uploaded image",
       featured: false
     };
@@ -1876,23 +2064,19 @@
     queueSave();
     render();
     closeImageModal();
-    showToast("Image added.");
+    showToast(uploaded.cloud ? "Image added and uploaded." : "Image added.");
+  }
 
-    if (firebaseState.enabled && firebaseState.user) {
+  async function buildImageSource(file, hint = "upload") {
+    if (hasCloudSync()) {
       const cloudUrl = await runCloudImageUpload(file);
-      if (!cloudUrl) {
-        return;
+      if (cloudUrl) {
+        return { src: cloudUrl, cloud: true };
       }
-
-      const target = findBlockById(imageBlock.id);
-      if (!target) {
-        return;
-      }
-
-      target.src = cloudUrl;
-      queueSave();
-      render();
     }
+
+    const base64 = await fileToDataUrl(file);
+    return { src: base64, cloud: false };
   }
 
   async function uploadImageToCloud(file) {
@@ -2537,6 +2721,15 @@
 
   function sanitizeText(value) {
     return String(value || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\u00a0/g, " ").trim();
+  }
+
+  function clampNumber(value, min, max, fallback) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return fallback;
+    }
+
+    return Math.max(min, Math.min(max, numeric));
   }
 
   function uid(prefix) {

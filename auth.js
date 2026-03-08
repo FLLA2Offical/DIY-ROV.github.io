@@ -25,7 +25,6 @@
     refreshElements();
     bindEvents();
     syncGoogleButton();
-    bindGoogleSessionRecovery();
 
     if (!elements.modal || !elements.form || !elements.passwordInput || !elements.error) {
       console.warn("Auth UI initialized with missing elements.");
@@ -149,8 +148,12 @@
 
     try {
       await authState.googleLoginHandler();
-      markAdmin("google");
-      closeModal();
+      if (authState.isAdmin) {
+        closeModal();
+      } else {
+        showError("Signed in with Google, but this account is not allowed for admin.");
+        closeModal();
+      }
     } catch (error) {
       const message = error && error.message ? error.message : "Google login failed.";
       showError(message);
@@ -174,6 +177,13 @@
     persistAdminState(false);
     window.dispatchEvent(new CustomEvent("admin:auth-logout"));
     window.dispatchEvent(new CustomEvent("admin:auth-logout-request"));
+    closeModal();
+  }
+
+  function setVisitorMode() {
+    authState.isAdmin = false;
+    persistAdminState(false);
+    window.dispatchEvent(new CustomEvent("admin:auth-logout"));
     closeModal();
   }
 
@@ -250,53 +260,6 @@
 
   function setGoogleLoginHandler(handler) {
     authState.googleLoginHandler = typeof handler === "function" ? handler : null;
-  }
-
-  function bindGoogleSessionRecovery() {
-    let wired = false;
-    let attempts = 0;
-    const maxAttempts = 20;
-
-    const timer = window.setInterval(() => {
-      if (authState.isAdmin) {
-        window.clearInterval(timer);
-        return;
-      }
-
-      if (!window.firebase || typeof window.firebase.auth !== "function") {
-        attempts += 1;
-        if (attempts >= maxAttempts) {
-          window.clearInterval(timer);
-        }
-        return;
-      }
-
-      try {
-        const auth = window.firebase.auth();
-
-        if (!wired && typeof auth.onAuthStateChanged === "function") {
-          wired = true;
-          auth.onAuthStateChanged((user) => {
-            if (user && !authState.isAdmin) {
-              completeExternalLogin("google");
-            }
-          });
-        }
-
-        if (auth.currentUser && !authState.isAdmin) {
-          completeExternalLogin("google");
-          window.clearInterval(timer);
-          return;
-        }
-      } catch (error) {
-        // Firebase app may not be initialized yet; retry until maxAttempts.
-      }
-
-      attempts += 1;
-      if (attempts >= maxAttempts) {
-        window.clearInterval(timer);
-      }
-    }, 500);
   }
 
   function refreshElements() {
@@ -438,6 +401,7 @@
     closeModal,
     isAdmin: () => authState.isAdmin,
     logout,
+    setVisitorMode,
     completeExternalLogin,
     setGoogleEnabled,
     setGoogleLoginHandler,
