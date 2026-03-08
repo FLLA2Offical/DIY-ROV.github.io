@@ -2100,16 +2100,19 @@
     setSaveStatus("Saving...", "saving");
 
     try {
-      if (hasCloudSync() && payloadHasInlineImages(payload)) {
-        await replaceInlineImagesWithCloudUrls(payload);
-      }
-
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (storageError) {
-        localStatus = isStorageQuotaError(storageError) ? "quota-failed" : "failed";
-        if (localStatus === "failed") {
+        if (!isStorageQuotaError(storageError)) {
           throw storageError;
+        }
+
+        const quotaSafe = buildQuotaSafePayload(payload);
+        if (!quotaSafe) {
+          localStatus = "quota-failed";
+        } else {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(quotaSafe));
+          localStatus = "compact";
         }
       }
 
@@ -2119,6 +2122,9 @@
         if (cloudStatus.publishedSaved && localStatus === "full") {
           showToast("Saved and published for everyone.");
           setSaveStatus("Published", "success");
+        } else if (cloudStatus.publishedSaved && localStatus === "compact") {
+          showToast("Published for everyone. Local save used quota-safe image data.");
+          setSaveStatus("Published (Cloud)", "warning");
         } else if (cloudStatus.publishedSaved && localStatus === "quota-failed") {
           showToast("Published for everyone. Local browser storage is full.");
           setSaveStatus("Published (Cloud)", "warning");
@@ -2128,6 +2134,9 @@
         } else if (cloudStatus.accountSaved) {
           showToast("Saved to your account only. Public publish failed.");
           setSaveStatus("Saved (Account Only)", "warning");
+        } else if (localStatus === "compact") {
+          showToast("Saved with quota-safe local data. Some new images may need re-upload.");
+          setSaveStatus("Saved (Quota Safe)", "warning");
         } else if (localStatus === "quota-failed") {
           showToast("Save failed: local browser storage is full, and cloud publish did not complete.");
           setSaveStatus("Save Failed (Storage Full)", "error");
@@ -2321,6 +2330,60 @@
     }
 
     return false;
+  }
+
+  function buildQuotaSafePayload(payload) {
+    try {
+      const previousRaw = localStorage.getItem(STORAGE_KEY);
+      const previous = previousRaw ? JSON.parse(previousRaw) : null;
+      const previousImageByBlockId = new Map();
+      const previousImageByImageId = new Map();
+
+      if (previous && Array.isArray(previous.pages)) {
+        for (const page of previous.pages) {
+          for (const section of page.sections || []) {
+            for (const block of section.blocks || []) {
+              if (block && block.type === "image" && block.id && typeof block.src === "string") {
+                previousImageByBlockId.set(String(block.id), block.src);
+              }
+              if (block && block.type === "gallery" && Array.isArray(block.images)) {
+                for (const image of block.images) {
+                  if (image && image.id && typeof image.src === "string") {
+                    previousImageByImageId.set(String(image.id), image.src);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const clone = JSON.parse(JSON.stringify(payload));
+      for (const page of clone.pages || []) {
+        for (const section of page.sections || []) {
+          for (const block of section.blocks || []) {
+            if (block.type === "image" && typeof block.src === "string" && block.src.startsWith("data:image/")) {
+              const previousSrc = previousImageByBlockId.get(String(block.id));
+              block.src = previousSrc || "";
+            }
+
+            if (block.type === "gallery" && Array.isArray(block.images)) {
+              for (const image of block.images) {
+                if (image && typeof image.src === "string" && image.src.startsWith("data:image/")) {
+                  const previousSrc = previousImageByImageId.get(String(image.id));
+                  image.src = previousSrc || "";
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return clone;
+    } catch (error) {
+      console.error("Quota-safe payload build failed:", error);
+      return null;
+    }
   }
 
   async function replaceInlineImagesWithCloudUrls(payload) {
