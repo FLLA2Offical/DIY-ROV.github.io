@@ -532,8 +532,18 @@
       return { accountSaved: false, publishedSaved: false };
     }
 
+    let cloudPayload = payload;
     if (payloadHasInlineImages(payload)) {
-      return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
+      if (pendingCloudImageUploads > 0) {
+        return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
+      }
+
+      const quotaSafe = buildQuotaSafePayload(payload);
+      if (quotaSafe) {
+        cloudPayload = quotaSafe;
+      } else {
+        return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
+      }
     }
 
     let accountSaved = false;
@@ -544,7 +554,7 @@
       await withTimeout(
         userDocRef.set(
           {
-            state: payload,
+            state: cloudPayload,
             updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
             team: "Team 69309 Collegiate Dutchmen"
           },
@@ -563,7 +573,7 @@
       await withTimeout(
         publishedDocRef.set(
           {
-            state: payload,
+            state: cloudPayload,
             updatedAt: window.firebase.firestore.FieldValue.serverTimestamp(),
             team: "Team 69309 Collegiate Dutchmen",
             publishedBy: firebaseState.user.uid
@@ -2140,9 +2150,12 @@
         } else if (localStatus === "quota-failed") {
           showToast("Save failed: local browser storage is full, and cloud publish did not complete.");
           setSaveStatus("Save Failed (Storage Full)", "error");
-        } else if (cloudStatus.reason === "inline-images" || pendingCloudImageUploads > 0) {
+        } else if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
           showToast("Images are still uploading. Wait a moment, then Save again.");
           setSaveStatus("Waiting for Images", "warning");
+        } else if (cloudStatus.reason === "inline-images") {
+          showToast("Some images could not upload. Saved using last known image versions.");
+          setSaveStatus("Saved (Image Fallback)", "warning");
         } else if (firebaseState.enabled && !firebaseState.user) {
           showToast("Saved on this device only. Use Sign in with Google to sync.");
           setSaveStatus("Local Only", "warning");
