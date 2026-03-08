@@ -17,6 +17,7 @@
   const SAVE_OP_TIMEOUT_MS = 15000;
   const AUTO_SAVE_ENABLED = false;
   const AUTO_SAVE_DELAY_MS = 9000;
+  const DEFAULT_CANVAS_HEIGHT = 920;
   const DEFAULT_SITE_NAME = "Team 69309 Collegiate Dutchmen";
   const ADMIN_EMAIL_HASH_ALLOWLIST = [
     "51e4a7b04c774ff36a20cb3e9b0b113d42eb7ca952a017011a897eec2b19b8c6",
@@ -789,6 +790,8 @@
       normalized.blocks.push(createTextBlock("Add your text here."));
     }
 
+    ensureSectionBlockLayout(normalized);
+
     return normalized;
   }
 
@@ -800,11 +803,11 @@
     const common = {
       id: String(block.id || uid("block")),
       type: String(block.type || "text"),
-      offsetX: clampNumber(block.offsetX, -1600, 1600, 0),
-      offsetY: clampNumber(block.offsetY, -1600, 1600, 0),
-      zIndex: clampNumber(block.zIndex, 1, 50, 1),
-      boxWidthPx: clampNumber(block.boxWidthPx, 180, 1400, 0),
-      boxMinHeightPx: clampNumber(block.boxMinHeightPx, 80, 1200, 0)
+      posX: toFiniteNumberOrNull(block.posX ?? block.offsetX),
+      posY: toFiniteNumberOrNull(block.posY ?? block.offsetY),
+      zIndex: toFiniteNumberOrNull(block.zIndex),
+      boxWidthPx: toFiniteNumberOrNull(block.boxWidthPx),
+      boxHeightPx: toFiniteNumberOrNull(block.boxHeightPx ?? block.boxMinHeightPx)
     };
 
     if (common.type === "title") {
@@ -1160,6 +1163,8 @@
       return;
     }
 
+    page.sections.forEach((section) => ensureSectionBlockLayout(section));
+
     const html = page.sections
       .map((section) => {
         const selectedClass = section.id === state.selectedSectionId ? "selected" : "";
@@ -1171,13 +1176,14 @@
             </div>`
           : "";
 
+        const canvasHeight = getSectionCanvasHeight(section);
         return `
-          <section class="builder-section fade-section ${selectedClass}" data-section-id="${escapeAttr(section.id)}" draggable="${state.adminMode}">
+          <section class="builder-section fade-section ${selectedClass}" data-section-id="${escapeAttr(section.id)}" draggable="false">
             ${controls}
             <div class="section-header">
               <span class="section-chip">${escapeHtml(section.name)}</span>
             </div>
-            <div class="section-content">
+            <div class="section-content free-canvas" style="height:${canvasHeight}px">
               ${section.blocks.map((block) => renderBlock(block, section)).join("")}
             </div>
           </section>
@@ -1224,7 +1230,7 @@
       : "";
     const wrapperStart = `<div class="builder-block" style="${escapeAttr(runtimeStyle)}" data-block-id="${escapeAttr(
       block.id
-    )}" data-section-id="${escapeAttr(section.id)}" draggable="${state.adminMode}">${dragHandle}${resizeGrip}`;
+    )}" data-section-id="${escapeAttr(section.id)}" draggable="false">${dragHandle}${resizeGrip}`;
     const wrapperEnd = "</div>";
 
     if (block.type === "title") {
@@ -1252,14 +1258,12 @@
     }
 
     if (block.type === "image") {
-      const widthPercent = clampNumber(block.widthPercent, 40, 100, 100);
-      const heightPx = clampNumber(block.heightPx, 180, 720, block.featured ? 470 : 420);
       const imageClass = `${block.featured ? "rounded-3xl shadow-xl" : "rounded-2xl shadow-lg"} w-full object-cover`;
-      return `${wrapperStart}<div class="builder-image-wrap mx-auto" style="max-width:${widthPercent}%"><img src="${escapeAttr(
+      return `${wrapperStart}<div class="builder-image-wrap h-full w-full"><img src="${escapeAttr(
         block.src
       )}" alt="${escapeAttr(
         block.alt || "Image"
-      )}" class="${imageClass}" loading="lazy" style="height:${heightPx}px" /></div>${wrapperEnd}`;
+      )}" class="${imageClass}" loading="lazy" style="height:100%;width:100%" /></div>${wrapperEnd}`;
     }
 
     if (block.type === "gallery") {
@@ -1348,21 +1352,101 @@
   }
 
   function buildBlockInlineStyle(block) {
-    const translateX = clampNumber(block?.offsetX, -1600, 1600, 0);
-    const translateY = clampNumber(block?.offsetY, -1600, 1600, 0);
+    const x = clampNumber(block?.posX, 0, 2400, 12);
+    const y = clampNumber(block?.posY, 0, 2400, 12);
     const zIndex = clampNumber(block?.zIndex, 1, 50, 1);
-    const widthPx = clampNumber(block?.boxWidthPx, 0, 1400, 0);
-    const minHeightPx = clampNumber(block?.boxMinHeightPx, 0, 1200, 0);
+    const widthPx = clampNumber(block?.boxWidthPx, 180, 1600, 420);
+    const heightPx = clampNumber(block?.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
 
-    const styles = [`transform:translate(${translateX}px, ${translateY}px)`, `z-index:${zIndex}`];
-    if (widthPx > 0) {
-      styles.push(`width:min(100%, ${widthPx}px)`);
-    }
-    if (minHeightPx > 0) {
-      styles.push(`min-height:${minHeightPx}px`);
-    }
-
+    const styles = [
+      "position:absolute",
+      `left:${x}px`,
+      `top:${y}px`,
+      `z-index:${zIndex}`,
+      `width:${widthPx}px`,
+      `height:${heightPx}px`
+    ];
     return styles.join(";");
+  }
+
+  function ensureSectionBlockLayout(section) {
+    if (!section || !Array.isArray(section.blocks)) {
+      return;
+    }
+
+    let cursorY = 12;
+    section.blocks.forEach((block) => {
+      if (!block || typeof block !== "object") {
+        return;
+      }
+
+      if (!Number.isFinite(block.posX)) {
+        block.posX = 12;
+      }
+      if (!Number.isFinite(block.posY)) {
+        block.posY = cursorY;
+      }
+      if (!Number.isFinite(block.zIndex)) {
+        block.zIndex = 1;
+      }
+      if (!Number.isFinite(block.boxWidthPx)) {
+        block.boxWidthPx = 520;
+      }
+      if (!Number.isFinite(block.boxHeightPx)) {
+        block.boxHeightPx = getDefaultBlockHeight(block);
+      }
+
+      block.posX = clampNumber(block.posX, 0, 2400, 12);
+      block.posY = clampNumber(block.posY, 0, 2400, cursorY);
+      block.zIndex = clampNumber(block.zIndex, 1, 50, 1);
+      block.boxWidthPx = clampNumber(block.boxWidthPx, 180, 1600, 520);
+      block.boxHeightPx = clampNumber(block.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
+
+      cursorY = Math.max(cursorY, block.posY + block.boxHeightPx + 14);
+    });
+  }
+
+  function getSectionCanvasHeight(section) {
+    if (!section || !Array.isArray(section.blocks) || !section.blocks.length) {
+      return DEFAULT_CANVAS_HEIGHT;
+    }
+
+    let maxBottom = DEFAULT_CANVAS_HEIGHT;
+    section.blocks.forEach((block) => {
+      if (!block || typeof block !== "object") {
+        return;
+      }
+
+      const y = clampNumber(block.posY, 0, 2400, 12);
+      const h = clampNumber(block.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
+      maxBottom = Math.max(maxBottom, y + h + 24);
+    });
+
+    return maxBottom;
+  }
+
+  function getDefaultBlockHeight(block) {
+    if (!block || typeof block !== "object") {
+      return 180;
+    }
+
+    if (block.type === "title") {
+      return 90;
+    }
+    if (block.type === "text") {
+      return 170;
+    }
+    if (block.type === "button") {
+      return 90;
+    }
+    if (block.type === "image") {
+      return 320;
+    }
+    if (block.type === "gallery") {
+      return 300;
+    }
+
+    return 220;
   }
 
   function handleSiteClick(event) {
@@ -1619,10 +1703,10 @@
       return;
     }
 
-    block.widthPercent = clampNumber(Number(block.widthPercent || 100) + Number(widthDelta || 0), 40, 100, 100);
-    block.heightPx = clampNumber(Number(block.heightPx || (block.featured ? 470 : 420)) + Number(heightDelta || 0), 180, 720, 420);
+    block.boxWidthPx = clampNumber(Number(block.boxWidthPx || 520) + Number(widthDelta || 0), 180, 1600, 520);
+    block.boxHeightPx = clampNumber(Number(block.boxHeightPx || 320) + Number(heightDelta || 0), 80, 1400, 320);
     queueSave();
-    render();
+    applyLiveBlockStyle(block.id);
   }
 
   function resizeGalleryBlock(blockId, heightDelta) {
@@ -1631,9 +1715,9 @@
       return;
     }
 
-    block.imageHeightPx = clampNumber(Number(block.imageHeightPx || 176) + Number(heightDelta || 0), 100, 520, 176);
+    block.boxHeightPx = clampNumber(Number(block.boxHeightPx || 300) + Number(heightDelta || 0), 80, 1400, 300);
     queueSave();
-    render();
+    applyLiveBlockStyle(block.id);
   }
 
   function adjustBlockLayer(blockId, delta) {
@@ -1668,8 +1752,7 @@
         startX: event.clientX,
         startY: event.clientY,
         startWidth: Number(block.boxWidthPx || rect.width),
-        startMinHeight: Number(block.boxMinHeightPx || rect.height),
-        startImageHeight: Number(block.heightPx || 420)
+        startHeight: Number(block.boxHeightPx || rect.height)
       };
       blockElement.classList.add("editing-live");
       event.preventDefault();
@@ -1697,8 +1780,8 @@
       blockId,
       startX: event.clientX,
       startY: event.clientY,
-      startOffsetX: Number(block.offsetX || 0),
-      startOffsetY: Number(block.offsetY || 0)
+      startXPos: Number(block.posX || 0),
+      startYPos: Number(block.posY || 0)
     };
     blockElement.classList.add("editing-live");
     event.preventDefault();
@@ -1718,15 +1801,11 @@
     const deltaY = event.clientY - pointerEdit.startY;
 
     if (pointerEdit.mode === "drag") {
-      block.offsetX = clampNumber(pointerEdit.startOffsetX + deltaX, -1600, 1600, 0);
-      block.offsetY = clampNumber(pointerEdit.startOffsetY + deltaY, -1600, 1600, 0);
+      block.posX = clampNumber(pointerEdit.startXPos + deltaX, 0, 2400, 12);
+      block.posY = clampNumber(pointerEdit.startYPos + deltaY, 0, 2400, 12);
     } else if (pointerEdit.mode === "resize") {
-      block.boxWidthPx = clampNumber(pointerEdit.startWidth + deltaX, 180, 1400, pointerEdit.startWidth);
-      if (block.type === "image") {
-        block.heightPx = clampNumber(pointerEdit.startImageHeight + deltaY, 180, 900, pointerEdit.startImageHeight);
-      } else {
-        block.boxMinHeightPx = clampNumber(pointerEdit.startMinHeight + deltaY, 80, 1200, pointerEdit.startMinHeight);
-      }
+      block.boxWidthPx = clampNumber(pointerEdit.startWidth + deltaX, 180, 1600, pointerEdit.startWidth);
+      block.boxHeightPx = clampNumber(pointerEdit.startHeight + deltaY, 80, 1400, pointerEdit.startHeight);
     }
 
     applyLiveBlockStyle(block.id);
@@ -1750,6 +1829,13 @@
     }
 
     node.setAttribute("style", buildBlockInlineStyle(block));
+    const sectionElement = node.closest(".builder-section");
+    const sectionId = sectionElement?.dataset.sectionId;
+    const section = sectionId ? getSectionById(sectionId) : null;
+    const canvas = sectionElement?.querySelector(".section-content.free-canvas");
+    if (section && canvas) {
+      canvas.style.height = `${getSectionCanvasHeight(section)}px`;
+    }
   }
 
   function handleDragStart(event) {
@@ -2905,6 +2991,11 @@
     }
 
     return Math.max(min, Math.min(max, numeric));
+  }
+
+  function toFiniteNumberOrNull(value) {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : null;
   }
 
   function uid(prefix) {
