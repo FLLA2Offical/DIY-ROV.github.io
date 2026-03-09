@@ -1383,7 +1383,7 @@
       return;
     }
 
-    const needsMigrationCenter = Number(section.layoutVersion || 0) < 3;
+    const needsMigrationCenter = Number(section.layoutVersion || 0) < 4;
     const estimatedCanvasWidth = getSlideCanvasWidthEstimate();
     let cursorY = 24;
     section.blocks.forEach((block, index) => {
@@ -1394,6 +1394,7 @@
       const maxWidth = Math.max(320, estimatedCanvasWidth - 24);
       const defaultWidth = clampNumber(block.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, estimatedCanvasWidth));
       const centeredX = Math.max(12, Math.round((estimatedCanvasWidth - defaultWidth) / 2));
+      const minReadableWidth = Math.round(estimatedCanvasWidth * 0.68);
 
       if (needsMigrationCenter || !Number.isFinite(block.posX)) {
         block.posX = centeredX;
@@ -1417,11 +1418,19 @@
       block.boxWidthPx = clampNumber(block.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, estimatedCanvasWidth));
       block.boxHeightPx = clampNumber(block.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
 
+      if (needsMigrationCenter && block.type !== "button" && block.boxWidthPx < minReadableWidth) {
+        block.boxWidthPx = clampNumber(getDefaultBlockWidth(block, estimatedCanvasWidth), 240, maxWidth, maxWidth);
+      }
+
+      if (needsMigrationCenter) {
+        block.posX = Math.max(12, Math.round((estimatedCanvasWidth - block.boxWidthPx) / 2));
+      }
+
       cursorY = Math.max(cursorY, block.posY + block.boxHeightPx + 14);
     });
 
     if (needsMigrationCenter) {
-      section.layoutVersion = 3;
+      section.layoutVersion = 4;
     }
   }
 
