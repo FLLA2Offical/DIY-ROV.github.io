@@ -61,6 +61,8 @@
   let lastUnauthorizedAdminEmail = "";
   let hasUnsavedChanges = false;
   let pointerEdit = null;
+  let saveInFlight = false;
+  let saveRetryTimer = null;
   let cloudRetryTimer = null;
 
   const imageUploadContext = {
@@ -2638,6 +2640,22 @@
   }
 
   async function persistState(options = { manual: false }) {
+    if (saveInFlight) {
+      if (options.manual) {
+        showToast("Save already in progress...");
+      }
+      return;
+    }
+
+    saveInFlight = true;
+    const watchdog = window.setTimeout(() => {
+      setSaveStatus("Save Timed Out", "error");
+      if (options.manual) {
+        showToast("Save timed out. Try again.");
+      }
+      saveInFlight = false;
+    }, CLOUD_SAVE_TOTAL_TIMEOUT_MS + 5000);
+
     const payload = {
       pages: state.pages,
       currentPageId: state.currentPageId,
@@ -2698,8 +2716,9 @@
           showToast("Save failed: local browser storage is full, and cloud publish did not complete.");
           setSaveStatus("Save Failed (Storage Full)", "error");
         } else if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
-          showToast("Images are still uploading. Wait a moment, then Save again.");
+          showToast("Images are still uploading. Auto-retrying publish...");
           setSaveStatus("Waiting for Images", "warning");
+          queueCloudPublishRetry();
         } else if (cloudStatus.reason === "inline-images") {
           showToast("Some images could not upload. Saved using last known image versions.");
           setSaveStatus("Saved (Image Fallback)", "warning");
@@ -2721,6 +2740,9 @@
           setSaveStatus("Published", "success");
         } else if (cloudStatus.accountSaved) {
           setSaveStatus("Saved (Account Only)", "warning");
+        } else if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
+          setSaveStatus("Waiting for Images", "warning");
+          queueCloudPublishRetry();
         } else {
           setSaveStatus("Saved Locally", "warning");
         }
@@ -2738,7 +2760,26 @@
       } else {
         setSaveStatus("Autosave Failed", "error");
       }
+    } finally {
+      window.clearTimeout(watchdog);
+      saveInFlight = false;
     }
+  }
+
+  function queueCloudPublishRetry() {
+    if (!hasCloudSync()) {
+      return;
+    }
+
+    window.clearTimeout(saveRetryTimer);
+    saveRetryTimer = window.setTimeout(() => {
+      if (pendingCloudImageUploads > 0) {
+        queueCloudPublishRetry();
+        return;
+      }
+
+      persistState({ manual: false });
+    }, 1600);
   }
 
   function setSaveStatus(text, tone = "neutral") {
