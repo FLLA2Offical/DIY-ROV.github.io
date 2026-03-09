@@ -630,8 +630,6 @@
         return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
       }
 
-      await replaceInlineImagesWithCloudUrls(cloudPayload);
-
       if (payloadHasInlineImages(cloudPayload)) {
         const quotaSafe = buildQuotaSafePayload(cloudPayload);
         if (quotaSafe) {
@@ -1354,27 +1352,20 @@
   }
 
   function buildBlockInlineStyle(block) {
-    const canvasWidth = getSlideCanvasWidthEstimate();
     const x = clampNumber(block?.posX, 0, 2400, 12);
     const y = clampNumber(block?.posY, 0, 2400, 12);
     const zIndex = clampNumber(block?.zIndex, 1, 50, 1);
-    const maxWidth = Math.max(320, canvasWidth - 24);
-    const widthPx = clampNumber(block?.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, canvasWidth));
+    const widthPx = clampNumber(block?.boxWidthPx, 180, 1600, 420);
     const heightPx = clampNumber(block?.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
-    const fixedHeightBlock = block?.type === "image" || block?.type === "gallery";
 
     const styles = [
       "position:absolute",
       `left:${x}px`,
       `top:${y}px`,
       `z-index:${zIndex}`,
-      `width:${widthPx}px`
+      `width:${widthPx}px`,
+      `height:${heightPx}px`
     ];
-    if (fixedHeightBlock) {
-      styles.push(`height:${heightPx}px`);
-    } else {
-      styles.push(`min-height:${heightPx}px`);
-    }
     return styles.join(";");
   }
 
@@ -1383,7 +1374,7 @@
       return;
     }
 
-    const needsMigrationCenter = Number(section.layoutVersion || 0) < 4;
+    const needsMigrationCenter = Number(section.layoutVersion || 0) < 3;
     const estimatedCanvasWidth = getSlideCanvasWidthEstimate();
     let cursorY = 24;
     section.blocks.forEach((block, index) => {
@@ -1391,10 +1382,8 @@
         return;
       }
 
-      const maxWidth = Math.max(320, estimatedCanvasWidth - 24);
-      const defaultWidth = clampNumber(block.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, estimatedCanvasWidth));
+      const defaultWidth = clampNumber(block.boxWidthPx, 180, 1600, 520);
       const centeredX = Math.max(12, Math.round((estimatedCanvasWidth - defaultWidth) / 2));
-      const minReadableWidth = Math.round(estimatedCanvasWidth * 0.68);
 
       if (needsMigrationCenter || !Number.isFinite(block.posX)) {
         block.posX = centeredX;
@@ -1415,22 +1404,14 @@
       block.posX = clampNumber(block.posX, 0, 2400, 12);
       block.posY = clampNumber(block.posY, 0, 2400, cursorY);
       block.zIndex = clampNumber(block.zIndex, 1, 50, 1);
-      block.boxWidthPx = clampNumber(block.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, estimatedCanvasWidth));
+      block.boxWidthPx = clampNumber(block.boxWidthPx, 180, 1600, 520);
       block.boxHeightPx = clampNumber(block.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
-
-      if (needsMigrationCenter && block.type !== "button" && block.boxWidthPx < minReadableWidth) {
-        block.boxWidthPx = clampNumber(getDefaultBlockWidth(block, estimatedCanvasWidth), 240, maxWidth, maxWidth);
-      }
-
-      if (needsMigrationCenter) {
-        block.posX = Math.max(12, Math.round((estimatedCanvasWidth - block.boxWidthPx) / 2));
-      }
 
       cursorY = Math.max(cursorY, block.posY + block.boxHeightPx + 14);
     });
 
     if (needsMigrationCenter) {
-      section.layoutVersion = 4;
+      section.layoutVersion = 3;
     }
   }
 
@@ -1468,10 +1449,10 @@
     }
 
     if (block.type === "title") {
-      return 100;
+      return 90;
     }
     if (block.type === "text") {
-      return 190;
+      return 170;
     }
     if (block.type === "button") {
       return 90;
@@ -1484,19 +1465,6 @@
     }
 
     return 220;
-  }
-
-  function getDefaultBlockWidth(block, canvasWidth) {
-    const target = Math.round(canvasWidth * 0.88);
-    if (!block || typeof block !== "object") {
-      return target;
-    }
-
-    if (block.type === "button") {
-      return Math.round(canvasWidth * 0.5);
-    }
-
-    return target;
   }
 
   function handleSiteClick(event) {
@@ -2425,7 +2393,6 @@
       })
       .catch((error) => {
         console.error("Background image upload failed:", error);
-        showToast("Image upload failed. Click Save to retry cloud publish.");
       });
   }
 
@@ -2692,9 +2659,8 @@
           showToast("Save failed: local browser storage is full, and cloud publish did not complete.");
           setSaveStatus("Save Failed (Storage Full)", "error");
         } else if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
-          showToast("Images are uploading. Will auto-publish when ready.");
+          showToast("Images are still uploading. Wait a moment, then Save again.");
           setSaveStatus("Waiting for Images", "warning");
-          scheduleCloudSaveRetry();
         } else if (cloudStatus.reason === "inline-images") {
           showToast("Some images could not upload. Saved using last known image versions.");
           setSaveStatus("Saved (Image Fallback)", "warning");
@@ -2713,9 +2679,6 @@
           setSaveStatus("Published", "success");
         } else if (cloudStatus.accountSaved) {
           setSaveStatus("Saved (Account Only)", "warning");
-        } else if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
-          setSaveStatus("Waiting for Images", "warning");
-          scheduleCloudSaveRetry();
         } else {
           setSaveStatus("Saved Locally", "warning");
         }
@@ -2734,22 +2697,6 @@
         setSaveStatus("Autosave Failed", "error");
       }
     }
-  }
-
-  function scheduleCloudSaveRetry() {
-    if (!hasCloudSync()) {
-      return;
-    }
-
-    window.clearTimeout(cloudRetryTimer);
-    cloudRetryTimer = window.setTimeout(() => {
-      if (pendingCloudImageUploads > 0) {
-        scheduleCloudSaveRetry();
-        return;
-      }
-
-      persistState({ manual: false });
-    }, 1500);
   }
 
   function setSaveStatus(text, tone = "neutral") {
@@ -2960,11 +2907,6 @@
     }
   }
 
-  /**
-   * Uploads any inline data-image URLs in payload to cloud storage and swaps them with cloud URLs.
-   * @param {any} payload
-   * @returns {Promise<number>}
-   */
   async function replaceInlineImagesWithCloudUrls(payload) {
     if (!hasCloudSync() || !payload || !Array.isArray(payload.pages)) {
       return 0;
