@@ -2395,6 +2395,7 @@
       })
       .catch((error) => {
         console.error("Background image upload failed:", error);
+        showToast("Image upload failed. Click Save to retry cloud publish.");
       });
   }
 
@@ -2661,8 +2662,9 @@
           showToast("Save failed: local browser storage is full, and cloud publish did not complete.");
           setSaveStatus("Save Failed (Storage Full)", "error");
         } else if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
-          showToast("Images are still uploading. Wait a moment, then Save again.");
+          showToast("Images are uploading. Will auto-publish when ready.");
           setSaveStatus("Waiting for Images", "warning");
+          scheduleCloudSaveRetry();
         } else if (cloudStatus.reason === "inline-images") {
           showToast("Some images could not upload. Saved using last known image versions.");
           setSaveStatus("Saved (Image Fallback)", "warning");
@@ -2681,6 +2683,9 @@
           setSaveStatus("Published", "success");
         } else if (cloudStatus.accountSaved) {
           setSaveStatus("Saved (Account Only)", "warning");
+        } else if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
+          setSaveStatus("Waiting for Images", "warning");
+          scheduleCloudSaveRetry();
         } else {
           setSaveStatus("Saved Locally", "warning");
         }
@@ -2699,6 +2704,22 @@
         setSaveStatus("Autosave Failed", "error");
       }
     }
+  }
+
+  function scheduleCloudSaveRetry() {
+    if (!hasCloudSync()) {
+      return;
+    }
+
+    window.clearTimeout(cloudRetryTimer);
+    cloudRetryTimer = window.setTimeout(() => {
+      if (pendingCloudImageUploads > 0) {
+        scheduleCloudSaveRetry();
+        return;
+      }
+
+      persistState({ manual: false });
+    }, 1500);
   }
 
   function setSaveStatus(text, tone = "neutral") {
