@@ -63,6 +63,9 @@
   let pointerEdit = null;
   let saveInFlight = false;
   let saveRetryTimer = null;
+  let manualPublishInFlight = false;
+  let queuedManualPublishPayload = null;
+  let queuedManualPublishLocalStatus = "full";
   let cloudRetryTimer = null;
 
   const imageUploadContext = {
@@ -2686,6 +2689,13 @@
         }
       }
 
+      if (options.manual && hasCloudSync()) {
+        hasUnsavedChanges = false;
+        setSaveStatus("Saved Locally, Publishing...", "saving");
+        publishCloudAfterManualSave(payload, localStatus);
+        return;
+      }
+
       cloudStatus = await withTimeout(
         saveStateToCloud(payload),
         CLOUD_SAVE_TOTAL_TIMEOUT_MS,
@@ -2780,6 +2790,88 @@
 
       persistState({ manual: false });
     }, 1600);
+  }
+
+  function publishCloudAfterManualSave(payload, localStatus) {
+    try {
+      queuedManualPublishPayload = JSON.parse(JSON.stringify(payload));
+    } catch (error) {
+      queuedManualPublishPayload = payload;
+    }
+    queuedManualPublishLocalStatus = localStatus;
+
+    if (manualPublishInFlight) {
+      return;
+    }
+
+    runManualPublishQueue();
+  }
+
+  async function runManualPublishQueue() {
+    manualPublishInFlight = true;
+    while (queuedManualPublishPayload) {
+      const nextPayload = queuedManualPublishPayload;
+      const nextLocalStatus = queuedManualPublishLocalStatus;
+      queuedManualPublishPayload = null;
+      queuedManualPublishLocalStatus = "full";
+
+      let cloudStatus = { accountSaved: false, publishedSaved: false };
+      try {
+        cloudStatus = await withTimeout(
+          saveStateToCloud(nextPayload),
+          CLOUD_SAVE_TOTAL_TIMEOUT_MS,
+          "Cloud save took too long."
+        );
+      } catch (error) {
+        console.error("Manual cloud publish failed:", error);
+        cloudStatus = { accountSaved: false, publishedSaved: false, reason: "timeout" };
+      }
+
+      if (cloudStatus.publishedSaved) {
+        if (nextLocalStatus === "compact") {
+          showToast("Published for everyone. Local save used quota-safe image data.");
+          setSaveStatus("Published (Cloud)", "warning");
+        } else if (nextLocalStatus === "quota-failed") {
+          showToast("Published for everyone. Local browser storage is full.");
+          setSaveStatus("Published (Cloud)", "warning");
+        } else {
+          showToast("Saved and published for everyone.");
+          setSaveStatus("Published", "success");
+        }
+        continue;
+      }
+
+      if (cloudStatus.accountSaved) {
+        showToast("Saved to your account only. Public publish failed.");
+        setSaveStatus("Saved (Account Only)", "warning");
+        continue;
+      }
+
+      if (cloudStatus.reason === "images-uploading" || pendingCloudImageUploads > 0) {
+        setSaveStatus("Waiting for Images", "warning");
+        queueCloudPublishRetry();
+        continue;
+      }
+
+      if (cloudStatus.reason === "inline-images" || cloudStatus.reason === "inline-timeout") {
+        showToast("Saved locally. Cloud image publish will retry on next save.");
+        setSaveStatus("Saved (Image Fallback)", "warning");
+        continue;
+      }
+
+      if (nextLocalStatus === "compact") {
+        showToast("Saved with quota-safe local data. Some images may need re-upload.");
+        setSaveStatus("Saved (Quota Safe)", "warning");
+      } else if (nextLocalStatus === "quota-failed") {
+        showToast("Save failed: local browser storage is full, and cloud publish did not complete.");
+        setSaveStatus("Save Failed (Storage Full)", "error");
+      } else {
+        showToast("Saved locally only.");
+        setSaveStatus("Saved Locally", "warning");
+      }
+    }
+
+    manualPublishInFlight = false;
   }
 
   function setSaveStatus(text, tone = "neutral") {
