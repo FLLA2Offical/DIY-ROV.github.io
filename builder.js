@@ -2960,6 +2960,11 @@
     }
   }
 
+  /**
+   * Uploads any inline data-image URLs in payload to cloud storage and swaps them with cloud URLs.
+   * @param {any} payload
+   * @returns {Promise<number>}
+   */
   async function replaceInlineImagesWithCloudUrls(payload) {
     if (!hasCloudSync() || !payload || !Array.isArray(payload.pages)) {
       return 0;
