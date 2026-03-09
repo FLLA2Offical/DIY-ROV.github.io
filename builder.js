@@ -1354,20 +1354,27 @@
   }
 
   function buildBlockInlineStyle(block) {
+    const canvasWidth = getSlideCanvasWidthEstimate();
     const x = clampNumber(block?.posX, 0, 2400, 12);
     const y = clampNumber(block?.posY, 0, 2400, 12);
     const zIndex = clampNumber(block?.zIndex, 1, 50, 1);
-    const widthPx = clampNumber(block?.boxWidthPx, 180, 1600, 420);
+    const maxWidth = Math.max(320, canvasWidth - 24);
+    const widthPx = clampNumber(block?.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, canvasWidth));
     const heightPx = clampNumber(block?.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
+    const fixedHeightBlock = block?.type === "image" || block?.type === "gallery";
 
     const styles = [
       "position:absolute",
       `left:${x}px`,
       `top:${y}px`,
       `z-index:${zIndex}`,
-      `width:${widthPx}px`,
-      `height:${heightPx}px`
+      `width:${widthPx}px`
     ];
+    if (fixedHeightBlock) {
+      styles.push(`height:${heightPx}px`);
+    } else {
+      styles.push(`min-height:${heightPx}px`);
+    }
     return styles.join(";");
   }
 
@@ -1384,7 +1391,8 @@
         return;
       }
 
-      const defaultWidth = clampNumber(block.boxWidthPx, 180, 1600, 520);
+      const maxWidth = Math.max(320, estimatedCanvasWidth - 24);
+      const defaultWidth = clampNumber(block.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, estimatedCanvasWidth));
       const centeredX = Math.max(12, Math.round((estimatedCanvasWidth - defaultWidth) / 2));
 
       if (needsMigrationCenter || !Number.isFinite(block.posX)) {
@@ -1406,7 +1414,7 @@
       block.posX = clampNumber(block.posX, 0, 2400, 12);
       block.posY = clampNumber(block.posY, 0, 2400, cursorY);
       block.zIndex = clampNumber(block.zIndex, 1, 50, 1);
-      block.boxWidthPx = clampNumber(block.boxWidthPx, 180, 1600, 520);
+      block.boxWidthPx = clampNumber(block.boxWidthPx, 240, maxWidth, getDefaultBlockWidth(block, estimatedCanvasWidth));
       block.boxHeightPx = clampNumber(block.boxHeightPx, 80, 1400, getDefaultBlockHeight(block));
 
       cursorY = Math.max(cursorY, block.posY + block.boxHeightPx + 14);
@@ -1451,10 +1459,10 @@
     }
 
     if (block.type === "title") {
-      return 90;
+      return 100;
     }
     if (block.type === "text") {
-      return 170;
+      return 190;
     }
     if (block.type === "button") {
       return 90;
@@ -1467,6 +1475,19 @@
     }
 
     return 220;
+  }
+
+  function getDefaultBlockWidth(block, canvasWidth) {
+    const target = Math.round(canvasWidth * 0.88);
+    if (!block || typeof block !== "object") {
+      return target;
+    }
+
+    if (block.type === "button") {
+      return Math.round(canvasWidth * 0.5);
+    }
+
+    return target;
   }
 
   function handleSiteClick(event) {
