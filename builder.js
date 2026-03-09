@@ -18,6 +18,7 @@
   const AUTO_SAVE_ENABLED = false;
   const AUTO_SAVE_DELAY_MS = 9000;
   const DEFAULT_CANVAS_HEIGHT = 920;
+  const SLIDE_CANVAS_WIDTH = 1020;
   const DEFAULT_SITE_NAME = "Team 69309 Collegiate Dutchmen";
   const ADMIN_EMAIL_HASH_ALLOWLIST = [
     "51e4a7b04c774ff36a20cb3e9b0b113d42eb7ca952a017011a897eec2b19b8c6",
@@ -629,8 +630,6 @@
         return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
       }
 
-      await replaceInlineImagesWithCloudUrls(cloudPayload);
-
       if (payloadHasInlineImages(cloudPayload)) {
         const quotaSafe = buildQuotaSafePayload(cloudPayload);
         if (quotaSafe) {
@@ -782,6 +781,7 @@
     const normalized = {
       id: String(section?.id || uid("section")),
       name: String(section?.name || "Section"),
+      layoutVersion: Number(section?.layoutVersion || 0),
       blocks: Array.isArray(section?.blocks) ? section.blocks.map((block) => normalizeBlock(block)).filter(Boolean) : []
     };
 
@@ -1374,23 +1374,27 @@
       return;
     }
 
-    let cursorY = 12;
-    section.blocks.forEach((block) => {
+    const needsMigrationCenter = Number(section.layoutVersion || 0) < 2;
+    let cursorY = 24;
+    section.blocks.forEach((block, index) => {
       if (!block || typeof block !== "object") {
         return;
       }
 
-      if (!Number.isFinite(block.posX)) {
-        block.posX = 12;
+      const defaultWidth = clampNumber(block.boxWidthPx, 180, 1600, 520);
+      const centeredX = Math.max(12, Math.round((SLIDE_CANVAS_WIDTH - defaultWidth) / 2));
+
+      if (needsMigrationCenter || !Number.isFinite(block.posX)) {
+        block.posX = centeredX;
       }
-      if (!Number.isFinite(block.posY)) {
+      if (needsMigrationCenter || !Number.isFinite(block.posY)) {
         block.posY = cursorY;
       }
-      if (!Number.isFinite(block.zIndex)) {
-        block.zIndex = 1;
+      if (needsMigrationCenter || !Number.isFinite(block.zIndex)) {
+        block.zIndex = 1 + index;
       }
       if (!Number.isFinite(block.boxWidthPx)) {
-        block.boxWidthPx = 520;
+        block.boxWidthPx = defaultWidth;
       }
       if (!Number.isFinite(block.boxHeightPx)) {
         block.boxHeightPx = getDefaultBlockHeight(block);
@@ -1404,6 +1408,10 @@
 
       cursorY = Math.max(cursorY, block.posY + block.boxHeightPx + 14);
     });
+
+    if (needsMigrationCenter) {
+      section.layoutVersion = 2;
+    }
   }
 
   function getSectionCanvasHeight(section) {
@@ -2268,14 +2276,25 @@
       }
 
       const file = imageFiles[0];
-      const uploaded = await buildImageSource(file, "banner");
-      targetBlock.src = uploaded.src;
+      const localSource = await buildImageSource(file, "banner");
+      targetBlock.src = localSource.src;
       targetBlock.alt = file.name || targetBlock.alt || "Banner image";
 
       queueSave();
       render();
       closeImageModal();
-      showToast(uploaded.cloud ? "Banner image replaced and uploaded." : "Banner image replaced.");
+      showToast("Banner image replaced.");
+      uploadFileInBackground(file, "banner", (cloudUrl) => {
+        const refreshedTarget = findBlockById(targetBlockId);
+        if (!refreshedTarget || refreshedTarget.type !== "image") {
+          return;
+        }
+        refreshedTarget.src = cloudUrl;
+        queueSave();
+        persistState({ manual: false });
+        render();
+        showToast("Banner uploaded.");
+      });
       return;
     }
 
@@ -2301,6 +2320,19 @@
       render();
       closeImageModal();
       showToast("Gallery added.");
+
+      imageFiles.forEach((file, index) => {
+        uploadFileInBackground(file, `gallery-${index + 1}`, (cloudUrl) => {
+          const refreshedGallery = findBlockById(galleryBlock.id);
+          if (!refreshedGallery || refreshedGallery.type !== "gallery" || !Array.isArray(refreshedGallery.images) || !refreshedGallery.images[index]) {
+            return;
+          }
+          refreshedGallery.images[index].src = cloudUrl;
+          queueSave();
+          persistState({ manual: false });
+          render();
+        });
+      });
       return;
     }
 
@@ -2318,19 +2350,40 @@
     queueSave();
     render();
     closeImageModal();
-    showToast(uploaded.cloud ? "Image added and uploaded." : "Image added.");
+    showToast("Image added.");
+    uploadFileInBackground(file, "image", (cloudUrl) => {
+      const refreshedImage = findBlockById(imageBlock.id);
+      if (!refreshedImage || refreshedImage.type !== "image") {
+        return;
+      }
+      refreshedImage.src = cloudUrl;
+      queueSave();
+      persistState({ manual: false });
+      render();
+      showToast("Image uploaded.");
+    });
   }
 
   async function buildImageSource(file, hint = "upload") {
-    if (hasCloudSync()) {
-      const cloudUrl = await runCloudImageUpload(file);
-      if (cloudUrl) {
-        return { src: cloudUrl, cloud: true };
-      }
+    const base64 = await fileToDataUrl(file);
+    return { src: base64, cloud: false, hint };
+  }
+
+  function uploadFileInBackground(file, hint, onDone) {
+    if (!hasCloudSync()) {
+      return;
     }
 
-    const base64 = await fileToDataUrl(file);
-    return { src: base64, cloud: false };
+    runCloudImageUpload(file)
+      .then((cloudUrl) => {
+        if (!cloudUrl || typeof onDone !== "function") {
+          return;
+        }
+        onDone(cloudUrl);
+      })
+      .catch((error) => {
+        console.error("Background image upload failed:", error);
+      });
   }
 
   async function uploadImageToCloud(file) {
