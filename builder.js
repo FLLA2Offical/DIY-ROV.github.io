@@ -60,6 +60,7 @@
   let lastUnauthorizedAdminEmail = "";
   let hasUnsavedChanges = false;
   let pointerEdit = null;
+  let cloudRetryTimer = null;
 
   const imageUploadContext = {
     mode: "image",
@@ -628,6 +629,8 @@
       if (pendingCloudImageUploads > 0) {
         return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
       }
+
+      await replaceInlineImagesWithCloudUrls(cloudPayload);
 
       if (payloadHasInlineImages(cloudPayload)) {
         const quotaSafe = buildQuotaSafePayload(cloudPayload);
