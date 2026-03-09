@@ -272,7 +272,8 @@ body.admin-mode main {
 .builder-section {
   position: relative;
   overflow: hidden;
-  padding: 1.3rem;
+  width: 100%;
+  padding: 1rem 1rem 1.25rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -341,7 +342,8 @@ body.admin-mode main {
 }
 
 .section-content.free-canvas {
-  min-height: 700px;
+  width: 100%;
+  min-height: max(700px, calc(100vh - 250px));
 }
 
 .builder-block {
@@ -618,6 +620,10 @@ body.admin-mode main {
 
   .builder-section {
     padding: 1rem;
+  }
+
+  .section-content.free-canvas {
+    min-height: max(560px, calc(100vh - 240px));
   }
 
   .section-controls {

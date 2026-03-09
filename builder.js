@@ -18,7 +18,6 @@
   const AUTO_SAVE_ENABLED = false;
   const AUTO_SAVE_DELAY_MS = 9000;
   const DEFAULT_CANVAS_HEIGHT = 920;
-  const SLIDE_CANVAS_WIDTH = 1020;
   const DEFAULT_SITE_NAME = "Team 69309 Collegiate Dutchmen";
   const ADMIN_EMAIL_HASH_ALLOWLIST = [
     "51e4a7b04c774ff36a20cb3e9b0b113d42eb7ca952a017011a897eec2b19b8c6",
@@ -1374,7 +1373,8 @@
       return;
     }
 
-    const needsMigrationCenter = Number(section.layoutVersion || 0) < 2;
+    const needsMigrationCenter = Number(section.layoutVersion || 0) < 3;
+    const estimatedCanvasWidth = getSlideCanvasWidthEstimate();
     let cursorY = 24;
     section.blocks.forEach((block, index) => {
       if (!block || typeof block !== "object") {
@@ -1382,7 +1382,7 @@
       }
 
       const defaultWidth = clampNumber(block.boxWidthPx, 180, 1600, 520);
-      const centeredX = Math.max(12, Math.round((SLIDE_CANVAS_WIDTH - defaultWidth) / 2));
+      const centeredX = Math.max(12, Math.round((estimatedCanvasWidth - defaultWidth) / 2));
 
       if (needsMigrationCenter || !Number.isFinite(block.posX)) {
         block.posX = centeredX;
@@ -1410,8 +1410,17 @@
     });
 
     if (needsMigrationCenter) {
-      section.layoutVersion = 2;
+      section.layoutVersion = 3;
     }
+  }
+
+  function getSlideCanvasWidthEstimate() {
+    const viewport = typeof window !== "undefined" ? Number(window.innerWidth || 0) : 0;
+    if (!Number.isFinite(viewport) || viewport <= 0) {
+      return 1100;
+    }
+
+    return clampNumber(viewport - 90, 760, 1700, 1100);
   }
 
   function getSectionCanvasHeight(section) {
