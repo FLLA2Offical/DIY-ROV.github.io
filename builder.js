@@ -15,6 +15,7 @@
   const CLOUD_PUBLIC_DOC_ID = "published";
   const SAVE_DEBOUNCE_MS = 450;
   const SAVE_OP_TIMEOUT_MS = 15000;
+  const CLOUD_SAVE_TOTAL_TIMEOUT_MS = 45000;
   const AUTO_SAVE_ENABLED = false;
   const AUTO_SAVE_DELAY_MS = 9000;
   const DEFAULT_CANVAS_HEIGHT = 920;
@@ -625,9 +626,21 @@
       cloudPayload = payload;
     }
 
+    let conversionTimedOut = false;
     if (payloadHasInlineImages(payload)) {
       if (pendingCloudImageUploads > 0) {
         return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
+      }
+
+      try {
+        await withTimeout(
+          replaceInlineImagesWithCloudUrls(cloudPayload),
+          SAVE_OP_TIMEOUT_MS * 2,
+          "Inline image conversion timed out."
+        );
+      } catch (error) {
+        conversionTimedOut = true;
+        console.warn("Inline image conversion timed out:", error);
       }
 
       if (payloadHasInlineImages(cloudPayload)) {
@@ -682,7 +695,7 @@
       console.error("Public publish save failed:", error);
     }
 
-    return { accountSaved, publishedSaved };
+    return { accountSaved, publishedSaved, reason: conversionTimedOut ? "inline-timeout" : undefined };
   }
 
   function isFirebaseConfigured() {
@@ -2633,7 +2646,11 @@
         }
       }
 
-      cloudStatus = await saveStateToCloud(payload);
+      cloudStatus = await withTimeout(
+        saveStateToCloud(payload),
+        CLOUD_SAVE_TOTAL_TIMEOUT_MS,
+        "Cloud save took too long."
+      );
       hasUnsavedChanges = false;
 
       if (options.manual) {
@@ -2664,6 +2681,9 @@
         } else if (cloudStatus.reason === "inline-images") {
           showToast("Some images could not upload. Saved using last known image versions.");
           setSaveStatus("Saved (Image Fallback)", "warning");
+        } else if (cloudStatus.reason === "inline-timeout") {
+          showToast("Large image upload timed out. Local save completed; cloud may finish on next Save.");
+          setSaveStatus("Saved (Cloud Timeout)", "warning");
         } else if (firebaseState.enabled && !firebaseState.user) {
           showToast("Saved on this device only. Use Sign in with Google to sync.");
           setSaveStatus("Local Only", "warning");
