@@ -16,6 +16,8 @@
   const SAVE_DEBOUNCE_MS = 450;
   const SAVE_OP_TIMEOUT_MS = 15000;
   const CLOUD_SAVE_TOTAL_TIMEOUT_MS = 45000;
+  const MAX_UPLOAD_IMAGE_DIMENSION = 1800;
+  const UPLOAD_JPEG_QUALITY = 0.82;
   const AUTO_SAVE_ENABLED = false;
   const AUTO_SAVE_DELAY_MS = 9000;
   const DEFAULT_CANVAS_HEIGHT = 920;
@@ -2355,15 +2357,18 @@
         images: []
       };
 
-      for (let index = 0; index < imageFiles.length; index += 1) {
+      const preparedImages = await Promise.all(
+        imageFiles.map((file, index) => buildImageSource(file, `gallery-${index + 1}`))
+      );
+
+      preparedImages.forEach((uploaded, index) => {
         const file = imageFiles[index];
-        const uploaded = await buildImageSource(file, `gallery-${index + 1}`);
         galleryBlock.images.push({
           id: uid("img"),
           src: uploaded.src,
           alt: file.name || "Gallery image"
         });
-      }
+      });
 
       section.blocks.push(galleryBlock);
       queueSave();
@@ -2445,7 +2450,12 @@
       const safeName = String(file.name || "upload").replace(/[^a-zA-Z0-9_.-]/g, "_");
       const path = `images/${firebaseState.user.uid}/${Date.now()}-${safeName}`;
       const storageRef = firebaseState.storage.ref().child(path);
-      await withTimeout(storageRef.put(file), SAVE_OP_TIMEOUT_MS, "Image upload timed out.");
+      const uploadBlob = await optimizeImageBlobForUpload(file);
+      await withTimeout(
+        storageRef.put(uploadBlob, { contentType: uploadBlob.type || String(file.type || "image/jpeg") }),
+        SAVE_OP_TIMEOUT_MS,
+        "Image upload timed out."
+      );
       return await withTimeout(storageRef.getDownloadURL(), SAVE_OP_TIMEOUT_MS, "Image URL fetch timed out.");
     } catch (error) {
       console.error("Cloud image upload failed:", error);
@@ -2674,7 +2684,18 @@
 
     try {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        const preferCompactLocal = hasCloudSync() && payloadHasInlineImages(payload);
+        if (preferCompactLocal) {
+          const compactPayload = buildQuotaSafePayload(payload);
+          if (compactPayload) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(compactPayload));
+            localStatus = "compact";
+          } else {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+          }
+        } else {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        }
       } catch (storageError) {
         if (!isStorageQuotaError(storageError)) {
           throw storageError;
@@ -3144,8 +3165,9 @@
     pendingCloudImageUploads += 1;
     try {
       const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      const mime = String(blob.type || "image/png");
+      const rawBlob = await response.blob();
+      const blob = await optimizeImageBlobForUpload(rawBlob);
+      const mime = String(blob.type || rawBlob.type || "image/jpeg");
       const ext = mime.includes("jpeg") ? "jpg" : mime.includes("webp") ? "webp" : "png";
       const safeHint = String(hint || "upload").replace(/[^a-zA-Z0-9_.-]/g, "_");
       const path = `images/${firebaseState.user.uid}/${Date.now()}-${safeHint}.${ext}`;
@@ -3157,6 +3179,69 @@
       return null;
     } finally {
       pendingCloudImageUploads = Math.max(0, pendingCloudImageUploads - 1);
+    }
+  }
+
+  async function optimizeImageBlobForUpload(inputBlob) {
+    if (!inputBlob || typeof window === "undefined") {
+      return inputBlob;
+    }
+
+    const sourceType = String(inputBlob.type || "");
+    if (!sourceType.startsWith("image/") || sourceType.includes("svg")) {
+      return inputBlob;
+    }
+
+    const objectUrl = URL.createObjectURL(inputBlob);
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Image decode failed."));
+        img.src = objectUrl;
+      });
+
+      const originalWidth = Number(image.naturalWidth || image.width || 0);
+      const originalHeight = Number(image.naturalHeight || image.height || 0);
+      if (originalWidth <= 0 || originalHeight <= 0) {
+        return inputBlob;
+      }
+
+      const longestEdge = Math.max(originalWidth, originalHeight);
+      const scale = longestEdge > MAX_UPLOAD_IMAGE_DIMENSION ? MAX_UPLOAD_IMAGE_DIMENSION / longestEdge : 1;
+      const targetWidth = Math.max(1, Math.round(originalWidth * scale));
+      const targetHeight = Math.max(1, Math.round(originalHeight * scale));
+      const shouldReencode = scale < 1 || Number(inputBlob.size || 0) > 1200000;
+
+      if (!shouldReencode) {
+        return inputBlob;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const context = canvas.getContext("2d", { alpha: false });
+      if (!context) {
+        return inputBlob;
+      }
+
+      context.drawImage(image, 0, 0, targetWidth, targetHeight);
+      const exportType = sourceType.includes("png") ? "image/png" : "image/jpeg";
+
+      const encoded = await new Promise((resolve) => {
+        canvas.toBlob(
+          (blob) => resolve(blob || inputBlob),
+          exportType,
+          exportType === "image/jpeg" ? UPLOAD_JPEG_QUALITY : undefined
+        );
+      });
+
+      return encoded || inputBlob;
+    } catch (error) {
+      console.warn("Image optimization skipped:", error);
+      return inputBlob;
+    } finally {
+      URL.revokeObjectURL(objectUrl);
     }
   }
 
