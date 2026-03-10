@@ -69,6 +69,7 @@
   let queuedManualPublishPayload = null;
   let queuedManualPublishLocalStatus = "full";
   let cloudRetryTimer = null;
+  let lastCloudErrorMessage = "";
 
   const imageUploadContext = {
     mode: "image",
@@ -633,13 +634,29 @@
       cloudPayload = payload;
     }
 
+    let conversionTimedOut = false;
     if (payloadHasInlineImages(payload)) {
       if (pendingCloudImageUploads > 0) {
         return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
       }
 
+      try {
+        await withTimeout(
+          replaceInlineImagesWithCloudUrls(cloudPayload),
+          12000,
+          "Inline image conversion timed out."
+        );
+      } catch (error) {
+        conversionTimedOut = true;
+        console.warn("Inline image conversion timed out:", error);
+      }
+
       if (payloadHasInlineImages(cloudPayload)) {
-        return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
+        return {
+          accountSaved: false,
+          publishedSaved: false,
+          reason: conversionTimedOut ? "inline-timeout" : "inline-images"
+        };
       }
     }
 
@@ -2737,11 +2754,13 @@
           setSaveStatus("Waiting for Images", "warning");
           queueCloudPublishRetry();
         } else if (cloudStatus.reason === "inline-images") {
-          showToast("Some images could not upload. Saved using last known image versions.");
-          setSaveStatus("Saved (Image Fallback)", "warning");
+          showToast("Publishing photos...");
+          setSaveStatus("Publishing Photos...", "warning");
+          queueCloudPublishRetry();
         } else if (cloudStatus.reason === "inline-timeout") {
-          showToast("Large image upload timed out. Local save completed; cloud may finish on next Save.");
-          setSaveStatus("Saved (Cloud Timeout)", "warning");
+          showToast("Photo upload is still processing. Retrying publish...");
+          setSaveStatus("Publishing Photos...", "warning");
+          queueCloudPublishRetry();
         } else if (firebaseState.enabled && !firebaseState.user) {
           showToast("Saved on this device only. Use Sign in with Google to sync.");
           setSaveStatus("Local Only", "warning");
@@ -2861,8 +2880,8 @@
       }
 
       if (cloudStatus.reason === "inline-images" || cloudStatus.reason === "inline-timeout") {
-        showToast("Saved locally. Cloud image publish will retry on next save.");
-        setSaveStatus("Saved (Image Fallback)", "warning");
+        setSaveStatus("Publishing Photos...", "warning");
+        queueCloudPublishRetry();
         continue;
       }
 
