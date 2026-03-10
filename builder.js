@@ -633,30 +633,13 @@
       cloudPayload = payload;
     }
 
-    let conversionTimedOut = false;
     if (payloadHasInlineImages(payload)) {
       if (pendingCloudImageUploads > 0) {
         return { accountSaved: false, publishedSaved: false, reason: "images-uploading" };
       }
 
-      try {
-        await withTimeout(
-          replaceInlineImagesWithCloudUrls(cloudPayload),
-          SAVE_OP_TIMEOUT_MS * 2,
-          "Inline image conversion timed out."
-        );
-      } catch (error) {
-        conversionTimedOut = true;
-        console.warn("Inline image conversion timed out:", error);
-      }
-
       if (payloadHasInlineImages(cloudPayload)) {
-        const quotaSafe = buildQuotaSafePayload(cloudPayload);
-        if (quotaSafe) {
-          cloudPayload = quotaSafe;
-        } else {
-          return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
-        }
+        return { accountSaved: false, publishedSaved: false, reason: "inline-images" };
       }
     }
 
@@ -702,7 +685,7 @@
       console.error("Public publish save failed:", error);
     }
 
-    return { accountSaved, publishedSaved, reason: conversionTimedOut ? "inline-timeout" : undefined };
+    return { accountSaved, publishedSaved };
   }
 
   function isFirebaseConfigured() {
@@ -2343,8 +2326,9 @@
         }
         refreshedTarget.src = cloudUrl;
         queueSave();
-        persistState({ manual: false });
         render();
+        setSaveStatus("Publishing...", "saving");
+        queueCloudPublishRetry();
         showToast("Banner uploaded.");
       });
       return;
@@ -2384,8 +2368,9 @@
           }
           refreshedGallery.images[index].src = cloudUrl;
           queueSave();
-          persistState({ manual: false });
           render();
+          setSaveStatus("Publishing...", "saving");
+          queueCloudPublishRetry();
         });
       });
       return;
@@ -2413,8 +2398,9 @@
       }
       refreshedImage.src = cloudUrl;
       queueSave();
-      persistState({ manual: false });
       render();
+      setSaveStatus("Publishing...", "saving");
+      queueCloudPublishRetry();
       showToast("Image uploaded.");
     });
   }
