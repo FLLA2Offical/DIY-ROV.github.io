@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAllowedAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email != null &&
+        request.auth.token.email in [
+          "tbuland@collegiateschool.org",
+          "teddyb.ceo@gmail.com",
+          "gstanley@collegiateschool.org"
+        ];
+    }
+
+    match /fll6959SiteBuilder/published {
+      allow read: if true;
+      allow write: if isAllowedAdmin();
+    }
+
+    match /fll6959SiteBuilder/{userId} {
+      allow read, write: if isAllowedAdmin() && request.auth.uid == userId;
+    }
+  }
+}

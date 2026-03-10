@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAllowedAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email != null &&
+        request.auth.token.email in [
+          "tbuland@collegiateschool.org",
+          "teddyb.ceo@gmail.com",
+          "gstanley@collegiateschool.org"
+        ];
+    }
+
+    match /images/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAllowedAdmin() && request.auth.uid == userId;
+    }
+  }
+}
